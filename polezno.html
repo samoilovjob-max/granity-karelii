@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Калькулятор массы — Граниты Карелии</title>
-  <meta name="description" content="Расчёт объёма и массы гранитных изделий по размерам и породе камня." />
+  <title>Калькуляторы — Граниты Карелии</title>
+  <meta name="description" content="Расчёт массы гранитных изделий и количества брусчатки на площадь мощения." />
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="images/brand/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="images/brand/apple-touch-icon.png" />
@@ -38,9 +38,10 @@
       <p class="eyebrow">Полезно</p>
       <h1>Калькулятор массы</h1>
       <p class="lead">Посчитайте объём и массу изделий по размерам и породе гранита. Размеры — в миллиметрах.</p>
+      <p class="tool-links"><a href="#bruschatka">Калькулятор брусчатки</a></p>
     </section>
 
-    <section class="calc-shell" aria-label="Калькулятор">
+    <section class="calc-shell" id="massa" aria-label="Калькулятор массы">
       <form class="calc-form" id="calcForm">
         <label>
           Порода гранита
@@ -121,6 +122,112 @@
       Формула: объём = Д × Ш × Т / 1&nbsp;000&nbsp;000&nbsp;000 × кол-во;
       масса = объём × плотность породы.
     </p>
+
+    <section class="section-gap pave" id="bruschatka" aria-labelledby="pave-title">
+      <div class="pave-head">
+        <p class="eyebrow">Полезно</p>
+        <h2 id="pave-title">Калькулятор брусчатки</h2>
+        <p class="lead">Площадь мощения и размер камня: штуки без запаса и с запасом, вес и объём насыпи для колотой брусчатки.</p>
+        <p class="tool-links"><a href="produkciya/bruschatka.html">Карточка брусчатки</a></p>
+      </div>
+
+      <div class="pave-shell">
+        <form class="calc-form pave-form" id="paveForm">
+          <label>
+            Площадь мощения, м²
+            <input id="paveArea" name="area" type="number" inputmode="decimal" min="0" step="any" value="10" />
+          </label>
+
+          <label>
+            Размер брусчатки, мм
+            <select id="paveSize" name="size"></select>
+          </label>
+
+          <div class="pave-dims" id="paveDims" hidden>
+            <label>
+              Длина, мм
+              <input id="paveLength" name="length" type="number" inputmode="decimal" min="0" step="any" />
+            </label>
+            <label>
+              Ширина, мм
+              <input id="paveWidth" name="width" type="number" inputmode="decimal" min="0" step="any" />
+            </label>
+            <label>
+              Толщина, мм
+              <input id="paveThickness" name="thickness" type="number" inputmode="decimal" min="0" step="any" />
+            </label>
+          </div>
+
+          <label>
+            Тип укладки
+            <select id="paveReserve" name="reserve"></select>
+          </label>
+
+          <label>
+            Тип брусчатки
+            <select id="paveKind" name="kind">
+              <option value="sawn">Пиленая</option>
+              <option value="split">Колотая</option>
+            </select>
+          </label>
+
+          <label id="paveModeWrap" hidden>
+            Как считать колотую
+            <select id="paveMode" name="mode">
+              <option value="pieces">Штуками</option>
+              <option value="bulk">Насыпью</option>
+            </select>
+          </label>
+
+          <label id="paveLayerWrap" hidden>
+            Толщина слоя насыпи, м
+            <input id="paveLayer" name="layer" type="number" inputmode="decimal" min="0" step="any" value="0.1" />
+          </label>
+
+          <div class="calc-actions">
+            <button class="btn btn-ghost" type="button" id="paveReset">Сбросить</button>
+          </div>
+        </form>
+
+        <div class="calc-results pave-results" id="paveResults" aria-live="polite">
+            <p class="pave-error" id="paveError" hidden></p>
+            <div class="result-cards">
+              <article>
+                <span>Штук на 1 м²</span>
+                <strong id="pavePerM2">—</strong>
+              </article>
+              <article>
+                <span>Без запаса</span>
+                <strong id="pavePlain">—</strong>
+                <small>шт</small>
+              </article>
+              <article>
+                <span>С запасом</span>
+                <strong id="paveReserveCount">—</strong>
+                <small>шт</small>
+              </article>
+              <article id="paveWeightCard">
+                <span>Вес</span>
+                <strong id="paveWeight">—</strong>
+                <small>т</small>
+              </article>
+              <article id="paveBulkCard" hidden>
+                <span>Объём насыпью</span>
+                <strong id="paveBulk">—</strong>
+                <small>м³</small>
+              </article>
+            </div>
+            <p class="pave-hint" id="paveHint"></p>
+        </div>
+
+        <!-- Фото брусчатки: положите файл images/paving/bruschatka.jpg
+             и замените заглушку на img с атрибутами src, alt, loading="lazy". -->
+        <figure class="stone-photo pave-photo">
+          <div class="stone-photo-placeholder" role="img" aria-label="Место для фотографии брусчатки"></div>
+          <figcaption>Фото появится здесь: images/paving/bruschatka.jpg</figcaption>
+        </figure>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -144,12 +251,13 @@
           <li><a href="mailto:info@granit-karel.ru">info@granit-karel.ru</a></li>
         </ul>
       </div>
-      <p>Калькулятор массы изделий</p>
+      <p>Калькуляторы массы и брусчатки</p>
     </div>
   </footer>
 
   <script src="js/densities.js"></script>
   <script src="js/calculator.js"></script>
+  <script src="js/paving.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>

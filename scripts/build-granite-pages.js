@@ -371,7 +371,7 @@ function productPage(product, siblings) {
         <h1>${esc(article.headline)}</h1>
         ${article.lead.map((paragraph) => `<p class="lead">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
-          <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>
+          <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>${product.id === "bruschatka" ? `\n          <a class="btn btn-ghost" href="../polezno.html#bruschatka">Посчитать брусчатку</a>` : ""}
           <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
         </div>
       </div>

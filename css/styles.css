@@ -1207,3 +1207,132 @@ ul.stone-links {
 .stone-section .stone-links + .eyebrow {
   margin-top: 0.9rem; /* как gap .stone-grid */
 }
+
+/* Калькулятор брусчатки. Отдельных --font-size-* нет: размеры взяты у соседних блоков. */
+#massa,
+#bruschatka {
+  scroll-margin-top: calc(var(--header-h) + 0.5rem);
+}
+
+.tool-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0.85rem 0 0;
+}
+
+.tool-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.pave-head {
+  max-width: 40rem; /* как .page-intro */
+  margin-bottom: 1.25rem;
+}
+
+.pave-head h2 {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 3vw, 2.2rem); /* между .stone-section h2 и .page-intro h1 */
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--brand-dark);
+}
+
+.pave-shell,
+.pave-dims,
+.pave-shell > * {
+  min-width: 0;
+}
+
+.pave-shell {
+  display: grid;
+  gap: 1.25rem; /* как .calc-shell */
+  grid-template-areas:
+    "form"
+    "results"
+    "photo";
+}
+
+.pave-form {
+  grid-area: form;
+}
+
+.pave-results {
+  grid-area: results;
+}
+
+.pave-photo {
+  grid-area: photo;
+}
+
+.pave-photo .stone-photo-placeholder {
+  background: var(--brand-dark); /* карточки продукции красят заглушку #1b2429 точечно */
+}
+
+.pave-dims {
+  display: grid;
+  gap: 0.8rem; /* как .calc-grid */
+}
+
+.pave-dims[hidden],
+#paveModeWrap[hidden],
+#paveLayerWrap[hidden],
+.pave-error[hidden],
+#paveBulkCard[hidden],
+#paveWeightCard[hidden] {
+  display: none;
+}
+
+.pave-error {
+  margin: 0 0 0.8rem;
+  color: var(--color-accent);
+  font-size: 0.92rem; /* как .density-line */
+}
+
+.pave-hint {
+  margin: 0.15rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.86rem; /* как .calc-note */
+}
+
+.result-cards strong {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 480px) {
+  .pave-dims {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pave-dims label:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 768px) {
+  .pave-dims {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .pave-dims label:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .pave-shell {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); /* как .calc-shell */
+    grid-template-areas:
+      "form results"
+      "form photo";
+    align-items: start;
+  }
+}
