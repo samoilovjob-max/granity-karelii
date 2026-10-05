@@ -34,7 +34,7 @@ function nav(prefix, active) {
         <a href="${href("index.html")}#products">Продукция</a>
         <a href="${href("index.html")}#gallery">Галерея</a>
         ${item("polezno.html", "Полезно", "calc")}
-        <a href="${href("index.html")}#contacts">Контакты</a>
+        <a${active === "contacts" ? ' class="is-active"' : ""} href="${href("kontakty.html")}">Контакты</a>
       </nav>
     </div>
   </header>`;

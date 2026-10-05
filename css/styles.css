@@ -691,6 +691,57 @@ summary:focus-visible {
   }
 }
 
+.requisites {
+  max-width: 42rem;
+  margin-top: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.1rem 1rem 1.2rem;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.requisites,
+.requisites * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.requisites ::selection {
+  background: transparent;
+}
+
+.requisites h2 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--brand-dark);
+}
+
+.requisites dl {
+  margin: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.requisites dt {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.requisites dd {
+  margin: 0.12rem 0 0;
+  color: var(--color-text);
+}
+
+.requisites dd.mono {
+  font-family: var(--font-technical);
+  font-size: 0.95rem;
+}
+
 .about-block {
   margin-top: 2rem;
 }
