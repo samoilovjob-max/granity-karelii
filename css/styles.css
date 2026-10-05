@@ -411,18 +411,20 @@ select {
 }
 
 .footer-apps {
-  gap: 0.2rem;
+  gap: 0.15rem;
 }
 
 .footer-contacts .footer-apps a {
-  min-width: 44px;
+  min-width: 0;
+  padding: 0 0.1rem;
   justify-content: center;
   text-decoration: none;
 }
 
 .footer-apps img {
-  width: 32px;
-  height: 32px;
+  width: 1.15em; /* чуть больше кегля номера: .footer-contacts 0.9rem */
+  height: 1.15em;
+  object-fit: contain;
 }
 
 .footer-contacts a {
