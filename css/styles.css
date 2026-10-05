@@ -376,6 +376,50 @@ select {
   height: 36px;
 }
 
+.site-footer .footer-inner {
+  align-items: flex-start;
+}
+
+.footer-id {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.footer-contacts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem; /* как .site-footer p */
+}
+
+.footer-inn {
+  font-family: var(--font-technical);
+}
+
+.footer-phone,
+.footer-apps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.75rem;
+}
+
+.footer-contacts a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  overflow-wrap: anywhere;
+}
+
 .site-footer p {
   margin: 0;
   color: var(--text-secondary);

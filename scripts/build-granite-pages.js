@@ -63,14 +63,29 @@ function nav(prefix, active) {
   </header>`;
 }
 
-function footer(prefix) {
+function footer(prefix, note = "18 пород · калькулятор массы") {
   return `<footer class="site-footer">
     <div class="footer-inner">
-      <a class="brand" href="${prefix}index.html" aria-label="Граниты Карелии">
-        <img src="${prefix}images/brand/logo-gk.jpg" alt="" width="36" height="36" />
-        <span>Граниты Карелии</span>
-      </a>
-      <p>18 пород · калькулятор массы</p>
+      <div class="footer-id">
+        <a class="brand" href="${prefix}index.html" aria-label="Граниты Карелии">
+          <img src="${prefix}images/brand/logo-gk.jpg" alt="" width="36" height="36" />
+          <span>Граниты Карелии</span>
+        </a>
+        <ul class="footer-contacts">
+          <li>ИНН <span class="footer-inn">102003029438</span></li>
+          <li class="footer-phone">
+            <a href="tel:+79218017170">+7 921 801 71 70</a>
+            <span class="footer-apps">
+              <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer">Telegram</a>
+              <!-- Профиль MAX: когда появится ссылка https://max.ru/u/…, подставьте её вместо https://max.ru/ -->
+              <a href="https://max.ru/" target="_blank" rel="noopener noreferrer">MAX</a>
+            </span>
+          </li>
+          <li><a href="mailto:info@granit-karel.ru">info@granit-karel.ru</a></li>
+        </ul>
+      </div>
+      <p>${note}</p>
     </div>
   </footer>
   <script src="${prefix}js/nav.js"></script>`;
