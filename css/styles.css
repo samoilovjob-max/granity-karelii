@@ -740,20 +740,12 @@ summary:focus-visible {
 }
 
 .palette a {
-  display: block;
+  display: flex;
+  align-items: center;
   min-height: 44px;
   color: var(--brand-primary);
   text-decoration: underline;
   text-underline-offset: 0.15em;
-}
-
-.palette .latin {
-  display: block;
-  margin-top: 0.15rem;
-  font-family: var(--font-technical);
-  font-size: 0.78rem;
-  color: var(--color-muted);
-  text-decoration: none;
 }
 
 @media (min-width: 768px) {

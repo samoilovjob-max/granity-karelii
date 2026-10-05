@@ -53,7 +53,7 @@ function footer(prefix) {
   <script src="${prefix}js/nav.js"></script>`;
 }
 
-function head(prefix, title, description) {
+function head(prefix, title, description, extra = "") {
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -61,6 +61,7 @@ function head(prefix, title, description) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}" />
+  ${extra}
   <link rel="icon" href="${prefix}favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="${prefix}images/brand/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="${prefix}images/brand/apple-touch-icon.png" />
@@ -91,14 +92,46 @@ function cardLead(article) {
   return cut === -1 ? text : text.slice(0, cut + 1);
 }
 
+function isPositioning(section) {
+  return /^6\.\s/.test(section.title) || section.title.includes("Рыночное позиционирование");
+}
+
+function sectionPlainText(section) {
+  return section.blocks.map((block) => {
+    if (block.type === "p") return block.text;
+    return block.items.map((item) => `${item.label}: ${item.text}`).join(" ");
+  }).join(" ");
+}
+
 function story(article) {
-  return `<div class="stone-story">${article.sections.map((section) => `<section class="stone-section">
+  const visible = article.sections.filter((section) => !isPositioning(section));
+  return `<div class="stone-story">${visible.map((section) => `<section class="stone-section">
         <h2>${esc(section.title)}</h2>
         ${section.blocks.map((block) => {
           if (block.type === "p") return `<p>${esc(block.text)}</p>`;
           return `<ul class="points">${block.items.map((item) => `<li><strong>${esc(item.label)}</strong> ${esc(item.text)}</li>`).join("")}</ul>`;
         }).join("")}
       </section>`).join("")}</div>`;
+}
+
+function structuredData(stone, article) {
+  const positioning = article.sections.find(isPositioning);
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: stone.name,
+    alternateName: stone.latin,
+    description: [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" "),
+    brand: { "@type": "Brand", name: "Граниты Карелии" },
+    additionalProperty: positioning
+      ? {
+          "@type": "PropertyValue",
+          name: positioning.title.replace(/^\d+\.\s*/, ""),
+          value: sectionPlainText(positioning)
+        }
+      : undefined
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
 }
 
 function stonePage(stone, index) {
@@ -115,7 +148,9 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation]
   ].map(([label, value]) => `<div><dt>${label}</dt><dd>${esc(value)}</dd></div>`).join("");
 
-  return `${head("../", article.seoTitle, article.meta)}
+  const positioning = article.sections.find(isPositioning);
+  const meta = [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+  return `${head("../", article.seoTitle, meta, structuredData(stone, article))}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span>${esc(stone.name)}</span></p>
