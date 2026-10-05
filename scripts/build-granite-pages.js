@@ -58,7 +58,10 @@ function head(prefix, title, description) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}" />
-  <link rel="icon" href="${prefix}images/brand/logo-gk.jpg" />
+  <link rel="icon" href="${prefix}favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="${prefix}images/brand/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="180x180" href="${prefix}images/brand/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="${prefix}images/brand/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
