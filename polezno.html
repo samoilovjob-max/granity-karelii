@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор массы — Граниты Карелии</title>
+  <meta name="description" content="Расчёт объёма и массы гранитных изделий по размерам и породе камня." />
+  <link rel="icon" href="images/brand/logo-gk.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="Граниты Карелии">
+        <img src="images/brand/logo-gk.jpg" alt="" width="40" height="40" />
+        <span>Граниты Карелии</span>
+      </a>
+      <nav class="nav" aria-label="Навигация">
+        <a href="index.html">О компании</a>
+        <a href="index.html#granites">Виды гранитов</a>
+        <a href="index.html#products">Продукция</a>
+        <a href="index.html#gallery">Галерея</a>
+        <a class="is-active" href="polezno.html">Полезно</a>
+        <a href="index.html#contacts">Контакты</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="page-intro">
+      <p class="eyebrow">Полезно</p>
+      <h1>Калькулятор массы</h1>
+      <p class="lead">Посчитайте объём и массу изделий по размерам и породе гранита. Размеры — в миллиметрах.</p>
+    </section>
+
+    <section class="calc-shell" aria-label="Калькулятор">
+      <form class="calc-form" id="calcForm">
+        <label>
+          Порода гранита
+          <select id="stone" name="stone" required></select>
+        </label>
+        <p class="density-line">Плотность: <strong id="densityValue">3200</strong> кг/м³</p>
+
+        <div class="calc-grid">
+          <label>
+            Длина, мм
+            <input id="length" name="length" type="number" min="1" step="1" value="1000" required />
+          </label>
+          <label>
+            Ширина, мм
+            <input id="width" name="width" type="number" min="1" step="1" value="500" required />
+          </label>
+          <label>
+            Толщина, мм
+            <input id="thickness" name="thickness" type="number" min="1" step="1" value="80" required />
+          </label>
+          <label>
+            Количество
+            <input id="qty" name="qty" type="number" min="1" step="1" value="1" required />
+          </label>
+        </div>
+
+        <div class="calc-actions">
+          <button class="btn btn-primary" type="submit">Добавить в расчёт</button>
+          <button class="btn btn-ghost" type="button" id="clearBtn">Очистить список</button>
+        </div>
+      </form>
+
+      <div class="calc-results">
+        <div class="result-cards">
+          <article>
+            <span>Объём позиции</span>
+            <strong id="itemVolume">0</strong>
+            <small>м³</small>
+          </article>
+          <article>
+            <span>Масса позиции</span>
+            <strong id="itemMass">0</strong>
+            <small>кг</small>
+          </article>
+        </div>
+
+        <div class="table-wrap">
+          <table class="calc-table" id="itemsTable">
+            <thead>
+              <tr>
+                <th>Порода</th>
+                <th>Размер, мм</th>
+                <th>Кол-во</th>
+                <th>Объём, м³</th>
+                <th>Масса, кг</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody">
+              <tr class="empty-row">
+                <td colspan="6">Позиций пока нет — добавьте изделие слева</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="3">Итого</th>
+                <th id="totalVolume">0</th>
+                <th id="totalMass">0</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <p class="calc-note">
+      Формула: объём = Д × Ш × Т / 1&nbsp;000&nbsp;000&nbsp;000 × кол-во;
+      масса = объём × плотность породы. Расчёт ориентировочный.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="brand" href="index.html" aria-label="Граниты Карелии">
+        <img src="images/brand/logo-gk.jpg" alt="" width="36" height="36" />
+        <span>Граниты Карелии</span>
+      </a>
+      <p>Калькулятор массы изделий</p>
+    </div>
+  </footer>
+
+  <script src="js/densities.js"></script>
+  <script src="js/calculator.js"></script>
+</body>
+</html>
