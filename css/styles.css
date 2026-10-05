@@ -691,9 +691,33 @@ summary:focus-visible {
   }
 }
 
+.place-card {
+  max-width: 42rem;
+  margin-top: 0.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.1rem 1rem 1.15rem;
+}
+
+.place-card h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--brand-dark);
+}
+
+.place-card p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
 .requisites {
   max-width: 42rem;
-  margin-top: 1.5rem;
+  margin-top: 0.9rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
