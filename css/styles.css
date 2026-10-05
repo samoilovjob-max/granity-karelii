@@ -1285,6 +1285,7 @@ ul.stone-links {
 .pave-dims[hidden],
 #paveModeWrap[hidden],
 #paveLayerWrap[hidden],
+#paveDensityWrap[hidden],
 .pave-error[hidden],
 #paveBulkCard[hidden],
 #paveWeightCard[hidden] {

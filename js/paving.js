@@ -8,6 +8,10 @@
   const lengthInput = document.getElementById("paveLength");
   const widthInput = document.getElementById("paveWidth");
   const thicknessInput = document.getElementById("paveThickness");
+  const stoneSelect = document.getElementById("paveStone");
+  const densityValue = document.getElementById("paveDensityValue");
+  const densityWrap = document.getElementById("paveDensityWrap");
+  const densityInput = document.getElementById("paveDensity");
   const reserveSelect = document.getElementById("paveReserve");
   const kindSelect = document.getElementById("paveKind");
   const modeWrap = document.getElementById("paveModeWrap");
@@ -44,8 +48,11 @@
     { id: "herringbone", rate: 0.15, label: "Ёлочка или диагональ (15%)" }
   ];
 
-  // Плотность гранита, т/м³. В брифе 2,6–2,7; для одного числа взята середина.
-  const DENSITY_T_PER_M3 = 2.65;
+  // Брусчатку обычно делают из габбро-диабаза. Список и кг/м³ — из js/densities.js,
+  // те же середины диапазонов, что в калькуляторе массы. Другая порода — пункт селекта,
+  // произвольное число — пункт «custom».
+  const DEFAULT_STONE_ID = "gabbro-diabaz";
+  const STONES = window.GRANITE_DENSITIES || [];
 
   // Колотая насыпью: поправка на неровные грани, верх диапазона 105–110 к базе 100.
   // Геометрия 100×100×100 даёт 1 000 шт/м³. «≈100 шт/м³» из брифа — это 100 шт
@@ -77,6 +84,18 @@
     reserveSelect.appendChild(option);
   });
 
+  STONES.forEach((stone) => {
+    const option = document.createElement("option");
+    option.value = stone.id;
+    option.textContent = stone.name;
+    stoneSelect.appendChild(option);
+  });
+  const customDensity = document.createElement("option");
+  customDensity.value = "custom";
+  customDensity.textContent = "Своя плотность";
+  stoneSelect.appendChild(customDensity);
+  stoneSelect.value = DEFAULT_STONE_ID;
+
   const readNumber = (input) => {
     const raw = input.value.trim();
     if (!raw) return null;
@@ -92,14 +111,21 @@
 
   const selectedSize = () => SIZES.find((size) => size.id === sizeSelect.value) || SIZES[0];
   const selectedReserve = () => RESERVES.find((item) => item.id === reserveSelect.value) || RESERVES[0];
+  const selectedStone = () => STONES.find((stone) => stone.id === stoneSelect.value);
 
   const syncFields = () => {
     const custom = sizeSelect.value === "custom";
     const split = kindSelect.value === "split";
+    const ownDensity = stoneSelect.value === "custom";
     dims.hidden = !custom;
     modeWrap.hidden = !split;
     layerWrap.hidden = !split;
+    densityWrap.hidden = !ownDensity;
     if (!split) modeSelect.value = "pieces";
+    const stone = selectedStone();
+    const typed = readNumber(densityInput);
+    const shown = ownDensity ? typed : stone && stone.density;
+    densityValue.textContent = shown > 0 ? String(Math.round(shown)) : "—";
   };
 
   const fail = (message) => ({ ok: false, error: message });
@@ -133,6 +159,11 @@
       if (thickness !== null && thickness <= 0) thickness = null;
     }
 
+    const ownDensity = stoneSelect.value === "custom";
+    const density = ownDensity ? readNumber(densityInput) : selectedStone().density;
+    const densityError = positive(density, "Плотность должна быть больше нуля.");
+    if (densityError) return fail(densityError);
+
     const reserve = selectedReserve();
     const split = kindSelect.value === "split";
     const bulk = split && modeSelect.value === "bulk";
@@ -155,6 +186,7 @@
       width,
       thickness: thickness > 0 ? thickness : null,
       reserve,
+      density,
       split,
       bulk,
       layer
@@ -187,20 +219,20 @@
     let weight = null;
     if (input.thickness > 0) {
       const stoneVolume = areaOne * (input.thickness / 1000) * withReserve;
-      weight = stoneVolume * DENSITY_T_PER_M3;
+      weight = stoneVolume * input.density / 1000;
     }
 
-    return { perM2, plain, withReserve, weight, bulkVolume, perM3, reserveRate };
+    return { perM2, plain, withReserve, weight, bulkVolume, perM3, reserveRate, density: input.density };
   };
 
   const hintText = (input, result) => {
     const percent = Math.round(result.reserveRate * 100);
-    const density = rateFmt.format(DENSITY_T_PER_M3);
+    const density = `${Math.round(result.density)} кг/м³`;
     if (input.bulk) {
-      return `Насыпь: объём = площадь × слой. К геометрическому числу штук добавлено 10% на неровные грани, затем запас ${percent}% на укладку. Вес при плотности ${density} т/м³. Толщина камня на штуки с квадратного метра не влияет.`;
+      return `Насыпь: объём = площадь × слой. К геометрическому числу штук добавлено 10% на неровные грани, затем запас ${percent}% на укладку. Вес при плотности ${density}. Толщина камня на штуки с квадратного метра не влияет.`;
     }
     const bulkNote = input.split ? " Объём насыпи = площадь × толщина слоя." : "";
-    const weightNote = result.weight === null ? " Чтобы увидеть вес, укажите толщину." : ` Вес при плотности ${density} т/м³.`;
+    const weightNote = result.weight === null ? " Чтобы увидеть вес, укажите толщину." : ` Вес при плотности ${density}.`;
     return `Запас ${percent}% добавлен к количеству штук, не к площади. Толщина не меняет штуки на 1 м².${weightNote}${bulkNote}`;
   };
 
@@ -247,6 +279,8 @@
     widthInput.value = "";
     thicknessInput.value = "";
     reserveSelect.value = RESERVES[0].id;
+    stoneSelect.value = DEFAULT_STONE_ID;
+    densityInput.value = "";
     kindSelect.value = "sawn";
     modeSelect.value = "pieces";
     layerInput.value = "0.1";
