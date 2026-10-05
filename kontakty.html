@@ -43,22 +43,34 @@
       </div>
     </section>
 
-    <section class="place-card" aria-label="Телефон">
-      <h2>Телефон</h2>
-      <p><a href="tel:+79218017170">+7 921 801 71 70</a></p>
-    </section>
-
-    <section class="place-card" aria-label="Адрес производства">
-      <h2>Адрес производства</h2>
-      <p>Республика Карелия, г. Петрозаводск, Пряжинское шоссе, 45</p>
-      <p><a href="https://yandex.ru/maps/-/CXeKu0Z1" target="_blank" rel="noopener noreferrer">Открыть в Яндекс Картах</a></p>
-      <iframe
-        title="Производство на Яндекс Картах: Пряжинское шоссе, 45"
-        src="https://yandex.ru/map-widget/v1/?ll=34.225272%2C61.822676&amp;z=16&amp;pt=34.225272,61.822676,pm2rdm"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        allowfullscreen
-      ></iframe>
+    <section class="location" aria-label="Производство на карте">
+      <div class="location-info">
+        <h2>Производство</h2>
+        <p class="location-address">Республика Карелия, г. Петрозаводск, Пряжинское шоссе, 45</p>
+        <p class="location-phone">
+          <a href="tel:+79218017170">+7 921 801 71 70</a>
+          <span class="location-apps">
+            <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
+            <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="images/messengers/telegram.png" alt="" width="18" height="18" /></a>
+            <!-- Профиль MAX: когда появится ссылка https://max.ru/u/…, подставьте её вместо https://max.ru/ -->
+            <a href="https://max.ru/" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="images/messengers/max.png" alt="" width="18" height="18" /></a>
+          </span>
+        </p>
+        <p><a href="mailto:info@granit-karel.ru">info@granit-karel.ru</a></p>
+        <div class="location-actions">
+          <a class="btn btn-primary" href="https://yandex.ru/maps/?rtext=~61.822676%2C34.225272&amp;rtt=auto" target="_blank" rel="noopener noreferrer">Маршрут</a>
+          <a class="btn btn-ghost" href="https://yandex.ru/maps/-/CXeKu0Z1" target="_blank" rel="noopener noreferrer">Яндекс Карты</a>
+        </div>
+      </div>
+      <div class="location-map">
+        <iframe
+          title="Производство на Яндекс Картах: Пряжинское шоссе, 45"
+          src="https://yandex.ru/map-widget/v1/?ll=34.225272%2C61.822676&amp;z=16&amp;l=map&amp;pt=34.225272,61.822676,pm2orm"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      </div>
     </section>
 
     <section class="requisites" aria-label="Реквизиты">
