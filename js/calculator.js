@@ -64,7 +64,7 @@
 
   const renderItems = () => {
     if (!items.length) {
-      itemsBody.innerHTML = '<tr class="empty-row"><td colspan="6">Позиций пока нет — добавьте изделие слева</td></tr>';
+      itemsBody.innerHTML = '<tr class="empty-row"><td colspan="6">Позиций пока нет — добавьте изделие</td></tr>';
       totalVolume.textContent = "0";
       totalMass.textContent = "0";
       return;
@@ -75,10 +75,10 @@
         (item, index) => `
       <tr>
         <td>${item.stoneName}</td>
-        <td>${item.length}×${item.width}×${item.thickness}</td>
-        <td>${item.qty}</td>
-        <td>${formatVolume(item.volume)}</td>
-        <td>${formatMass(item.mass)}</td>
+        <td data-label="Размер, мм">${item.length}×${item.width}×${item.thickness}</td>
+        <td data-label="Кол-во">${item.qty}</td>
+        <td data-label="Объём, м³">${formatVolume(item.volume)}</td>
+        <td data-label="Масса, кг">${formatMass(item.mass)}</td>
         <td><button class="remove-btn" type="button" data-index="${index}" aria-label="Удалить">✕</button></td>
       </tr>`
       )
