@@ -410,6 +410,21 @@ select {
   gap: 0.15rem 0.75rem;
 }
 
+.footer-apps {
+  gap: 0.2rem;
+}
+
+.footer-contacts .footer-apps a {
+  min-width: 44px;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.footer-apps img {
+  width: 32px;
+  height: 32px;
+}
+
 .footer-contacts a {
   min-height: 44px;
   display: inline-flex;
