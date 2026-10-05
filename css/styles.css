@@ -693,7 +693,7 @@ summary:focus-visible {
 
 .place-card {
   max-width: 42rem;
-  margin-top: 0.25rem;
+  margin-top: 0.9rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
@@ -713,6 +713,12 @@ summary:focus-visible {
   color: var(--color-text);
   font-size: 1.05rem;
   line-height: 1.45;
+}
+
+.place-card a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .requisites {
