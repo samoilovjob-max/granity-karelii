@@ -1128,7 +1128,7 @@ summary:focus-visible {
    Отдельного правила на 480px у сетки пород нет — до 768px остаётся одна колонка. */
 
 .product-block > h2 {
-  margin: 0 0 0.9rem;
+  margin: 0 0 0.15rem;
   font-family: var(--font-heading);
   font-size: clamp(1.2rem, 2.2vw, 1.45rem); /* как .stone-section h2 */
   letter-spacing: -0.03em;
@@ -1137,8 +1137,32 @@ summary:focus-visible {
   overflow-wrap: break-word;
 }
 
+.product-block .tool-links {
+  margin: 0 0 0.9rem; /* как прежний нижний отступ .product-block > h2 */
+}
+
 .product-block + .product-block {
   margin-top: 2.2rem; /* как .section-gap */
+}
+
+.stone-card .stone-links p.card-calc {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-main);
+  font-size: 0.92rem; /* как .stone-links a */
+  letter-spacing: 0;
+  text-transform: none; /* соседний p — подпись «Используемые граниты» капителью */
+  color: inherit;
+}
+
+.card-calc a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  font-size: 0.92rem; /* как .stone-links a */
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .card-main {

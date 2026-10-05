@@ -290,6 +290,9 @@ function graniteLinks(product, prefix) {
 }
 
 function productCard(product) {
+  const paving = product.id === "bruschatka"
+    ? `\n          <p class="card-calc"><a href="kalkulyator-bruschatki.html">Калькулятор брусчатки</a></p>`
+    : "";
   return `<article class="stone-card">
         <a class="card-main" href="produkciya/${product.id}.html">
           ${productPhoto(product, "", true)}
@@ -298,7 +301,7 @@ function productCard(product) {
         </a>
         <div class="stone-links">
           <p>Используемые граниты</p>
-          <ul>${graniteLinks(product, "")}</ul>
+          <ul>${graniteLinks(product, "")}</ul>${paving}
         </div>
       </article>`;
 }
@@ -309,6 +312,7 @@ function productGroups(list) {
     if (!items.length) return "";
     return `<section class="product-block" id="${category}" aria-labelledby="heading-${category}">
       <h2 id="heading-${category}">${CATEGORY_LABEL[category]}</h2>
+      <p class="tool-links"><a href="polezno.html">Калькулятор массы</a></p>
       <div class="stone-grid">${items.map(productCard).join("\n")}</div>
     </section>`;
   }).join("\n");
@@ -371,7 +375,9 @@ function productPage(product, siblings) {
         <h1>${esc(article.headline)}</h1>
         ${article.lead.map((paragraph) => `<p class="lead">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
-          <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>${product.id === "bruschatka" ? `\n          <a class="btn btn-ghost" href="../kalkulyator-bruschatki.html">Посчитать брусчатку</a>` : ""}
+          ${product.id === "bruschatka"
+            ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Посчитать брусчатку</a>`
+            : `<a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>`}
           <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
         </div>
       </div>
