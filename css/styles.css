@@ -156,6 +156,10 @@ select {
   align-items: start;
 }
 
+.calc-shell > * {
+  min-width: 0;
+}
+
 .calc-form,
 .calc-results {
   background: var(--bg-card);
@@ -180,6 +184,8 @@ select {
 .calc-form input,
 .calc-form select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 46px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -378,10 +384,6 @@ select {
 @media (max-width: 920px) {
   .calc-shell {
     grid-template-columns: 1fr;
-  }
-
-  .nav {
-    display: none;
   }
 }
 
