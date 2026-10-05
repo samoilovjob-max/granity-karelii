@@ -26,7 +26,7 @@ function nav(prefix, active) {
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
       <nav class="nav" id="site-nav" aria-label="Навигация">
-        <a href="${href("index.html")}">О компании</a>
+        <a${active === "about" ? ' class="is-active"' : ""} href="${href("o-kompanii.html")}">О компании</a>
         ${item("vidy.html", "Виды гранитов", "types")}
         <a href="${href("index.html")}#products">Продукция</a>
         <a href="${href("index.html")}#gallery">Галерея</a>
