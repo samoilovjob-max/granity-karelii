@@ -721,6 +721,21 @@ summary:focus-visible {
   text-underline-offset: 0.15em;
 }
 
+.place-card iframe {
+  display: block;
+  width: 100%;
+  height: 280px;
+  margin-top: 0.9rem;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+@media (min-width: 768px) {
+  .place-card iframe {
+    height: 360px;
+  }
+}
+
 .requisites {
   max-width: 42rem;
   margin-top: 0.9rem;
