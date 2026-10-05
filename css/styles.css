@@ -1209,8 +1209,7 @@ ul.stone-links {
 }
 
 /* Калькулятор брусчатки. Отдельных --font-size-* нет: размеры взяты у соседних блоков. */
-#massa,
-#bruschatka {
+#massa {
   scroll-margin-top: calc(var(--header-h) + 0.5rem);
 }
 
@@ -1229,21 +1228,6 @@ ul.stone-links {
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 0.15em;
-}
-
-.pave-head {
-  max-width: 40rem; /* как .page-intro */
-  margin-bottom: 1.25rem;
-}
-
-.pave-head h2 {
-  margin: 0 0 0.7rem;
-  font-family: var(--font-heading);
-  font-size: clamp(1.6rem, 3vw, 2.2rem); /* между .stone-section h2 и .page-intro h1 */
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
-  color: var(--brand-dark);
 }
 
 .pave-shell,
