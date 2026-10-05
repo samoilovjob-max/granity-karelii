@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const stones = require("./stones-data");
+const articles = require("./stones-articles.json");
+
+const articleById = Object.fromEntries(articles.map((article) => [article.id, article]));
 
 const root = path.join(__dirname, "..");
 const stoneDir = path.join(root, "granity");
@@ -82,7 +85,25 @@ function photo(stone, prefix, compact) {
       </figure>`;
 }
 
+function cardLead(article) {
+  const text = article.lead[0];
+  const cut = text.search(/\.\s/);
+  return cut === -1 ? text : text.slice(0, cut + 1);
+}
+
+function story(article) {
+  return `<div class="stone-story">${article.sections.map((section) => `<section class="stone-section">
+        <h2>${esc(section.title)}</h2>
+        ${section.blocks.map((block) => {
+          if (block.type === "p") return `<p>${esc(block.text)}</p>`;
+          return `<ul class="points">${block.items.map((item) => `<li><strong>${esc(item.label)}</strong> ${esc(item.text)}</li>`).join("")}</ul>`;
+        }).join("")}
+      </section>`).join("")}</div>`;
+}
+
 function stonePage(stone, index) {
+  const article = articleById[stone.id];
+  if (!article) throw new Error(`Нет текста документа для ${stone.id}`);
   const prev = stones[(index - 1 + stones.length) % stones.length];
   const next = stones[(index + 1) % stones.length];
   const specs = [
@@ -94,16 +115,15 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation]
   ].map(([label, value]) => `<div><dt>${label}</dt><dd>${esc(value)}</dd></div>`).join("");
 
-  return `${head("../", `${stone.name} — Граниты Карелии`, stone.lead)}
+  return `${head("../", article.seoTitle, article.meta)}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span>${esc(stone.name)}</span></p>
     <section class="stone-hero">
       <div class="stone-copy">
         <p class="eyebrow">${esc(stone.latin)}</p>
-        <h1>${esc(stone.name)}</h1>
-        <p class="lead">${esc(stone.lead)}</p>
-        <p class="lead">${esc(stone.place)}</p>
+        <h1>${esc(article.headline)}</h1>
+        ${article.lead.map((paragraph) => `<p class="lead">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
           <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>
           <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(stone.name)}">Оставить заявку</a>
@@ -111,27 +131,8 @@ function stonePage(stone, index) {
       </div>
       ${photo(stone, "../")}
     </section>
-    <section class="stone-layout" aria-label="Характеристики">
-      <dl class="specs">${specs}</dl>
-      <div>
-        <details class="fold">
-          <summary>Как выглядит</summary>
-          <p>${esc(stone.look)}</p>
-        </details>
-        <details class="fold">
-          <summary>Фактуры</summary>
-          <ul>${stone.finishes.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>
-        </details>
-        <details class="fold">
-          <summary>Где применяют</summary>
-          <ul>${stone.uses.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>
-        </details>
-        <details class="fold" open>
-          <summary>Гравировка</summary>
-          <p>${esc(stone.engraving)}</p>
-        </details>
-      </div>
-    </section>
+    <dl class="specs specs-board" aria-label="Характеристики">${specs}</dl>
+    ${story(article)}
     <nav class="pager" aria-label="Соседние породы">
       <a href="${prev.id}.html">← ${esc(prev.name)}</a>
       <a href="${next.id}.html">${esc(next.name)} →</a>
@@ -147,17 +148,17 @@ function catalogPage() {
   const cards = stones.map((stone) => `<a class="stone-card" href="granity/${stone.id}.html">
         ${photo(stone, "", true)}
         <h2>${esc(stone.name)}</h2>
-        <p>${esc(stone.lead)}</p>
+        <p>${esc(cardLead(articleById[stone.id]))}</p>
         <p class="density">${esc(stone.density)}</p>
       </a>`).join("\n");
 
-  return `${head("", "Виды гранитов — Граниты Карелии", "18 пород: цвет, плотность, морозостойкость и отдельная страница на каждый камень.")}
+  return `${head("", "Виды гранитов — Граниты Карелии", "18 пород: полное описание, свойства, фактуры, гравировка и применение.")}
   ${nav("", "types")}
   <main class="page">
     <section class="page-intro">
       <p class="eyebrow">Каталог</p>
       <h1>Виды гранитов</h1>
-      <p class="lead">18 пород. У каждой своя страница: цвет, характеристики и заметка по гравировке. Цифры — из описаний пород.</p>
+      <p class="lead">18 пород. На странице камня — текст из описания: минералогия, свойства, фактуры, гравировка и где камень применяют.</p>
     </section>
     <section class="stone-grid" aria-label="Породы">${cards}</section>
     <section class="section-gap">

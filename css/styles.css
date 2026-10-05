@@ -767,3 +767,73 @@ summary:focus-visible {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.specs-board {
+  margin-top: 0.25rem;
+}
+
+.stone-story {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+}
+
+.stone-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.05rem 1rem 1.15rem;
+}
+
+.stone-section h2 {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--brand-dark);
+}
+
+.stone-section p {
+  margin: 0 0 0.75rem;
+  max-width: 48rem;
+  color: var(--color-text);
+}
+
+.stone-section p:last-child,
+.stone-section .points:last-child {
+  margin-bottom: 0;
+}
+
+.points {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.points li {
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-text);
+}
+
+.points strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .specs-board {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .specs-board {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
