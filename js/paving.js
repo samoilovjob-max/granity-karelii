@@ -165,7 +165,8 @@
     if (densityError) return fail(densityError);
 
     const reserve = selectedReserve();
-    const split = kindSelect.value === "split";
+    const kind = kindSelect.value;
+    const split = kind === "split";
     const bulk = split && modeSelect.value === "bulk";
     let layer = 0.1;
 
@@ -187,6 +188,7 @@
       thickness: thickness > 0 ? thickness : null,
       reserve,
       density,
+      kind,
       split,
       bulk,
       layer
@@ -231,8 +233,11 @@
     if (input.bulk) {
       return `Насыпь: объём = площадь × слой. К геометрическому числу штук добавлено 10% на неровные грани, затем запас ${percent}% на укладку. Вес при плотности ${density}. Толщина камня на штуки с квадратного метра не влияет.`;
     }
-    const bulkNote = input.split ? " Объём насыпи = площадь × толщина слоя." : "";
     const weightNote = result.weight === null ? " Чтобы увидеть вес, укажите толщину." : ` Вес при плотности ${density}.`;
+    if (input.kind === "sawn-split") {
+      return `Пилено-колотая: боковые грани пиленые, верх и низ колотые. Штуки считаются по пиленому размеру в плане. Запас ${percent}% добавлен к количеству штук, не к площади. Толщина не меняет штуки на 1 м².${weightNote}`;
+    }
+    const bulkNote = input.split ? " Объём насыпи = площадь × толщина слоя." : "";
     return `Запас ${percent}% добавлен к количеству штук, не к площади. Толщина не меняет штуки на 1 м².${weightNote}${bulkNote}`;
   };
 
