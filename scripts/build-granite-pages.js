@@ -66,7 +66,7 @@ function nav(prefix, active) {
         ${item("vidy.html", "Виды гранитов", "types")}
         ${item("produkciya.html", "Продукция", "products")}
         <a${active === "gallery" ? ' class="is-active"' : ""} href="${href("galereya.html")}">Галерея</a>
-        ${item("polezno.html", "Полезно", "calc")}
+        ${item("kalkulyator-massy-granita.html", "Полезно", "calc")}
         <a${active === "contacts" ? ' class="is-active"' : ""} href="${href("kontakty.html")}">Контакты</a>
       </nav>
     </div>
@@ -260,7 +260,7 @@ function stonePage(stone, index) {
         <h1 data-edit="stone.${stone.id}.headline">${esc(article.headline)}</h1>
         ${article.lead.map((paragraph, leadIndex) => `<p class="lead" data-edit="stone.${stone.id}.lead.${leadIndex}">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
-          <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>
+          <a class="btn btn-primary" href="../kalkulyator-massy-granita.html">Рассчитать массу</a>
           <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(stone.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
@@ -310,7 +310,7 @@ function catalogPage() {
     <section class="cta-band section-gap">
       <h2>Нужна масса партии</h2>
       <p>Выберите породу и размеры плиты в калькуляторе.</p>
-      <div class="hero-actions"><a class="btn btn-primary" href="polezno.html">Открыть калькулятор</a></div>
+      <div class="hero-actions"><a class="btn btn-primary" href="kalkulyator-massy-granita.html">Калькулятор массы гранита</a></div>
     </section>
   </main>
   ${footer("")}
@@ -371,7 +371,7 @@ function productGroups(list) {
     if (!items.length) return "";
     return `<section class="product-block" id="${category}" aria-labelledby="heading-${category}">
       <h2 id="heading-${category}">${CATEGORY_LABEL[category]}</h2>
-      <p class="tool-links"><a href="polezno.html">Калькулятор массы гранитного изделия</a></p>
+      <p class="tool-links"><a href="kalkulyator-massy-granita.html">${category === "memorial" ? "калькулятор массы гранита" : "рассчитать вес изделия из гранита"}</a></p>
       <div class="stone-grid">${items.map(productCard).join("\n")}</div>
     </section>`;
   }).join("\n");
@@ -434,7 +434,7 @@ function productPage(product, siblings) {
         <div class="hero-actions">
           ${product.id === "bruschatka"
             ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Калькулятор брусчатки</a>`
-            : `<a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>`}
+            : `<a class="btn btn-primary" href="../kalkulyator-massy-granita.html">Рассчитать массу</a>`}
           <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
@@ -523,7 +523,7 @@ function writeSitemap(productList) {
     "vidy.html",
     "produkciya.html",
     "galereya.html",
-    "polezno.html",
+    "kalkulyator-massy-granita.html",
     "kalkulyator-bruschatki.html",
     "kontakty.html",
     "politika.html",

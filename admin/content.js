@@ -105,11 +105,47 @@ const HAND = {
   polezno: {
     title: "Калькулятор массы гранитного изделия",
     group: "Полезно",
-    file: "polezno.html",
+    file: "kalkulyator-massy-granita.html",
     groups: [
       { title: "Шапка", open: true, fields: [
         { id: "polezno.h1", label: "Заголовок" },
         { id: "polezno.lead", label: "Вступление", type: "textarea" }
+      ]},
+      { title: "Как пользоваться", fields: [
+        { id: "polezno.how.title", label: "Заголовок" },
+        { id: "polezno.how.p", label: "Вступление", type: "textarea" },
+        { id: "polezno.how.li1", label: "Пункт 1" },
+        { id: "polezno.how.li2", label: "Пункт 2" },
+        { id: "polezno.how.li3", label: "Пункт 3" },
+        { id: "polezno.how.p2", label: "Для каких изделий", type: "textarea" }
+      ]},
+      { title: "Формула", fields: [
+        { id: "polezno.formula.title", label: "Заголовок" },
+        { id: "polezno.volume.title", label: "Объём" },
+        { id: "polezno.volume.p", label: "Про объём", type: "textarea" },
+        { id: "polezno.mass.title", label: "Масса" },
+        { id: "polezno.mass.p", label: "Про массу", type: "textarea" },
+        { id: "polezno.mass.example", label: "Пример", type: "textarea" }
+      ]},
+      { title: "Плотность", fields: [
+        { id: "polezno.rocks.title", label: "Заголовок" },
+        { id: "polezno.why3150.title", label: "Почему 3150" },
+        { id: "polezno.why3150.p", label: "Текст", type: "textarea" },
+        { id: "polezno.table.title", label: "Таблица" },
+        { id: "polezno.table.p", label: "Подпись к таблице", type: "textarea" }
+      ]},
+      { title: "Зачем считать", fields: [
+        { id: "polezno.purpose.title", label: "Заголовок" },
+        { id: "polezno.delivery.title", label: "Доставка" },
+        { id: "polezno.delivery.p", label: "Про доставку", type: "textarea" },
+        { id: "polezno.load.title", label: "Нагрузка" },
+        { id: "polezno.load.p", label: "Про нагрузку", type: "textarea" },
+        { id: "polezno.gear.title", label: "Монтаж" },
+        { id: "polezno.gear.p", label: "Про монтаж", type: "textarea" }
+      ]},
+      { title: "Заказ", fields: [
+        { id: "polezno.buy.title", label: "Заголовок" },
+        { id: "polezno.buy.p", label: "Текст", type: "textarea" }
       ]}
     ]
   },
