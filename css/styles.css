@@ -472,11 +472,18 @@ select {
 }
 
 .consent-note {
-  margin: 0.75rem 0 0;
+  margin: 1.25rem 0 0; /* как gap .stone-hero: чуть ниже кнопок заявки */
   max-width: 36rem;
   color: var(--color-muted);
   font-size: 0.85rem; /* чуть меньше .lead */
   line-height: 1.45;
+}
+
+.stone-section .consent-note,
+.cta-band .consent-note,
+.about-block > .consent-note,
+.stone-copy .consent-note {
+  margin: 1.25rem 0 0; /* родительские правила p обнуляют верхний отступ .consent-note */
 }
 
 .consent-note a {
@@ -1656,7 +1663,7 @@ ul.stone-links {
 }
 
 .supply .cta-band .consent-note {
-  margin: 0.75rem 0 0; /* как .consent-note: .cta-band p обнуляет margin */
+  margin: 1.25rem 0 0; /* как .consent-note */
 }
 
 @media (max-width: 479px) {
