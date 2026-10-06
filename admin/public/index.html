@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Админка — Граниты Карелии</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/admin.css" />
+</head>
+<body>
+  <main class="login" id="login">
+    <form id="loginForm">
+      <p class="brand">Граниты Карелии</p>
+      <h1>Вход</h1>
+      <p class="hint">Здесь правятся тексты сайта и фотографии галереи. Справа будет видно, как страница выглядит для посетителя.</p>
+      <label>
+        Пароль
+        <input id="password" type="password" autocomplete="current-password" required />
+      </label>
+      <button class="primary" type="submit">Войти</button>
+      <p class="error" id="loginError" hidden></p>
+    </form>
+  </main>
+
+  <div class="app" id="app" hidden>
+    <header class="top">
+      <div>
+        <p class="brand">Граниты Карелии</p>
+        <strong id="pageTitle">Админка</strong>
+      </div>
+      <div class="top-actions">
+        <p class="status" id="status"></p>
+        <button class="ghost" id="logout" type="button">Выйти</button>
+        <button class="primary" id="save" type="button">Сохранить</button>
+      </div>
+    </header>
+    <div class="workspace">
+      <nav class="pages" aria-label="Страницы">
+        <label class="search">
+          Найти страницу
+          <input id="filter" type="search" placeholder="Порода, изделие, контакты" />
+        </label>
+        <div id="pageList"></div>
+      </nav>
+      <section class="editor" id="editor" aria-label="Поля страницы"></section>
+      <section class="preview" aria-label="Предпросмотр">
+        <div class="preview-bar">
+          <span>Так страница будет выглядеть</span>
+          <div class="widths">
+            <button type="button" class="width is-on" data-width="100%">Компьютер</button>
+            <button type="button" class="width" data-width="390px">Телефон</button>
+          </div>
+        </div>
+        <div class="frame-wrap" id="frameWrap">
+          <iframe id="preview" title="Предпросмотр страницы"></iframe>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

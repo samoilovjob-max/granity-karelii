@@ -4,6 +4,15 @@ const stones = require("./stones-data");
 const articles = require("./stones-articles.json");
 const products = require("./products-data");
 const productArticles = require("./products-articles.json");
+const site = require("../data/site.json");
+const gallery = require("../data/gallery.json");
+const pagesCopy = require("../data/pages.json");
+const productOverrides = require("../data/product-overrides.json");
+
+products.forEach((product) => {
+  const extra = productOverrides[product.id];
+  if (extra) Object.assign(product, extra);
+});
 
 const articleById = Object.fromEntries(articles.map((article) => [article.id, article]));
 const productArticleById = Object.fromEntries(productArticles.map((article) => [article.id, article]));
@@ -55,7 +64,7 @@ function nav(prefix, active) {
         <a${active === "about" ? ' class="is-active"' : ""} href="${href("o-kompanii.html")}">О компании</a>
         ${item("vidy.html", "Виды гранитов", "types")}
         ${item("produkciya.html", "Продукция", "products")}
-        <a href="${href("index.html")}#gallery">Галерея</a>
+        <a${active === "gallery" ? ' class="is-active"' : ""} href="${href("galereya.html")}">Галерея</a>
         ${item("polezno.html", "Полезно", "calc")}
         <a${active === "contacts" ? ' class="is-active"' : ""} href="${href("kontakty.html")}">Контакты</a>
       </nav>
@@ -76,17 +85,17 @@ function footer(prefix, note = "18 пород · калькулятор масс
           <span>Граниты Карелии</span>
         </a>
         <ul class="footer-contacts">
-          <li>ИНН <span class="footer-inn">102003029438</span></li>
+          <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
           <li class="footer-phone">
-            <a href="tel:+79218017170">+7 921 801 71 70</a>
+            <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
-              <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
-              <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
+              <a href="https://wa.me/${esc(site.phoneTel.replace(/^\+/, ""))}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
+              <a href="https://t.me/${esc(site.phoneTel)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
               <!-- Профиль MAX: когда появится ссылка https://max.ru/u/…, подставьте её вместо https://max.ru/ -->
               <a href="https://max.ru/" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>
             </span>
           </li>
-          <li><a href="mailto:info@granit-karel.ru">info@granit-karel.ru</a></li>
+          <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>
         </ul>
         <p class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></p>
       </div>
@@ -117,13 +126,27 @@ function head(prefix, title, description, extra = "") {
 <body>`;
 }
 
+function imageRel(dir, id) {
+  if (fs.existsSync(path.join(root, "images", dir, `${id}.webp`))) return `images/${dir}/${id}.webp`;
+  if (fs.existsSync(path.join(root, "images", dir, `${id}.jpg`))) return `images/${dir}/${id}.jpg`;
+  return "";
+}
+
 function photo(stone, prefix, compact) {
-  const file = `${prefix}images/granites/${stone.id}.jpg`;
+  const rel = imageRel("granites", stone.id);
+  const photoKey = `stone.${stone.id}.photo`;
+  if (rel) {
+    const caption = compact ? "" : `<figcaption>${esc(stone.name)}</figcaption>`;
+    return `<figure class="stone-photo" data-photo="${photoKey}">
+        <img src="${prefix}${rel}" alt="${esc(stone.name)}" loading="lazy" />
+        ${caption}
+      </figure>`;
+  }
   const caption = compact
     ? ""
-    : `<figcaption>Фото появится здесь: images/granites/${esc(stone.id)}.jpg</figcaption>`;
-  return `<figure class="stone-photo">
-        <!-- Фото породы: уберите placeholder и укажите src="${file}" -->
+    : `<figcaption>Фото появится здесь: images/granites/${esc(stone.id)}.webp</figcaption>`;
+  return `<figure class="stone-photo" data-photo="${photoKey}">
+        <!-- Фото породы подставляет админка в images/granites/${stone.id}.webp -->
         <div class="stone-photo-placeholder" style="background:${stone.color}" role="img" aria-label="Место для фотографии: ${esc(stone.name)}"></div>
         ${caption}
       </figure>`;
@@ -148,15 +171,21 @@ function sectionPlainText(section) {
   }).join(" ");
 }
 
-function story(article) {
-  const visible = article.sections.filter((section) => !isPositioning(section));
-  return `<div class="stone-story">${visible.map((section) => `<section class="stone-section">
-        <h2>${esc(section.title)}</h2>
-        ${section.blocks.map((block) => {
-          if (block.type === "p") return `<p>${esc(block.text)}</p>`;
-          return `<ul class="points">${block.items.map((item) => `<li><strong>${esc(item.label)}</strong> ${esc(item.text)}</li>`).join("")}</ul>`;
-        }).join("")}
-      </section>`).join("")}</div>`;
+function story(article, keyPrefix) {
+  return `<div class="stone-story">${article.sections.map((section, sectionIndex) => {
+    if (isPositioning(section)) return "";
+    const blocks = section.blocks.map((block, blockIndex) => {
+      if (block.type === "p") {
+        return `<p data-edit="${keyPrefix}.s.${sectionIndex}.b.${blockIndex}">${esc(block.text)}</p>`;
+      }
+      const items = block.items.map((item, itemIndex) => `<li><strong data-edit="${keyPrefix}.s.${sectionIndex}.b.${blockIndex}.i.${itemIndex}.label">${esc(item.label)}</strong> <span data-edit="${keyPrefix}.s.${sectionIndex}.b.${blockIndex}.i.${itemIndex}.text">${esc(item.text)}</span></li>`).join("");
+      return `<ul class="points">${items}</ul>`;
+    }).join("");
+    return `<section class="stone-section">
+        <h2 data-edit="${keyPrefix}.s.${sectionIndex}.title">${esc(section.title)}</h2>
+        ${blocks}
+      </section>`;
+  }).join("")}</div>`;
 }
 
 function structuredData(stone, article) {
@@ -185,28 +214,28 @@ function stonePage(stone, index) {
   const prev = stones[(index - 1 + stones.length) % stones.length];
   const next = stones[(index + 1) % stones.length];
   const specs = [
-    ["Плотность", stone.density],
-    ["Водопоглощение", stone.water],
-    ["Сжатие", stone.strength],
-    ["Морозостойкость", stone.frost],
-    ["Истираемость", stone.wear],
-    ["Радиация", stone.radiation]
-  ].map(([label, value]) => `<div><dt>${label}</dt><dd>${esc(value)}</dd></div>`).join("");
+    ["Плотность", stone.density, "density"],
+    ["Водопоглощение", stone.water, "water"],
+    ["Сжатие", stone.strength, "strength"],
+    ["Морозостойкость", stone.frost, "frost"],
+    ["Истираемость", stone.wear, "wear"],
+    ["Радиация", stone.radiation, "radiation"]
+  ].map(([label, value, key]) => `<div><dt>${label}</dt><dd data-edit="stone.${stone.id}.${key}">${esc(value)}</dd></div>`).join("");
 
   const positioning = article.sections.find(isPositioning);
   const meta = [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
   return `${head("../", article.seoTitle, meta, structuredData(stone, article))}
   ${nav("../", "types")}
   <main class="page">
-    <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span>${esc(stone.name)}</span></p>
+    <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span data-edit="stone.${stone.id}.name">${esc(stone.name)}</span></p>
     <section class="stone-hero">
       <div class="stone-copy">
-        <p class="eyebrow">${esc(stone.latin)}</p>
-        <h1>${esc(article.headline)}</h1>
-        ${article.lead.map((paragraph) => `<p class="lead">${esc(paragraph)}</p>`).join("")}
+        <p class="eyebrow" data-edit="stone.${stone.id}.latin">${esc(stone.latin)}</p>
+        <h1 data-edit="stone.${stone.id}.headline">${esc(article.headline)}</h1>
+        ${article.lead.map((paragraph, leadIndex) => `<p class="lead" data-edit="stone.${stone.id}.lead.${leadIndex}">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
           <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>
-          <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(stone.name)}">Оставить заявку</a>
+          <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(stone.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
       </div>
@@ -214,7 +243,7 @@ function stonePage(stone, index) {
     </section>
     <dl class="specs specs-board" aria-label="Характеристики">${specs}</dl>
     ${appliedProducts(stone)}
-    ${story(article)}
+    ${story(article, `stone.${stone.id}`)}
     <nav class="pager" aria-label="Соседние породы">
       <a href="${prev.id}.html">← ${esc(prev.name)}</a>
       <a href="${next.id}.html">${esc(next.name)} →</a>
@@ -239,17 +268,17 @@ function catalogPage() {
   <main class="page">
     <section class="page-intro">
       <p class="eyebrow">Каталог</p>
-      <h1>Виды гранитов</h1>
-      <p class="lead">18 пород. На странице камня — текст из описания: минералогия, свойства, фактуры, гравировка и где камень применяют.</p>
+      <h1 data-edit="catalog.h1">${esc(pagesCopy.catalog.h1)}</h1>
+      <p class="lead" data-edit="catalog.lead">${esc(pagesCopy.catalog.lead)}</p>
     </section>
     <section class="stone-grid" aria-label="Породы">${cards}</section>
     <section class="section-gap">
       <h2>На что смотреть</h2>
       <div class="perk-grid">
-        <article><h2>Плотность</h2><p>Нужна для массы партии. Точный расчёт — в калькуляторе.</p></article>
-        <article><h2>Морозостойкость</h2><p>Значение F указано в карточке породы.</p></article>
-        <article><h2>Гравировка</h2><p>Прямой портрет уверенно читается на габбро-диабазе, Хауки и кольском габбро-диорите.</p></article>
-        <article><h2>Фактура</h2><p>Полировка для цвета, термообработка для улицы, где поверхность не должна скользить.</p></article>
+        <article><h2 data-edit="catalog.perk1.title">${esc(pagesCopy.catalog.perk1.title)}</h2><p data-edit="catalog.perk1.text">${esc(pagesCopy.catalog.perk1.text)}</p></article>
+        <article><h2 data-edit="catalog.perk2.title">${esc(pagesCopy.catalog.perk2.title)}</h2><p data-edit="catalog.perk2.text">${esc(pagesCopy.catalog.perk2.text)}</p></article>
+        <article><h2 data-edit="catalog.perk3.title">${esc(pagesCopy.catalog.perk3.title)}</h2><p data-edit="catalog.perk3.text">${esc(pagesCopy.catalog.perk3.text)}</p></article>
+        <article><h2 data-edit="catalog.perk4.title">${esc(pagesCopy.catalog.perk4.title)}</h2><p data-edit="catalog.perk4.text">${esc(pagesCopy.catalog.perk4.text)}</p></article>
       </div>
     </section>
     <section class="cta-band section-gap">
@@ -266,22 +295,20 @@ function catalogPage() {
 
 function productPhoto(product, prefix, compact) {
   const stone = stoneById[product.granites[0]];
-  const rel = `images/products/${product.id}.jpg`;
-  const file = `${prefix}${rel}`;
-  if (fs.existsSync(path.join(root, rel))) {
-    const caption = compact ? "" : `<figcaption>${esc(rel)}</figcaption>`;
-    return `<figure class="stone-photo">
-        <img src="${file}" alt="${esc(product.name)}" loading="lazy" />
+  const rel = imageRel("products", product.id);
+  const photoKey = `product.${product.id}.photo`;
+  if (rel) {
+    const caption = compact ? "" : `<figcaption>${esc(product.name)}</figcaption>`;
+    return `<figure class="stone-photo" data-photo="${photoKey}">
+        <img src="${prefix}${rel}" alt="${esc(product.name)}" loading="lazy" />
         ${caption}
       </figure>`;
   }
   const caption = compact
     ? ""
-    : `<figcaption>Фото появится здесь: ${esc(rel)}</figcaption>`;
-  return `<figure class="stone-photo">
-        <!-- Фото продукции: положите файл ${rel} и пересоберите страницы.
-             Атрибуты готового изображения: src="${file}", alt — название изделия, loading="lazy".
-             Пока файла нет, показан placeholder цвета первой связанной породы. -->
+    : `<figcaption>Фото появится здесь: images/products/${esc(product.id)}.webp</figcaption>`;
+  return `<figure class="stone-photo" data-photo="${photoKey}">
+        <!-- Фото продукции подставляет админка в images/products/${product.id}.webp -->
         <div class="stone-photo-placeholder" style="background:${stone.color}" role="img" aria-label="Место для фотографии: ${esc(product.name)}"></div>
         ${caption}
       </figure>`;
@@ -302,8 +329,8 @@ function productCard(product) {
   return `<article class="stone-card">
         <a class="card-main" href="produkciya/${product.id}.html">
           ${productPhoto(product, "", true)}
-          <h2>${esc(product.name)}</h2>
-          <p>${esc(product.summary)}</p>
+          <h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
+          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>
         </a>
         <div class="stone-links">
           <p>Используемые граниты</p>
@@ -374,17 +401,17 @@ function productPage(product, siblings) {
   return `${head("../", article.seoTitle || product.name, meta, productStructuredData(product, article))}
   ${nav("../", "products")}
   <main class="page">
-    <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span>${esc(product.name)}</span></p>
+    <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span data-edit="product.${product.id}.name">${esc(product.name)}</span></p>
     <section class="stone-hero">
       <div class="stone-copy">
         <p class="eyebrow">${esc(CATEGORY_LABEL[product.category])}</p>
-        <h1>${esc(article.headline)}</h1>
-        ${article.lead.map((paragraph) => `<p class="lead">${esc(paragraph)}</p>`).join("")}
+        <h1 data-edit="product.${product.id}.headline">${esc(article.headline)}</h1>
+        ${article.lead.map((paragraph, leadIndex) => `<p class="lead" data-edit="product.${product.id}.lead.${leadIndex}">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
           ${product.id === "bruschatka"
             ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Посчитать брусчатку</a>`
             : `<a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>`}
-          <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
+          <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
       </div>
@@ -394,7 +421,7 @@ function productPage(product, siblings) {
       <h2>Используемые граниты</h2>
       <ul class="stone-links">${graniteLinks(product, "../")}</ul>
     </section>
-    ${story(article)}
+    ${story(article, `product.${product.id}`)}
     <nav class="pager" aria-label="Соседние изделия">${pager}</nav>
   </main>
   ${footer("../")}
@@ -409,8 +436,8 @@ function productsPage(list) {
   <main class="page">
     <section class="page-intro">
       <p class="eyebrow">Каталог</p>
-      <h1>Выпускаемая продукция</h1>
-      <p class="lead">Сначала мемориальные изделия, затем строительные. В карточке — породы, из которых это изделие делают.</p>
+      <h1 data-edit="products.h1">${esc(pagesCopy.products.h1)}</h1>
+      <p class="lead" data-edit="products.lead">${esc(pagesCopy.products.lead)}</p>
     </section>
     <!-- Порядок секций: memorial, затем construction. Его задаёт sortedProducts(), не вёрстка сетки. -->
     ${productGroups(list)}
@@ -460,4 +487,30 @@ fs.mkdirSync(productDir, { recursive: true });
   });
 });
 fs.writeFileSync(path.join(root, "produkciya.html"), productsPage(orderedProducts));
-console.log(`wrote vidy.html, produkciya.html, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
+fs.writeFileSync(path.join(root, "galereya.html"), galleryPage());
+console.log(`wrote vidy.html, produkciya.html, galereya.html, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
+
+function galleryPage() {
+  const items = Array.isArray(gallery.items) ? gallery.items : [];
+  const figures = items.map((item) => `<figure>
+        <img src="${esc(item.src)}" alt="${esc(item.caption || gallery.title)}" loading="lazy" />
+        ${item.caption ? `<figcaption data-caption="${esc(item.id)}">${esc(item.caption)}</figcaption>` : `<figcaption data-caption="${esc(item.id)}"></figcaption>`}
+      </figure>`).join("\n");
+  const grid = items.length
+    ? `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии">${figures}</section>`
+    : `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии"><p class="gallery-empty">Фотографии работ появятся здесь.</p></section>`;
+  return `${head("", `${gallery.title} — Граниты Карелии`, gallery.lead)}
+  ${nav("", "gallery")}
+  <main class="page">
+    <section class="page-intro">
+      <p class="eyebrow">Галерея</p>
+      <h1 data-edit="gallery.title">${esc(gallery.title)}</h1>
+      <p class="lead" data-edit="gallery.lead">${esc(gallery.lead)}</p>
+    </section>
+    ${grid}
+  </main>
+  ${footer("", "Камнеобработка в Карелии")}
+</body>
+</html>
+`;
+}

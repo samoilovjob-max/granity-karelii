@@ -15,10 +15,22 @@
 
 Плотности — в `docs/densities.md`. План разделов — в `PLAN.md`.
 
-Локально:
+Локально сайт без админки:
 
 ```bash
 python3 -m http.server 8080
 ```
 
 Страница: http://localhost:8080/polezno.html
+
+Админка (тексты всех страниц, галерея, фото в WebP и предпросмотр):
+
+```bash
+npm install
+npm start
+```
+
+Адрес: http://127.0.0.1:8787/admin  
+Пароль по умолчанию `karelia`. Свой пароль: `ADMIN_PASSWORD=... npm start`.
+
+Пункт меню «Галерея» открывает `galereya.html`. GitHub Pages отдаёт уже сохранённые страницы; сама админка работает, пока запущен `npm start`.
