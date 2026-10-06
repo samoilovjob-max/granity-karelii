@@ -724,16 +724,36 @@ summary:focus-visible {
   min-height: 48px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem; /* как .stone-section p */
   padding: 0.7rem 0.95rem;
   cursor: pointer;
   font-weight: 600;
+  color: var(--color-text);
+  list-style: none;
+}
+
+.fold summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold summary::after {
+  content: "Ответ внутри";
+  flex: none;
+  font-weight: 500; /* как .size-table th */
+  font-size: 0.85rem; /* как .consent-note */
+  color: var(--color-accent);
+}
+
+.fold[open] summary::after {
+  content: none;
 }
 
 .fold p,
 .fold ul {
   margin: 0;
   padding: 0 0.95rem 0.95rem;
-  color: var(--color-muted);
+  color: var(--color-text); /* как вопрос в summary */
 }
 
 .fold ul {
