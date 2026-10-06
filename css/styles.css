@@ -738,15 +738,19 @@ summary:focus-visible {
 }
 
 .fold summary::after {
-  content: "Ответ внутри";
+  content: "";
   flex: none;
-  font-weight: 500; /* как .size-table th */
-  font-size: 0.85rem; /* как .consent-note */
-  color: var(--color-accent);
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.15rem;
+  border-right: 2px solid var(--color-accent); /* как outline focus-visible */
+  border-bottom: 2px solid var(--color-accent);
+  transform: translateY(-0.12rem) rotate(45deg);
+  transition: transform 0.2s var(--ease);
 }
 
 .fold[open] summary::after {
-  content: none;
+  transform: translateY(0.12rem) rotate(-135deg);
 }
 
 .fold p,
