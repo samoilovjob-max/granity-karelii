@@ -1222,6 +1222,12 @@ summary:focus-visible {
   color: var(--color-text);
 }
 
+.points a {
+  color: var(--brand-primary); /* как .stone-links a */
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 .points strong {
   display: block;
   margin-bottom: 0.15rem;
@@ -1600,6 +1606,10 @@ ul.stone-links {
    --radius, --container, --header-h, --shadow.
    Отдельных --font-size-* нет: заголовки берут размер .stone-section h2 и .page-intro h1.
    Новых шрифтов, цветов и теней нет. */
+.supply .page-intro .lead + .lead {
+  margin-top: 0.75rem; /* как расстояние абзацев .stone-section p */
+}
+
 .supply-title {
   margin: 0 0 0.7rem; /* как .stone-section h2 */
   font-family: var(--font-heading);
@@ -1645,7 +1655,7 @@ ul.stone-links {
   overflow: hidden;
 }
 
-/* Ширина полос — схема «рейс один, объём разный», не тариф. 100% и 50% менять вместе с текстом примера. */
+/* Ширина полос — схема «10 тонн против 20»: 100% и 50%. Менять вместе с примером на странице поставки. */
 .supply-meter-track span {
   display: block;
   height: 100%;

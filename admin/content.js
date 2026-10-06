@@ -105,24 +105,30 @@ const HAND = {
   supply: {
     title: "Поставка",
     group: "Страницы",
-    file: "postavka.html",
+    file: "postavka-granita-petrozavodsk-kareliya.html",
     groups: [
       { title: "Шапка", open: true, fields: [
         { id: "supply.h1", label: "Заголовок" },
+        { id: "supply.kicker", label: "Строка под заголовком", type: "textarea" },
         { id: "supply.lead", label: "Подзаголовок", type: "textarea" }
       ]},
       { title: "География", fields: [
         { id: "supply.geo.title", label: "Заголовок" },
-        { id: "supply.geo.p", label: "Текст", type: "textarea" }
+        { id: "supply.geo.p", label: "Откуда грузим", type: "textarea" },
+        { id: "supply.geo.eaeu", label: "ЕАЭС", type: "textarea" },
+        { id: "supply.offer.title", label: "Что поставляем" }
       ]},
       { title: "Машины", fields: [
         { id: "supply.compare.title", label: "Заголовок" },
         { id: "supply.half.title", label: "Половина машины" },
-        { id: "supply.full.title", label: "Полная машина" }
+        { id: "supply.full.title", label: "Полная машина" },
+        { id: "supply.compare.note", label: "Пояснение", type: "textarea" }
       ]},
       { title: "Цена", fields: [
         { id: "supply.price.title", label: "Заголовок" },
-        { id: "supply.price.p", label: "Текст", type: "textarea" }
+        { id: "supply.price.p", label: "Текст", type: "textarea" },
+        { id: "supply.price.example", label: "Пример", type: "textarea" },
+        { id: "supply.price.note", label: "Важно", type: "textarea" }
       ]},
       { title: "Логистика", fields: [
         { id: "supply.logistics.title", label: "Заголовок" },
