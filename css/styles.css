@@ -13,7 +13,14 @@
   --success: #2E6B5B;
 
   --font-main: "Manrope", Arial, sans-serif;
+  --font-heading: "Manrope", Arial, sans-serif; /* утверждённый шрифт заголовков */
   --font-technical: "IBM Plex Mono", monospace;
+
+  --color-bg: #F1F1EE; /* --bg-page */
+  --color-text: #25282A;
+  --color-accent: #C66A42;
+  --color-muted: #657075;
+  --container: 1120px;
 
   --header-h: 72px;
   --radius: 4px;
@@ -58,22 +65,22 @@ select {
   position: sticky;
   top: 0;
   z-index: 20;
-  height: var(--header-h);
+  min-height: var(--header-h);
   backdrop-filter: blur(12px);
-  background: rgba(241, 241, 238, 0.9);
+  background: rgba(241, 241, 238, 0.94);
   border-bottom: 1px solid var(--border);
 }
 
 .header-inner,
 .footer-inner,
 .page {
-  width: min(1120px, calc(100% - 2rem));
+  width: min(var(--container), calc(100% - 2rem));
   margin-inline: auto;
 }
 
 .header-inner,
 .footer-inner {
-  height: 100%;
+  min-height: var(--header-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -156,6 +163,15 @@ select {
   align-items: start;
 }
 
+/* Длинные названия пород и nowrap-таблица иначе раздвигают сетку шире экрана. */
+.calc-shell > *,
+.calc-form > *,
+.calc-results > *,
+.calc-grid > *,
+.table-wrap {
+  min-width: 0;
+}
+
 .calc-form,
 .calc-results {
   background: var(--bg-card);
@@ -180,6 +196,8 @@ select {
 .calc-form input,
 .calc-form select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 46px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -309,6 +327,10 @@ select {
   white-space: nowrap;
 }
 
+.calc-table td:first-child {
+  white-space: normal;
+}
+
 .calc-table th {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -369,19 +391,87 @@ select {
   height: 36px;
 }
 
+.site-footer .footer-inner {
+  align-items: flex-start;
+}
+
+.footer-id {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.footer-contacts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem; /* как .site-footer p */
+}
+
+.footer-inn {
+  font-family: var(--font-technical);
+}
+
+.footer-phone,
+.footer-apps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.75rem;
+}
+
+.footer-apps {
+  gap: 0.15rem;
+}
+
+.footer-contacts .footer-apps a {
+  min-width: 0;
+  padding: 0 0.1rem;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.footer-apps img {
+  width: 1.15em; /* чуть больше кегля номера: .footer-contacts 0.9rem */
+  height: 1.15em;
+  object-fit: contain;
+}
+
+.footer-contacts a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  overflow-wrap: anywhere;
+}
+
 .site-footer p {
   margin: 0;
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
+@media (max-width: 1100px) {
+  .calc-shell {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  }
+
+  .calc-table th,
+  .calc-table td {
+    padding-inline: 0.4rem;
+  }
+}
+
 @media (max-width: 920px) {
   .calc-shell {
     grid-template-columns: 1fr;
-  }
-
-  .nav {
-    display: none;
   }
 }
 
@@ -391,8 +481,947 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .calc-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
   .footer-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* Шесть колонок с nowrap не помещаются: порода сверху, цифры строками. */
+  .calc-table thead {
+    display: none;
+  }
+
+  .calc-table,
+  .calc-table tbody,
+  .calc-table tfoot {
+    display: block;
+    width: 100%;
+  }
+
+  .calc-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.2rem 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .calc-table tr.empty-row {
+    display: block;
+  }
+
+  .calc-table th,
+  .calc-table td {
+    padding: 0;
+    border: 0;
+    white-space: normal;
+  }
+
+  .calc-table tbody td:nth-child(1) {
+    font-weight: 700;
+  }
+
+  .calc-table tbody td:nth-child(6) {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .calc-table tbody td:nth-child(n + 2):not(:nth-child(6)),
+  .calc-table tfoot th:nth-child(2),
+  .calc-table tfoot th:nth-child(3) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .calc-table tbody td[data-label]::before,
+  .calc-table tfoot th[data-label]::before {
+    content: attr(data-label);
+    font-family: var(--font-main);
+    font-size: 0.75rem; /* как .calc-table th */
+    font-weight: 600;
+    letter-spacing: 0.04em; /* как .calc-table th */
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .calc-table tfoot th:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .calc-table tfoot th:last-child {
+    display: none;
+  }
+
+  .remove-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+.nav-toggle {
+  display: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.page-intro h1,
+.stone-hero h1,
+.cta-band h2 {
+  font-family: var(--font-heading);
+  overflow-wrap: anywhere;
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+}
+
+.crumbs a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.stone-hero {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.stone-hero h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--brand-dark);
+}
+
+.hero-actions,
+.cta-band .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.1rem;
+}
+
+.stone-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.stone-photo {
+  margin: 0;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+}
+
+.stone-photo-placeholder,
+.stone-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: calc(var(--radius) + 2px);
+}
+
+.stone-photo figcaption {
+  padding: 0.7rem 0.9rem 0.85rem;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.specs {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+}
+
+.specs div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.specs dt {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.specs dd {
+  margin: 0;
+  font-family: var(--font-technical);
+  font-size: 0.92rem;
+}
+
+.fold {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.fold + .fold {
+  margin-top: 0.65rem;
+}
+
+.fold summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.fold p,
+.fold ul {
+  margin: 0;
+  padding: 0 0.95rem 0.95rem;
+  color: var(--color-muted);
+}
+
+.fold ul {
+  padding-left: 1.6rem;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+}
+
+.pager a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.stone-grid,
+.perk-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: 1fr;
+}
+
+.stone-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  min-width: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  overflow: hidden;
+}
+
+.stone-card:hover {
+  border-color: var(--brand-primary);
+}
+
+.stone-card h2 {
+  margin: 0.85rem 0.95rem 0.3rem;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+}
+
+.stone-card p {
+  margin: 0 0.95rem 0.95rem;
+  color: var(--color-muted);
+  font-size: 0.92rem;
+  overflow-wrap: break-word;
+}
+
+.stone-card .density {
+  margin-top: auto;
+  padding: 0 0.95rem 0.95rem;
+  font-family: var(--font-technical);
+  font-size: 0.82rem;
+}
+
+.perk-grid article,
+.cta-band {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1rem;
+}
+
+.perk-grid h2,
+.cta-band h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+}
+
+.perk-grid p,
+.cta-band p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.section-gap {
+  margin-top: 2.2rem;
+}
+
+@media (min-width: 768px) {
+  .stone-hero,
+  .stone-layout {
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: start;
+  }
+
+  .stone-copy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .stone-photo {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .stone-grid,
+  .perk-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .stone-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .perk-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .header-inner {
+    flex-wrap: wrap;
+    padding: 0.55rem 0;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--brand-primary);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 0.4rem;
+  }
+
+  .nav.is-open {
+    display: flex;
+  }
+
+  .nav a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Карта как у крупных камнеобработчиков: карточка адреса слева, широкая Яндекс.Карта справа. */
+.location {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.location-info {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.15rem 1.05rem 1.2rem;
+}
+
+.location-info h2 {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem; /* как .requisites h2 */
+  letter-spacing: -0.02em;
+  color: var(--brand-dark);
+}
+
+.location-info p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.05rem; /* как прежний .place-card p */
+  line-height: 1.45;
+}
+
+.location-phone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.7rem;
+  margin-top: 0.85rem;
+  font-size: 1.15rem;
+}
+
+.location-phone > a,
+.location-info .location-phone + p a {
+  min-height: 44px; /* как .footer-contacts a */
+  display: inline-flex;
+  align-items: center;
+}
+
+.location-info .location-phone + p {
+  margin-top: 0.2rem;
+}
+
+.location-apps {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.location-apps a {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.location-apps img {
+  width: 1.15em; /* чуть больше кегля номера в .location-phone */
+  height: 1.15em;
+  object-fit: contain;
+}
+
+.location-info a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.location-info .location-apps a {
+  text-decoration: none;
+}
+
+.location-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem; /* как .hero-actions */
+  margin-top: 1.1rem; /* как .hero-actions */
+}
+
+.location-actions .btn {
+  text-decoration: none;
+}
+
+.location-map {
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  overflow: hidden;
+  background: var(--border);
+  min-height: 320px;
+}
+
+.location-map iframe {
+  display: block;
+  width: 100%;
+  height: 360px;
+  border: 0;
+}
+
+@media (min-width: 768px) {
+  .location-map iframe {
+    height: 420px;
+  }
+}
+
+@media (min-width: 920px) {
+  .location {
+    grid-template-columns: minmax(17rem, 22rem) minmax(0, 1fr);
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .location-map,
+  .location-map iframe {
+    height: 460px;
+    min-height: 460px;
+  }
+}
+
+.requisites {
+  margin-top: 0.9rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.1rem 1rem 1.2rem;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.requisites,
+.requisites * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.requisites ::selection {
+  background: transparent;
+}
+
+.requisites h2 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--brand-dark);
+}
+
+.requisites dl {
+  margin: 0;
+  display: grid;
+}
+
+.requisites dl > div {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.requisites dl > div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.requisites dl > div:last-child {
+  padding-bottom: 0;
+}
+
+.requisites dt {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.requisites dd {
+  margin: 0;
+  padding: 0;
+  color: var(--color-text);
+}
+
+@media (min-width: 640px) {
+  .requisites dl > div {
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: 0.4rem 1.25rem;
+    align-items: baseline;
+  }
+}
+
+.requisites dd.mono {
+  font-family: var(--font-technical);
+  font-size: 0.95rem;
+}
+
+.about-block {
+  margin-top: 2rem;
+}
+
+.about-block h2 {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--brand-dark);
+}
+
+.about-block > p {
+  margin: 0;
+  max-width: 46rem;
+  color: var(--color-text);
+}
+
+.palette {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.palette article {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1rem;
+}
+
+.palette h3 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--brand-primary);
+}
+
+.palette ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.palette a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+@media (min-width: 768px) {
+  .palette {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .palette {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.specs-board {
+  margin-top: 0.25rem;
+}
+
+.stone-story {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+}
+
+.stone-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.05rem 1rem 1.15rem;
+}
+
+.stone-section h2 {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--brand-dark);
+}
+
+.stone-section p {
+  margin: 0 0 0.75rem;
+  max-width: 48rem;
+  color: var(--color-text);
+}
+
+.stone-section p:last-child,
+.stone-section .points:last-child {
+  margin-bottom: 0;
+}
+
+.points {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.points li {
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-text);
+}
+
+.points strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .specs-board {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .specs-board {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Каталог продукции использует ту же .stone-grid, что и «Виды гранитов»:
+   1 колонка, 2 колонки с 768px, 4 колонки с 1200px.
+   Отдельного правила на 480px у сетки пород нет — до 768px остаётся одна колонка. */
+
+.product-block > h2 {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem); /* как .stone-section h2 */
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--brand-dark);
+  overflow-wrap: break-word;
+}
+
+.product-block .tool-links {
+  margin: 0 0 0.9rem; /* как прежний нижний отступ .product-block > h2 */
+}
+
+.product-block + .product-block {
+  margin-top: 2.2rem; /* как .section-gap */
+}
+
+.stone-card .stone-links p.card-calc {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-main);
+  font-size: 0.92rem; /* как .stone-links a */
+  letter-spacing: 0;
+  text-transform: none; /* соседний p — подпись «Используемые граниты» капителью */
+  color: inherit;
+}
+
+.card-calc a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  font-size: 0.92rem; /* как .stone-links a */
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.card-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: inherit;
+}
+
+.card-main .stone-photo {
+  flex-shrink: 0;
+}
+
+.card-main p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.stone-copy .lead + .lead {
+  margin-top: 0.75rem; /* как расстояние абзацев .stone-section p */
+}
+
+.stone-card .stone-links {
+  margin-top: auto;
+  padding: 0 0.95rem 0.95rem; /* как боковые поля .stone-card p */
+}
+
+.stone-card .stone-links p {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-technical);
+  font-size: 0.78rem; /* как .specs dt */
+  letter-spacing: 0.04em; /* как .calc-table th */
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.stone-links ul,
+ul.stone-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stone-links a {
+  min-height: 44px; /* как .nav a и .pager a */
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  font-size: 0.92rem; /* как .stone-card p */
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  overflow-wrap: break-word;
+}
+
+.stone-section .eyebrow + .stone-links,
+.stone-section .stone-links + .eyebrow {
+  margin-top: 0.35rem;
+}
+
+.stone-section .stone-links + .eyebrow {
+  margin-top: 0.9rem; /* как gap .stone-grid */
+}
+
+/* Калькулятор брусчатки. Отдельных --font-size-* нет: размеры взяты у соседних блоков. */
+#massa {
+  scroll-margin-top: calc(var(--header-h) + 0.5rem);
+}
+
+.tool-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0.85rem 0 0;
+}
+
+.tool-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.pave-shell,
+.pave-dims,
+.pave-shell > * {
+  min-width: 0;
+}
+
+.pave-shell {
+  display: grid;
+  gap: 1.25rem; /* как .calc-shell */
+  grid-template-areas:
+    "form"
+    "results"
+    "photo";
+}
+
+.pave-form {
+  grid-area: form;
+}
+
+.pave-results {
+  grid-area: results;
+}
+
+.pave-photo {
+  grid-area: photo;
+}
+
+.pave-photo .stone-photo-placeholder {
+  background: var(--brand-dark); /* карточки продукции красят заглушку #1b2429 точечно */
+}
+
+.pave-dims {
+  display: grid;
+  gap: 0.8rem; /* как .calc-grid */
+}
+
+.pave-dims[hidden],
+#paveModeWrap[hidden],
+#paveLayerWrap[hidden],
+#paveDensityWrap[hidden],
+.pave-error[hidden],
+#paveBulkCard[hidden],
+#paveWeightCard[hidden] {
+  display: none;
+}
+
+.pave-error {
+  margin: 0 0 0.8rem;
+  color: var(--color-accent);
+  font-size: 0.92rem; /* как .density-line */
+}
+
+.pave-hint {
+  margin: 0.15rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.86rem; /* как .calc-note */
+}
+
+.result-cards strong {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 480px) {
+  .pave-dims {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pave-dims label:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 768px) {
+  .pave-dims {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .pave-dims label:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .pave-shell {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); /* как .calc-shell */
+    grid-template-areas:
+      "form results"
+      "form photo";
+    align-items: start;
   }
 }
