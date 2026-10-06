@@ -1602,10 +1602,6 @@ ul.stone-links {
   color: var(--brand-dark);
 }
 
-.supply .stone-hero {
-  margin-bottom: 0;
-}
-
 .supply-split {
   display: grid;
   gap: 0.9rem; /* как .stone-story */
