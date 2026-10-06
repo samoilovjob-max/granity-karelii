@@ -76,10 +76,10 @@
         (item, index) => `
       <tr>
         <td>${item.stoneName}</td>
-        <td>${item.length}×${item.width}×${item.thickness}</td>
-        <td>${item.qty}</td>
-        <td>${formatVolume(item.volume)}</td>
-        <td>${formatMass(item.mass)}</td>
+        <td data-label="Размер, мм">${item.length}×${item.width}×${item.thickness}</td>
+        <td data-label="Кол-во">${item.qty}</td>
+        <td data-label="Объём, м³">${formatVolume(item.volume)}</td>
+        <td data-label="Масса, кг">${formatMass(item.mass)}</td>
         <td><button class="remove-btn" type="button" data-index="${index}" aria-label="Удалить">✕</button></td>
       </tr>`
       )

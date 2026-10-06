@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор брусчатки — Граниты Карелии</title>
+  <meta name="description" content="Калькулятор брусчатки: штуки на площадь мощения, запас на укладку, вес и объём насыпи." />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/brand/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="180x180" href="images/brand/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="Граниты Карелии">
+        <img src="images/brand/logo-gk.jpg" alt="" width="40" height="40" />
+        <span>Граниты Карелии</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
+      <nav class="nav" id="site-nav" aria-label="Навигация">
+        <a href="o-kompanii.html">О компании</a>
+        <a href="vidy.html">Виды гранитов</a>
+        <a href="produkciya.html">Продукция</a>
+        <a href="index.html#gallery">Галерея</a>
+        <a class="is-active" href="polezno.html">Полезно</a>
+        <a href="kontakty.html">Контакты</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="page-intro">
+      <p class="eyebrow">Брусчатка</p>
+      <h1>Калькулятор брусчатки</h1>
+      <p class="lead">Только для брусчатки: штуки на площадь мощения, запас на укладку, вес и объём насыпи. Мемориальная и строительная продукция считается в калькуляторе массы.</p>
+      <p class="tool-links">
+        <a href="produkciya/bruschatka.html">Карточка брусчатки</a>
+        <a href="polezno.html">Калькулятор массы</a>
+      </p>
+    </section>
+
+    <div class="pave-shell">
+      <form class="calc-form pave-form" id="paveForm">
+        <label>
+          Площадь мощения, м²
+          <input id="paveArea" name="area" type="number" inputmode="decimal" min="0" step="any" value="10" />
+        </label>
+
+        <label>
+          Размер брусчатки, мм
+          <select id="paveSize" name="size"></select>
+        </label>
+
+        <div class="pave-dims" id="paveDims" hidden>
+          <label>
+            Длина, мм
+            <input id="paveLength" name="length" type="number" inputmode="decimal" min="0" step="any" />
+          </label>
+          <label>
+            Ширина, мм
+            <input id="paveWidth" name="width" type="number" inputmode="decimal" min="0" step="any" />
+          </label>
+          <label>
+            Толщина, мм
+            <input id="paveThickness" name="thickness" type="number" inputmode="decimal" min="0" step="any" />
+          </label>
+        </div>
+
+        <label>
+          Порода
+          <select id="paveStone" name="stone"></select>
+        </label>
+        <p class="density-line">Плотность: <strong id="paveDensityValue">3150</strong> кг/м³</p>
+        <label id="paveDensityWrap" hidden>
+          Своя плотность, кг/м³
+          <input id="paveDensity" name="density" type="number" inputmode="decimal" min="0" step="any" />
+        </label>
+
+        <label>
+          Тип укладки
+          <select id="paveReserve" name="reserve"></select>
+        </label>
+
+        <label>
+          Тип брусчатки
+          <select id="paveKind" name="kind">
+            <option value="sawn">Пиленая</option>
+            <option value="sawn-split">Пилено-колотая</option>
+            <option value="split">Колотая</option>
+          </select>
+        </label>
+
+        <label id="paveModeWrap" hidden>
+          Как считать колотую
+          <select id="paveMode" name="mode">
+            <option value="pieces">Штуками</option>
+            <option value="bulk">Насыпью</option>
+          </select>
+        </label>
+
+        <label id="paveLayerWrap" hidden>
+          Толщина слоя насыпи, м
+          <input id="paveLayer" name="layer" type="number" inputmode="decimal" min="0" step="any" value="0.1" />
+        </label>
+
+        <div class="calc-actions">
+          <button class="btn btn-ghost" type="button" id="paveReset">Сбросить</button>
+        </div>
+      </form>
+
+      <div class="calc-results pave-results" id="paveResults" aria-live="polite">
+        <p class="pave-error" id="paveError" hidden></p>
+        <div class="result-cards">
+          <article>
+            <span>Штук на 1 м²</span>
+            <strong id="pavePerM2">—</strong>
+          </article>
+          <article>
+            <span>Без запаса</span>
+            <strong id="pavePlain">—</strong>
+            <small>шт</small>
+          </article>
+          <article>
+            <span>С запасом</span>
+            <strong id="paveReserveCount">—</strong>
+            <small>шт</small>
+          </article>
+          <article id="paveWeightCard">
+            <span>Вес</span>
+            <strong id="paveWeight">—</strong>
+            <small>т</small>
+          </article>
+          <article id="paveBulkCard" hidden>
+            <span>Объём насыпью</span>
+            <strong id="paveBulk">—</strong>
+            <small>м³</small>
+          </article>
+        </div>
+        <p class="pave-hint" id="paveHint"></p>
+      </div>
+
+      <!-- Фото брусчатки: положите файл images/paving/bruschatka.jpg
+           и замените заглушку на img с атрибутами src, alt, loading="lazy". -->
+      <figure class="stone-photo pave-photo">
+        <div class="stone-photo-placeholder" role="img" aria-label="Место для фотографии брусчатки"></div>
+        <figcaption>Фото появится здесь: images/paving/bruschatka.jpg</figcaption>
+      </figure>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-id">
+        <a class="brand" href="index.html" aria-label="Граниты Карелии">
+          <img src="images/brand/logo-gk.jpg" alt="" width="36" height="36" />
+          <span>Граниты Карелии</span>
+        </a>
+        <ul class="footer-contacts">
+          <li>ИНН <span class="footer-inn">102003029438</span></li>
+          <li class="footer-phone">
+            <a href="tel:+79218017170">+7 921 801 71 70</a>
+            <span class="footer-apps">
+              <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
+              <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="images/messengers/telegram.png" alt="" width="18" height="18" /></a>
+              <!-- Профиль MAX: когда появится ссылка https://max.ru/u/…, подставьте её вместо https://max.ru/ -->
+              <a href="https://max.ru/" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="images/messengers/max.png" alt="" width="18" height="18" /></a>
+            </span>
+          </li>
+          <li><a href="mailto:info@granit-karel.ru">info@granit-karel.ru</a></li>
+        </ul>
+      </div>
+      <p>Калькулятор брусчатки</p>
+    </div>
+  </footer>
+
+  <script src="js/densities.js"></script>
+  <script src="js/paving.js"></script>
+  <script src="js/nav.js"></script>
+</body>
+</html>
