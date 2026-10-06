@@ -1340,10 +1340,14 @@ summary:focus-visible {
   padding: 0 0.95rem 0.95rem; /* как боковые поля .stone-card p */
 }
 
+.page-intro:has(+ .gallery-grid) {
+  margin-bottom: 0.75rem; /* как расстояние абзацев .stone-section p */
+}
+
 .gallery-grid {
   display: grid;
-  gap: 0.9rem;
-  margin-top: 1.25rem;
+  gap: 0.65rem; /* как .hero-actions */
+  margin-top: 0;
   grid-template-columns: 1fr;
 }
 
@@ -1358,12 +1362,12 @@ summary:focus-visible {
 .gallery-grid img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
 }
 
 .gallery-grid figcaption {
-  padding: 0.7rem 0.9rem 0.85rem;
+  padding: 0.45rem 0.7rem 0.55rem;
   color: var(--color-text);
 }
 
