@@ -102,6 +102,44 @@ const HAND = {
       ]}
     ]
   },
+  supply: {
+    title: "Поставка",
+    group: "Страницы",
+    file: "postavka.html",
+    groups: [
+      { title: "Шапка", open: true, fields: [
+        { id: "supply.h1", label: "Заголовок" },
+        { id: "supply.lead", label: "Подзаголовок", type: "textarea" }
+      ]},
+      { title: "География", fields: [
+        { id: "supply.geo.title", label: "Заголовок" },
+        { id: "supply.geo.p", label: "Текст", type: "textarea" }
+      ]},
+      { title: "Машины", fields: [
+        { id: "supply.compare.title", label: "Заголовок" },
+        { id: "supply.half.title", label: "Половина машины" },
+        { id: "supply.full.title", label: "Полная машина" }
+      ]},
+      { title: "Цена", fields: [
+        { id: "supply.price.title", label: "Заголовок" },
+        { id: "supply.price.p", label: "Текст", type: "textarea" }
+      ]},
+      { title: "Логистика", fields: [
+        { id: "supply.logistics.title", label: "Заголовок" },
+        { id: "supply.own.title", label: "Ваш транспорт" },
+        { id: "supply.own.p", label: "Текст", type: "textarea" },
+        { id: "supply.ours.title", label: "Наша логистика" },
+        { id: "supply.ours.p", label: "Текст", type: "textarea" }
+      ]},
+      { title: "Дальше", fields: [
+        { id: "supply.steps.title", label: "Шаги" },
+        { id: "supply.docs.title", label: "Документы" },
+        { id: "supply.docs.p", label: "Текст документов", type: "textarea" },
+        { id: "supply.cta.title", label: "Заявка" },
+        { id: "supply.cta.p", label: "Текст заявки", type: "textarea" }
+      ]}
+    ]
+  },
   polezno: {
     title: "Калькулятор массы гранитного изделия",
     group: "Полезно",
@@ -709,6 +747,7 @@ function listPages() {
     ...stones.map((stone) => ({ id: `stone:${stone.id}`, title: stone.name, group: "Виды гранитов" })),
     { id: "products", title: "Список продукции", group: "Продукция" },
     ...products.map((product) => ({ id: `product:${product.id}`, title: product.name, group: "Продукция" })),
+    { id: "supply", title: "Поставка", group: "Страницы" },
     { id: "polezno", title: "Калькулятор массы гранитного изделия", group: "Полезно" },
     { id: "paving", title: "Калькулятор брусчатки", group: "Полезно" }
   ];

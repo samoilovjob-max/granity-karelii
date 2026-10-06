@@ -526,6 +526,7 @@ function writeSitemap(productList) {
     "kalkulyator-massy-granita.html",
     "kalkulyator-bruschatki.html",
     "kontakty.html",
+    "postavka.html",
     "politika.html",
     ...stones.map((stone) => `granity/${stone.id}.html`),
     ...productList.map((product) => `produkciya/${product.id}.html`)

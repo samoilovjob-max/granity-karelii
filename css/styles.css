@@ -1586,3 +1586,98 @@ ul.stone-links {
     align-items: start;
   }
 }
+
+/* Поставка. Переменные только из :root в начале файла:
+   --font-main, --font-heading, --font-technical, --color-text, --color-accent,
+   --color-muted, --brand-dark, --brand-primary, --bg-page, --bg-card, --border,
+   --radius, --container, --header-h, --shadow.
+   Отдельных --font-size-* нет: заголовки берут размер .stone-section h2 и .page-intro h1.
+   Новых шрифтов, цветов и теней нет. */
+.supply-title {
+  margin: 0 0 0.7rem; /* как .stone-section h2 */
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem); /* как .stone-section h2 */
+  letter-spacing: -0.03em;
+  line-height: 1.25; /* как .stone-section h2 */
+  color: var(--brand-dark);
+}
+
+.supply .stone-hero {
+  margin-bottom: 0;
+}
+
+.supply-split {
+  display: grid;
+  gap: 0.9rem; /* как .stone-story */
+  min-width: 0;
+}
+
+.supply-split > div {
+  min-width: 0;
+  padding: 1rem; /* как .cta-band */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-page);
+}
+
+.supply-best {
+  border-color: var(--color-accent);
+  background: var(--bg-card);
+}
+
+.supply-meter {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.supply-meter p {
+  margin: 0.35rem 0 0;
+}
+
+.supply-meter-track {
+  height: 0.55rem;
+  border-radius: var(--radius);
+  background: var(--border);
+  overflow: hidden;
+}
+
+/* Ширина полос — схема «рейс один, объём разный», не тариф. 100% и 50% менять вместе с текстом примера. */
+.supply-meter-track span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+}
+
+.supply-meter-track .is-short {
+  width: 50%;
+  background: var(--brand-primary);
+}
+
+.supply #zayavka,
+.supply #raschet {
+  scroll-margin-top: calc(var(--header-h) + 0.5rem); /* как #massa */
+}
+
+.supply .cta-band .consent-note {
+  margin: 0.75rem 0 0; /* как .consent-note: .cta-band p обнуляет margin */
+}
+
+@media (max-width: 479px) {
+  .supply .hero-actions .btn,
+  .supply .cta-band .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .supply-split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .supply-split {
+    grid-template-columns: 1fr 1fr; /* не 4 колонки .perk-grid */
+  }
+}
