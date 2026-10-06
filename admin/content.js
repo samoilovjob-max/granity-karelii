@@ -103,7 +103,7 @@ const HAND = {
     ]
   },
   polezno: {
-    title: "Калькулятор массы",
+    title: "Калькулятор массы гранитного изделия",
     group: "Полезно",
     file: "polezno.html",
     groups: [
@@ -635,7 +635,7 @@ function listPages() {
     ...stones.map((stone) => ({ id: `stone:${stone.id}`, title: stone.name, group: "Виды гранитов" })),
     { id: "products", title: "Список продукции", group: "Продукция" },
     ...products.map((product) => ({ id: `product:${product.id}`, title: product.name, group: "Продукция" })),
-    { id: "polezno", title: "Калькулятор массы", group: "Полезно" },
+    { id: "polezno", title: "Калькулятор массы гранитного изделия", group: "Полезно" },
     { id: "paving", title: "Калькулятор брусчатки", group: "Полезно" }
   ];
 }

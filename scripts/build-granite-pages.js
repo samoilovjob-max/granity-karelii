@@ -371,7 +371,7 @@ function productGroups(list) {
     if (!items.length) return "";
     return `<section class="product-block" id="${category}" aria-labelledby="heading-${category}">
       <h2 id="heading-${category}">${CATEGORY_LABEL[category]}</h2>
-      <p class="tool-links"><a href="polezno.html">Калькулятор массы</a></p>
+      <p class="tool-links"><a href="polezno.html">Калькулятор массы гранитного изделия</a></p>
       <div class="stone-grid">${items.map(productCard).join("\n")}</div>
     </section>`;
   }).join("\n");
