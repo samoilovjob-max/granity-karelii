@@ -3,6 +3,7 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const root = path.join(__dirname, "..");
+const seoDefaults = require(path.join(root, "data/seo-defaults.json"));
 
 const paths = {
   site: path.join(root, "data/site.json"),
@@ -167,6 +168,166 @@ function encodeText(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+function encodeAttr(value) {
+  return encodeText(value).replace(/"/g, "&quot;");
+}
+
+function normalizeKeywords(value) {
+  const list = Array.isArray(value) ? value : String(value || "").split(",");
+  const seen = new Set();
+  const phrases = [];
+  for (const item of list) {
+    const phrase = String(item).replace(/,/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!phrase) continue;
+    const key = phrase.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    phrases.push(phrase);
+    if (phrases.length >= 12) break;
+  }
+  return phrases;
+}
+
+function cleanSearchText(value, max) {
+  return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+function readHeadSeo(html) {
+  const title = decodeText((html.match(/<title>([^<]*)<\/title>/) || ["", ""])[1]);
+  const description = decodeText((html.match(/<meta name="description" content="([^"]*)"/) || ["", ""])[1]);
+  const keywordsRaw = decodeText((html.match(/<meta name="keywords" content="([^"]*)"/) || ["", ""])[1]);
+  return {
+    title,
+    description,
+    keywords: keywordsRaw.split(",").map((item) => item.trim()).filter(Boolean)
+  };
+}
+
+function writeHeadSeo(html, seo) {
+  const title = cleanSearchText(seo && seo.title, 300);
+  const description = cleanSearchText(seo && seo.description, 4000);
+  if (!title) {
+    const error = new Error("Заголовок в поиске не может быть пустым");
+    error.status = 400;
+    throw error;
+  }
+  if (!description) {
+    const error = new Error("Описание в поиске не может быть пустым");
+    error.status = 400;
+    throw error;
+  }
+  const keywords = normalizeKeywords(seo.keywords);
+  const lines = [
+    `<title>${encodeText(title)}</title>`,
+    `<meta name="description" content="${encodeAttr(description)}" />`
+  ];
+  const keywordsContent = encodeAttr(keywords.join(", "));
+  if (keywords.length) lines.push(`<meta name="keywords" content="${keywordsContent}" />`);
+  lines.push(
+    `<meta property="og:title" content="${encodeAttr(title)}" />`,
+    `<meta property="og:description" content="${encodeAttr(description)}" />`,
+    `<meta property="og:type" content="website" />`
+  );
+  const block = `${lines.map((line) => `  ${line}`).join("\n")}\n`;
+  const pattern = /  <title>[^<]*<\/title>\n(?:  <meta (?:name="(?:description|keywords)"|property="og:[^"]+") content="[^"]*"\s*\/?>\n)*/;
+  if (!pattern.test(html)) {
+    const error = new Error("На странице не найден заголовок для поиска");
+    error.status = 400;
+    throw error;
+  }
+  return html.replace(pattern, block);
+}
+
+function withSeo(page, relativeFile) {
+  const html = fs.readFileSync(path.join(root, relativeFile), "utf8");
+  const seo = readHeadSeo(html);
+  seo.url = `https://granit-karel.ru/${relativeFile.replace(/^\//, "")}`;
+  return { ...page, seo };
+}
+
+function isPositioningSection(section) {
+  return /^6\.\s/.test(section.title)
+    || section.title.includes("Рыночное позиционирование")
+    || section.title.includes("причин выбрать");
+}
+
+function sectionPlainText(section) {
+  return section.blocks.map((block) => {
+    if (block.type === "p") return block.text;
+    return block.items.map((item) => `${item.label}: ${item.text}`).join(" ");
+  }).join(" ");
+}
+
+function defaultArticleDescription(article) {
+  const positioning = (article.sections || []).find(isPositioningSection);
+  return [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+}
+
+function applyArticleSeo(article, seo) {
+  if (!seo || typeof seo !== "object") return false;
+  const title = cleanSearchText(seo.title, 300);
+  const description = cleanSearchText(seo.description, 4000);
+  if (!title) {
+    const error = new Error("Заголовок в поиске не может быть пустым");
+    error.status = 400;
+    throw error;
+  }
+  if (!description) {
+    const error = new Error("Описание в поиске не может быть пустым");
+    error.status = 400;
+    throw error;
+  }
+  let changed = false;
+  if (article.seoTitle !== title) {
+    article.seoTitle = title;
+    changed = true;
+  }
+  const fallback = defaultArticleDescription(article);
+  if (description === fallback) {
+    if (Object.prototype.hasOwnProperty.call(article, "seoDescription")) {
+      delete article.seoDescription;
+      changed = true;
+    }
+  } else if (article.seoDescription !== description) {
+    article.seoDescription = description;
+    changed = true;
+  }
+  const keywords = normalizeKeywords(seo.keywords);
+  const previous = Array.isArray(article.keywords) ? article.keywords : [];
+  if (keywords.join("\n") !== previous.join("\n")) {
+    if (keywords.length) article.keywords = keywords;
+    else delete article.keywords;
+    changed = true;
+  }
+  return changed;
+}
+
+function gallerySearchTitle(title) {
+  return `${String(title || "").trim() || "Галерея"} — Граниты Карелии`;
+}
+
+function storedSearchSeo(input, fallbackTitle, fallbackDescription) {
+  if (!input || typeof input !== "object") return undefined;
+  const title = cleanSearchText(input.title, 300);
+  const description = cleanSearchText(input.description, 4000);
+  if (!title) {
+    const error = new Error("Заголовок в поиске не может быть пустым");
+    error.status = 400;
+    throw error;
+  }
+  if (!description) {
+    const error = new Error("Описание в поиске не может быть пустым");
+    error.status = 400;
+    throw error;
+  }
+  const keywords = normalizeKeywords(input.keywords);
+  const seo = {};
+  if (title !== fallbackTitle) seo.title = title;
+  if (description !== fallbackDescription) seo.description = description;
+  if (keywords.length) seo.keywords = keywords;
+  return Object.keys(seo).length ? seo : undefined;
 }
 
 function readField(html, id) {
@@ -348,7 +509,7 @@ function photoInfo(dir, id, key) {
 function getPage(id) {
   if (id === "gallery") {
     const gallery = readJson(paths.gallery);
-    return {
+    return withSeo({
       id,
       title: "Галерея",
       href: "/galereya.html",
@@ -356,12 +517,12 @@ function getPage(id) {
       titleText: gallery.title,
       lead: gallery.lead,
       items: gallery.items
-    };
+    }, "galereya.html");
   }
-  if (HAND[id]) return { id, ...fillHand({ ...HAND[id], id }) };
+  if (HAND[id]) return withSeo({ id, ...fillHand({ ...HAND[id], id }) }, HAND[id].file);
   if (id === "catalog") {
     const copy = readJson(paths.pages).catalog;
-    return {
+    return withSeo({
       id,
       title: "Список пород",
       href: "/vidy.html",
@@ -375,11 +536,11 @@ function getPage(id) {
           { id: `catalog.perk${n}.text`, label: `Блок ${n}, текст`, type: "textarea", value: copy[`perk${n}`].text }
         ])}
       ]
-    };
+    }, "vidy.html");
   }
   if (id === "products") {
     const copy = readJson(paths.pages).products;
-    return {
+    return withSeo({
       id,
       title: "Список продукции",
       href: "/produkciya.html",
@@ -389,20 +550,20 @@ function getPage(id) {
           { id: "products.lead", label: "Вступление", type: "textarea", value: copy.lead }
         ]}
       ]
-    };
+    }, "produkciya.html");
   }
   if (id.startsWith("stone:")) {
     const stoneId = id.slice(6);
     const stone = readStones().find((item) => item.id === stoneId);
     const article = readJson(paths.stoneArticles).find((item) => item.id === stoneId);
     if (!stone || !article) missing(id);
-    return {
+    return withSeo({
       id,
       title: stone.name,
       href: `/granity/${stoneId}.html`,
       photo: photoInfo("granites", stoneId, `stone.${stoneId}.photo`),
       groups: stoneGroups(stone, article)
-    };
+    }, `granity/${stoneId}.html`);
   }
   if (id.startsWith("product:")) {
     const productId = id.slice(8);
@@ -442,13 +603,13 @@ function getPage(id) {
       });
       groups.push({ title: section.title, fields });
     });
-    return {
+    return withSeo({
       id,
       title: product.name,
       href: `/produkciya/${productId}.html`,
       photo: photoInfo("products", productId, `product.${productId}.photo`),
       groups
-    };
+    }, `produkciya/${productId}.html`);
   }
   missing(id);
 }
@@ -508,7 +669,7 @@ function assignArticle(article, key, id, value) {
   else item.text = value;
 }
 
-function savePage(id, fields) {
+function savePage(id, fields, seo) {
   if (!fields || typeof fields !== "object") {
     const error = new Error("Нет данных для сохранения");
     error.status = 400;
@@ -523,6 +684,8 @@ function savePage(id, fields) {
     const article = articles.find((item) => item.id === stoneId);
     if (!stone || !article) missing(id);
     const prefix = `stone.${stoneId}.`;
+    const stonesBefore = JSON.stringify(stones);
+    const articlesBefore = JSON.stringify(articles);
     for (const [key, value] of Object.entries(fields)) {
       if (!key.startsWith(prefix)) continue;
       const rest = key.slice(prefix.length);
@@ -532,9 +695,12 @@ function savePage(id, fields) {
         assignArticle(article, key, `stone.${stoneId}`, String(value));
       }
     }
-    fs.writeFileSync(paths.stones, `module.exports = ${JSON.stringify(stones, null, 2)};\n`);
-    writeJson(paths.stoneArticles, articles);
-    rebuild();
+    applyArticleSeo(article, seo);
+    if (JSON.stringify(stones) !== stonesBefore) {
+      fs.writeFileSync(paths.stones, `module.exports = ${JSON.stringify(stones, null, 2)};\n`);
+    }
+    if (JSON.stringify(articles) !== articlesBefore) writeJson(paths.stoneArticles, articles);
+    if (JSON.stringify(stones) !== stonesBefore || JSON.stringify(articles) !== articlesBefore) rebuild();
     return getPage(id);
   }
   if (id.startsWith("product:")) {
@@ -543,6 +709,8 @@ function savePage(id, fields) {
     const article = articles.find((item) => item.id === productId);
     if (!article) missing(id);
     const overrides = readJson(paths.overrides);
+    const overridesBefore = JSON.stringify(overrides);
+    const articlesBefore = JSON.stringify(articles);
     overrides[productId] = overrides[productId] || {};
     const prefix = `product.${productId}.`;
     for (const [key, value] of Object.entries(fields)) {
@@ -552,36 +720,54 @@ function savePage(id, fields) {
       else assignArticle(article, key, `product.${productId}`, String(value));
     }
     if (!Object.keys(overrides[productId]).length) delete overrides[productId];
-    writeJson(paths.overrides, overrides);
-    writeJson(paths.productArticles, articles);
-    rebuild();
+    applyArticleSeo(article, seo);
+    if (JSON.stringify(overrides) !== overridesBefore) writeJson(paths.overrides, overrides);
+    if (JSON.stringify(articles) !== articlesBefore) writeJson(paths.productArticles, articles);
+    if (JSON.stringify(overrides) !== overridesBefore || JSON.stringify(articles) !== articlesBefore) rebuild();
     return getPage(id);
   }
   if (id === "catalog" || id === "products") {
     const copy = readJson(paths.pages);
+    const before = JSON.stringify(copy);
     for (const [key, value] of Object.entries(fields)) {
       const parts = key.split(".");
       if (parts[0] !== id) continue;
       if (parts.length === 2) copy[id][parts[1]] = String(value);
       else if (parts.length === 3 && copy[id][parts[1]]) copy[id][parts[1]][parts[2]] = String(value);
     }
-    writeJson(paths.pages, copy);
-    rebuild();
+    if (seo) {
+      const fallback = seoDefaults[id];
+      const stored = storedSearchSeo(seo, fallback.title, fallback.description);
+      if (stored) copy[id].seo = stored;
+      else delete copy[id].seo;
+    }
+    if (JSON.stringify(copy) !== before) {
+      writeJson(paths.pages, copy);
+      rebuild();
+    }
     return getPage(id);
   }
   if (id === "gallery") {
-    saveGallery({ title: fields["gallery.title"], lead: fields["gallery.lead"], items: readJson(paths.gallery).items });
+    const current = readJson(paths.gallery);
+    saveGallery({
+      title: fields["gallery.title"],
+      lead: fields["gallery.lead"],
+      items: current.items,
+      seo: seo || current.seo
+    });
     return getPage(id);
   }
   const page = HAND[id];
   if (!page) missing(id);
   const file = path.join(root, page.file);
   let html = fs.readFileSync(file, "utf8");
+  const before = html;
   for (const [key, value] of Object.entries(fields)) {
     if (key.startsWith("site.")) continue;
     html = writeField(html, key, String(value));
   }
-  fs.writeFileSync(file, html);
+  if (seo) html = writeHeadSeo(html, seo);
+  if (html !== before) fs.writeFileSync(file, html);
   if (siteChanged) rebuild();
   return getPage(id);
 }
@@ -595,11 +781,18 @@ function saveGallery(next) {
     if (!stored) return null;
     return { id: stored.id, src: stored.src, caption: String(item.caption || "").slice(0, 180) };
   }).filter(Boolean);
-  writeJson(paths.gallery, {
-    title: String(next.title || current.title).slice(0, 120),
-    lead: String(next.lead || current.lead).slice(0, 400),
-    items: clean
-  });
+  const title = String(next.title || current.title).slice(0, 120);
+  const lead = String(next.lead || current.lead).slice(0, 400);
+  const data = { title, lead, items: clean };
+  if (Object.prototype.hasOwnProperty.call(next, "seo")) {
+    const stored = next.seo
+      ? storedSearchSeo(next.seo, gallerySearchTitle(title), lead.trim())
+      : undefined;
+    if (stored) data.seo = stored;
+  } else if (current.seo) {
+    data.seo = current.seo;
+  }
+  writeJson(paths.gallery, data);
   for (const item of current.items) {
     if (!clean.some((kept) => kept.id === item.id)) {
       const file = path.join(root, item.src);

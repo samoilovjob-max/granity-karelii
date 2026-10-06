@@ -11,7 +11,16 @@ let pages = [];
 let current = null;
 let fields = {};
 let gallery = null;
+let seo = { title: "", description: "", keywords: [], url: "" };
 let ready = false;
+
+function signs(count) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return "знак";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "знака";
+  return "знаков";
+}
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, (char) => ({
@@ -43,7 +52,7 @@ function setStatus(text) {
 
 function pushPreview() {
   if (!ready || !preview.contentWindow) return;
-  const message = { type: "gk-preview", fields };
+  const message = { type: "gk-preview", fields, seo: { title: seo.title, description: seo.description } };
   if (gallery) message.gallery = gallery;
   preview.contentWindow.postMessage(message, location.origin);
 }
@@ -53,6 +62,11 @@ function collectFields() {
   editor.querySelectorAll("[data-field]").forEach((el) => {
     fields[el.dataset.field] = el.value;
   });
+  const titleInput = editor.querySelector("[data-seo='title']");
+  if (titleInput) {
+    seo.title = titleInput.value;
+    seo.description = editor.querySelector("[data-seo='description']").value;
+  }
   if (gallery) {
     if (Object.prototype.hasOwnProperty.call(fields, "gallery.title")) gallery.title = fields["gallery.title"];
     if (Object.prototype.hasOwnProperty.call(fields, "gallery.lead")) gallery.lead = fields["gallery.lead"];
@@ -81,6 +95,112 @@ function renderPages(filter) {
   `).join("");
 }
 
+function displayUrl(url) {
+  return String(url || "").replace(/^https?:\/\//, "");
+}
+
+function rememberSeo(page) {
+  const source = page.seo || {};
+  seo = {
+    title: source.title || "",
+    description: source.description || "",
+    keywords: Array.isArray(source.keywords) ? source.keywords.slice() : [],
+    url: source.url || ""
+  };
+}
+
+function seoBlock() {
+  return `<section class="seo">
+    <h2>Продвижение в поиске</h2>
+    <p class="hint">Так строка выглядит в Яндексе. Она обновляется сразу и может отличаться от заголовка на странице.</p>
+    <article class="snippet" aria-label="Как страница выглядит в поиске">
+      <p class="snippet-url"><img src="/images/brand/favicon-32.png" alt="" width="16" height="16" /><span id="snippetUrl">${escapeHtml(displayUrl(seo.url))}</span></p>
+      <p class="snippet-title" id="snippetTitle">${escapeHtml(seo.title)}</p>
+      <p class="snippet-text" id="snippetText">${escapeHtml(seo.description)}</p>
+    </article>
+    <label>Заголовок в поиске
+      <input data-seo="title" value="${escapeHtml(seo.title)}" />
+      <span class="count" id="titleCount"></span>
+    </label>
+    <label>Описание в поиске
+      <textarea data-seo="description">${escapeHtml(seo.description)}</textarea>
+      <span class="count" id="descriptionCount"></span>
+    </label>
+    <div class="phrases-box">
+      <strong>Ключевые фразы</strong>
+      <p class="hint">На странице их не видно. Поиск сначала читает заголовок и описание.</p>
+      <div class="phrases" id="phrases"></div>
+      <div class="phrase-row">
+        <label>Новая фраза
+          <input id="phraseInput" placeholder="например, брусчатка" autocomplete="off" />
+        </label>
+        <button class="ghost" id="addPhrase" type="button">Добавить фразу</button>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderPhrases() {
+  const box = document.querySelector("#phrases");
+  if (!box) return;
+  if (!seo.keywords.length) {
+    box.innerHTML = `<p class="hint">Пока нет фраз.</p>`;
+    return;
+  }
+  box.innerHTML = seo.keywords.map((phrase, index) => `
+    <span class="phrase">${escapeHtml(phrase)}<button class="phrase-x" type="button" data-phrase-remove="${index}" aria-label="Убрать фразу ${escapeHtml(phrase)}">×</button></span>
+  `).join("");
+}
+
+function refreshSeo(quiet) {
+  const titleInput = editor.querySelector("[data-seo='title']");
+  const descriptionInput = editor.querySelector("[data-seo='description']");
+  if (!titleInput || !descriptionInput) return;
+  seo.title = titleInput.value;
+  seo.description = descriptionInput.value;
+  const titleNode = document.querySelector("#snippetTitle");
+  const textNode = document.querySelector("#snippetText");
+  if (titleNode) titleNode.textContent = seo.title.replace(/\s+/g, " ").trim() || "Заголовок появится здесь";
+  if (textNode) textNode.textContent = seo.description.replace(/\s+/g, " ").trim() || "Описание появится здесь";
+  const titleCount = document.querySelector("#titleCount");
+  const descriptionCount = document.querySelector("#descriptionCount");
+  const titleLength = seo.title.replace(/\s+/g, " ").trim().length;
+  const descriptionLength = seo.description.replace(/\s+/g, " ").trim().length;
+  if (titleCount) {
+    titleCount.textContent = titleLength > 60
+      ? `${titleLength} ${signs(titleLength)} · поиск обычно показывает до 60`
+      : `${titleLength} ${signs(titleLength)} · помещается в выдачу`;
+    titleCount.classList.toggle("is-long", titleLength > 60);
+  }
+  if (descriptionCount) {
+    if (descriptionLength > 160) descriptionCount.textContent = `${descriptionLength} ${signs(descriptionLength)} · поиск обычно показывает до 160`;
+    else if (descriptionLength < 120) descriptionCount.textContent = `${descriptionLength} ${signs(descriptionLength)} · удобнее 120–160`;
+    else descriptionCount.textContent = `${descriptionLength} ${signs(descriptionLength)} · хорошая длина`;
+    descriptionCount.classList.toggle("is-long", descriptionLength > 160);
+    descriptionCount.classList.toggle("is-ok", descriptionLength >= 120 && descriptionLength <= 160);
+  }
+  pushPreview();
+  if (!quiet) setStatus("Есть несохранённые правки");
+}
+
+function addPhrase() {
+  const input = document.querySelector("#phraseInput");
+  if (!input) return;
+  const parts = input.value.split(",");
+  let added = false;
+  for (const part of parts) {
+    const phrase = part.replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!phrase || seo.keywords.length >= 12) continue;
+    if (seo.keywords.some((item) => item.toLowerCase() === phrase.toLowerCase())) continue;
+    seo.keywords.push(phrase);
+    added = true;
+  }
+  input.value = "";
+  renderPhrases();
+  if (seo.keywords.length >= 12) setStatus(added ? "Фраза добавлена. Больше 12 фраз на страницу не нужно" : "На странице уже 12 фраз");
+  else if (added) setStatus("Есть несохранённые правки");
+}
+
 function photoBlock(page) {
   if (!page.photo) return "";
   const image = page.photo.url
@@ -98,6 +218,7 @@ function photoBlock(page) {
 
 function renderEditor(page) {
   pageTitle.textContent = page.title;
+  rememberSeo(page);
   if (page.mode === "gallery") {
     gallery = {
       title: page.titleText,
@@ -105,25 +226,29 @@ function renderEditor(page) {
       items: page.items.map((item) => ({ ...item }))
     };
     fields = { "gallery.title": gallery.title, "gallery.lead": gallery.lead };
-    editor.innerHTML = `
+    editor.innerHTML = `${seoBlock()}
       <label>Заголовок<input data-field="gallery.title" value="${escapeHtml(gallery.title)}" /></label>
       <label>Вступление<textarea data-field="gallery.lead">${escapeHtml(gallery.lead)}</textarea></label>
       <div class="drop" id="drop">Перетащите фотографии сюда или нажмите, чтобы выбрать<input id="galleryFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden /></div>
       <p class="hint">Каждое фото само сожмётся в WebP. Подпись можно сразу поправить — справа видно сетку, как на сайте.</p>
       <div id="items"></div>`;
+    renderPhrases();
+    refreshSeo(true);
     renderGalleryItems();
     return;
   }
   gallery = null;
   fields = {};
   page.groups.forEach((group) => group.fields.forEach((field) => { fields[field.id] = field.value; }));
-  editor.innerHTML = page.groups.map((group) => `
+  editor.innerHTML = seoBlock() + page.groups.map((group) => `
     <details${group.open ? " open" : ""}>
       <summary>${escapeHtml(group.title)}</summary>
       ${group.fields.map((field) => `<label>${escapeHtml(field.label)}${field.type === "textarea"
         ? `<textarea data-field="${escapeHtml(field.id)}">${escapeHtml(field.value)}</textarea>`
         : `<input data-field="${escapeHtml(field.id)}" value="${escapeHtml(field.value)}" />`}</label>`).join("")}
     </details>`).join("") + photoBlock(page);
+  renderPhrases();
+  refreshSeo(true);
 }
 
 function renderGalleryItems() {
@@ -222,10 +347,32 @@ pageList.addEventListener("click", (event) => {
 });
 
 editor.addEventListener("input", (event) => {
+  if (event.target.matches("[data-seo]")) {
+    refreshSeo(false);
+    return;
+  }
   if (event.target.matches("[data-field], [data-caption]")) collectFields();
 });
 
+editor.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && event.target.id === "phraseInput") {
+    event.preventDefault();
+    addPhrase();
+  }
+});
+
 editor.addEventListener("click", (event) => {
+  if (event.target.id === "addPhrase") {
+    addPhrase();
+    return;
+  }
+  const removePhrase = event.target.closest("[data-phrase-remove]");
+  if (removePhrase) {
+    seo.keywords.splice(Number(removePhrase.dataset.phraseRemove), 1);
+    renderPhrases();
+    setStatus("Есть несохранённые правки");
+    return;
+  }
   const remove = event.target.closest("[data-remove]");
   const move = event.target.closest("[data-move]");
   if (remove && gallery) {
@@ -294,7 +441,7 @@ document.querySelector("#save").addEventListener("click", async () => {
       collectFields();
       const saved = await api("/admin/api/gallery", {
         method: "PUT",
-        body: JSON.stringify(gallery)
+        body: JSON.stringify({ ...gallery, seo })
       });
       gallery.items = saved.items;
       renderGalleryItems();
@@ -302,7 +449,7 @@ document.querySelector("#save").addEventListener("click", async () => {
       collectFields();
       current = await api("/admin/api/page", {
         method: "PUT",
-        body: JSON.stringify({ id: current.id, fields })
+        body: JSON.stringify({ id: current.id, fields, seo })
       });
       pages = (await api("/admin/api/pages")).pages;
       renderPages(document.querySelector("#filter").value);

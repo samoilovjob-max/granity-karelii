@@ -7,6 +7,7 @@ const productArticles = require("./products-articles.json");
 const site = require("../data/site.json");
 const gallery = require("../data/gallery.json");
 const pagesCopy = require("../data/pages.json");
+const seoDefaults = require("../data/seo-defaults.json");
 const productOverrides = require("../data/product-overrides.json");
 
 products.forEach((product) => {
@@ -105,14 +106,25 @@ function footer(prefix, note = "18 пород · калькулятор масс
   <script src="${prefix}js/nav.js"></script>`;
 }
 
-function head(prefix, title, description, extra = "") {
+function keywordTag(keywords) {
+  const phrases = (Array.isArray(keywords) ? keywords : [])
+    .map((item) => String(item).trim())
+    .filter(Boolean);
+  if (!phrases.length) return "";
+  return `\n  <meta name="keywords" content="${esc(phrases.join(", "))}" />`;
+}
+
+function head(prefix, title, description, extra = "", keywords = []) {
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
-  <meta name="description" content="${esc(description)}" />
+  <meta name="description" content="${esc(description)}" />${keywordTag(keywords)}
+  <meta property="og:title" content="${esc(title)}" />
+  <meta property="og:description" content="${esc(description)}" />
+  <meta property="og:type" content="website" />
   ${extra}
   <link rel="icon" href="${prefix}favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="${prefix}images/brand/favicon-32.png" />
@@ -171,6 +183,22 @@ function sectionPlainText(section) {
   }).join(" ");
 }
 
+// Если в админке задано своё описание, оно заменяет склейку meta и скрытого
+// блока позиционирования. Пока своего описания нет, строка в поиске прежняя.
+function articleDescription(article) {
+  if (article.seoDescription && String(article.seoDescription).trim()) return String(article.seoDescription).trim();
+  const positioning = article.sections.find(isPositioning);
+  return [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+}
+
+function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "") {
+  const seo = stored && typeof stored === "object" ? stored : {};
+  const title = String(seo.title || fallbackTitle);
+  const description = String(seo.description || fallbackDescription);
+  const keywords = Array.isArray(seo.keywords) ? seo.keywords : [];
+  return head(prefix, title, description, extra, keywords);
+}
+
 function story(article, keyPrefix) {
   return `<div class="stone-story">${article.sections.map((section, sectionIndex) => {
     if (isPositioning(section)) return "";
@@ -195,7 +223,7 @@ function structuredData(stone, article) {
     "@type": "Product",
     name: stone.name,
     alternateName: stone.latin,
-    description: [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" "),
+    description: articleDescription(article),
     brand: { "@type": "Brand", name: "Граниты Карелии" },
     additionalProperty: positioning
       ? {
@@ -222,9 +250,7 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation, "radiation"]
   ].map(([label, value, key]) => `<div><dt>${label}</dt><dd data-edit="stone.${stone.id}.${key}">${esc(value)}</dd></div>`).join("");
 
-  const positioning = article.sections.find(isPositioning);
-  const meta = [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
-  return `${head("../", article.seoTitle, meta, structuredData(stone, article))}
+  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), article.keywords)}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span data-edit="stone.${stone.id}.name">${esc(stone.name)}</span></p>
@@ -263,7 +289,7 @@ function catalogPage() {
         <p class="density">${esc(stone.density)}</p>
       </a>`).join("\n");
 
-  return `${head("", "Виды гранитов — Граниты Карелии", "18 пород: полное описание, свойства, фактуры, гравировка и применение.")}
+  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description)}
   ${nav("", "types")}
   <main class="page">
     <section class="page-intro">
@@ -373,7 +399,7 @@ function productStructuredData(product, article) {
     "@type": "Product",
     name: product.name,
     category: CATEGORY_LABEL[product.category],
-    description: [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" "),
+    description: articleDescription(article),
     brand: { "@type": "Brand", name: "Граниты Карелии" },
     additionalProperty: positioning
       ? {
@@ -396,9 +422,7 @@ function productPage(product, siblings) {
     prev ? `<a href="${prev.id}.html">← ${esc(prev.name)}</a>` : "<span></span>",
     next ? `<a href="${next.id}.html">${esc(next.name)} →</a>` : "<span></span>"
   ].join("");
-  const positioning = article.sections.find(isPositioning);
-  const meta = [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
-  return `${head("../", article.seoTitle || product.name, meta, productStructuredData(product, article))}
+  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), article.keywords)}
   ${nav("../", "products")}
   <main class="page">
     <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span data-edit="product.${product.id}.name">${esc(product.name)}</span></p>
@@ -431,7 +455,7 @@ function productPage(product, siblings) {
 }
 
 function productsPage(list) {
-  return `${head("", "Продукция — Граниты Карелии", "Мемориальная и строительная продукция из карельского гранита. Сначала мемориальные изделия, затем строительные.")}
+  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description)}
   ${nav("", "products")}
   <main class="page">
     <section class="page-intro">
@@ -499,7 +523,7 @@ function galleryPage() {
   const grid = items.length
     ? `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии">${figures}</section>`
     : `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии"><p class="gallery-empty">Фотографии работ появятся здесь.</p></section>`;
-  return `${head("", `${gallery.title} — Граниты Карелии`, gallery.lead)}
+  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead)}
   ${nav("", "gallery")}
   <main class="page">
     <section class="page-intro">

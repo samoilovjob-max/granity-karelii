@@ -158,6 +158,93 @@ summary { cursor: pointer; font-weight: 700; }
 
 .drop.over { background: #f3e4dc; }
 
+.seo {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.85rem 0.9rem 0.95rem;
+  background: #fafaf8;
+}
+
+.seo textarea { min-height: 4.4rem; }
+.seo label { margin-top: 0.7rem; }
+
+.seo h2 { margin: 0; font-size: 1.05rem; letter-spacing: -0.02em; }
+
+.snippet {
+  margin-top: 0.8rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem 0.9rem 0.95rem;
+}
+
+.snippet-url {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: #0d7a32;
+  font-size: 0.82rem;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.snippet-url img { width: 16px; height: 16px; border-radius: 3px; }
+
+.snippet-title {
+  margin: 0.2rem 0;
+  color: #174ea6;
+  font-size: 1.12rem;
+  font-weight: 500;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.snippet-text {
+  margin: 0;
+  color: #3c4043;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.count { font-weight: 500; color: var(--muted); font-size: 0.82rem; }
+.count.is-long { color: var(--accent); }
+.count.is-ok { color: #0d7a32; }
+
+.phrases-box { margin-top: 0.9rem; }
+.phrases-box strong { display: block; }
+.phrases { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.phrase {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  background: #e7eeea;
+  border-radius: 999px;
+  padding: 0.15rem 0.25rem 0.15rem 0.7rem;
+  font-weight: 600;
+}
+.phrase-x {
+  min-height: 32px;
+  width: 32px;
+  padding: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.phrase-row { display: flex; gap: 0.45rem; align-items: end; }
+.phrase-row label { flex: 1; }
+.phrase-row input { font-weight: 500; }
+.phrase-row .ghost { margin-bottom: 0; white-space: nowrap; }
+
 .gallery-item {
   display: grid;
   grid-template-columns: 92px 1fr;

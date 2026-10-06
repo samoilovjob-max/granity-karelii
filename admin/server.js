@@ -60,6 +60,11 @@ const previewScript = `<script>
     if (data.fields) Object.keys(data.fields).forEach(function (id) { text(id, data.fields[id]); });
     if (data.photo) photo(data.photo.key, data.photo.url);
     if (data.gallery) gallery(data.gallery);
+    if (data.seo) {
+      if (typeof data.seo.title === "string") document.title = data.seo.title;
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta && typeof data.seo.description === "string") meta.setAttribute("content", data.seo.description);
+    }
   });
   window.parent.postMessage({ type: "gk-preview-ready" }, location.origin);
 })();
@@ -133,7 +138,7 @@ app.get("/admin/api/page", requireAuth, (req, res, next) => {
 
 app.put("/admin/api/page", requireAuth, (req, res, next) => {
   try {
-    res.json(content.savePage(String(req.body.id || ""), req.body.fields || {}));
+    res.json(content.savePage(String(req.body.id || ""), req.body.fields || {}, req.body.seo));
   } catch (error) {
     next(error);
   }
