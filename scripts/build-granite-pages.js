@@ -433,7 +433,7 @@ function productPage(product, siblings) {
         ${article.lead.map((paragraph, leadIndex) => `<p class="lead" data-edit="product.${product.id}.lead.${leadIndex}">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
           ${product.id === "bruschatka"
-            ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Посчитать брусчатку</a>`
+            ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Калькулятор брусчатки</a>`
             : `<a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>`}
           <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
         </div>
@@ -512,7 +512,28 @@ fs.mkdirSync(productDir, { recursive: true });
 });
 fs.writeFileSync(path.join(root, "produkciya.html"), productsPage(orderedProducts));
 fs.writeFileSync(path.join(root, "galereya.html"), galleryPage());
-console.log(`wrote vidy.html, produkciya.html, galereya.html, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
+writeSitemap(orderedProducts);
+console.log(`wrote vidy.html, produkciya.html, galereya.html, sitemap.xml, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
+
+function writeSitemap(productList) {
+  const base = "https://samoilovjob-max.github.io/granity-karelii/";
+  const urls = [
+    "",
+    "o-kompanii.html",
+    "vidy.html",
+    "produkciya.html",
+    "galereya.html",
+    "polezno.html",
+    "kalkulyator-bruschatki.html",
+    "kontakty.html",
+    "politika.html",
+    ...stones.map((stone) => `granity/${stone.id}.html`),
+    ...productList.map((product) => `produkciya/${product.id}.html`)
+  ];
+  const body = urls.map((url) => `  <url><loc>${base}${url}</loc></url>`).join("\n");
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
+  fs.writeFileSync(path.join(root, "sitemap.xml"), xml);
+}
 
 function galleryPage() {
   const items = Array.isArray(gallery.items) ? gallery.items : [];

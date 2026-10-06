@@ -121,6 +121,44 @@ const HAND = {
       { title: "Шапка", open: true, fields: [
         { id: "paving.h1", label: "Заголовок" },
         { id: "paving.lead", label: "Вступление", type: "textarea" }
+      ]},
+      { title: "Как пользоваться", fields: [
+        { id: "paving.how.title", label: "Заголовок" },
+        { id: "paving.how.p", label: "Вступление", type: "textarea" },
+        { id: "paving.how.li1", label: "Пункт 1" },
+        { id: "paving.how.li2", label: "Пункт 2" },
+        { id: "paving.how.li3", label: "Пункт 3" },
+        { id: "paving.how.li4", label: "Пункт 4" },
+        { id: "paving.how.p2", label: "Про толщину", type: "textarea" }
+      ]},
+      { title: "Формула", fields: [
+        { id: "paving.formula.title", label: "Заголовок" },
+        { id: "paving.pieces.title", label: "Штуки на м²" },
+        { id: "paving.pieces.p", label: "Как считаются штуки", type: "textarea" },
+        { id: "paving.pieces.example", label: "Пример штук", type: "textarea" },
+        { id: "paving.reserve.title", label: "Запас" },
+        { id: "paving.reserve.p", label: "Про запас", type: "textarea" },
+        { id: "paving.weight.title", label: "Вес и насыпь" },
+        { id: "paving.weight.p", label: "Как считается вес", type: "textarea" },
+        { id: "paving.weight.p2", label: "Пример веса", type: "textarea" }
+      ]},
+      { title: "Характеристики", fields: [
+        { id: "paving.chars.title", label: "Заголовок" },
+        { id: "paving.density.title", label: "Плотность" },
+        { id: "paving.density.p", label: "Про плотность", type: "textarea" },
+        { id: "paving.sizes.title", label: "Размеры" },
+        { id: "paving.sizes.p", label: "Подпись к таблице", type: "textarea" }
+      ]},
+      { title: "Зачем считать", fields: [
+        { id: "paving.why.title", label: "Заголовок" },
+        { id: "paving.order.title", label: "Заказ" },
+        { id: "paving.order.p", label: "Про заказ", type: "textarea" },
+        { id: "paving.delivery.title", label: "Доставка" },
+        { id: "paving.delivery.p", label: "Про доставку", type: "textarea" }
+      ]},
+      { title: "Заказ", fields: [
+        { id: "paving.buy.title", label: "Заголовок" },
+        { id: "paving.buy.p", label: "Текст", type: "textarea" }
       ]}
     ]
   }
