@@ -63,6 +63,10 @@ function nav(prefix, active) {
   </header>`;
 }
 
+function consentNote(prefix) {
+  return `<p class="consent-note">Письмо уйдёт из вашей почтовой программы и на сайте не сохранится. Отправляя заявку, вы соглашаетесь на <a href="${prefix}politika.html">обработку персональных данных</a>.</p>`;
+}
+
 function footer(prefix, note = "18 пород · калькулятор массы") {
   return `<footer class="site-footer">
     <div class="footer-inner">
@@ -84,6 +88,7 @@ function footer(prefix, note = "18 пород · калькулятор масс
           </li>
           <li><a href="mailto:info@granit-karel.ru">info@granit-karel.ru</a></li>
         </ul>
+        <p class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></p>
       </div>
       <p>${note}</p>
     </div>
@@ -203,6 +208,7 @@ function stonePage(stone, index) {
           <a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>
           <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(stone.name)}">Оставить заявку</a>
         </div>
+        ${consentNote("../")}
       </div>
       ${photo(stone, "../")}
     </section>
@@ -380,6 +386,7 @@ function productPage(product, siblings) {
             : `<a class="btn btn-primary" href="../polezno.html">Рассчитать массу</a>`}
           <a class="btn btn-ghost" href="mailto:info@granit-karel.ru?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
         </div>
+        ${consentNote("../")}
       </div>
       ${productPhoto(product, "../")}
     </section>

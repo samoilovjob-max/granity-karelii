@@ -458,6 +458,33 @@ select {
   font-size: 0.9rem;
 }
 
+.footer-legal {
+  margin: 0.2rem 0 0;
+}
+
+.footer-legal a {
+  min-height: 44px; /* как .footer-contacts a */
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.consent-note {
+  margin: 0.75rem 0 0;
+  max-width: 36rem;
+  color: var(--color-muted);
+  font-size: 0.85rem; /* чуть меньше .lead */
+  line-height: 1.45;
+}
+
+.consent-note a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 @media (max-width: 1100px) {
   .calc-shell {
     grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
@@ -1081,6 +1108,10 @@ summary:focus-visible {
   margin: 0;
   max-width: 46rem;
   color: var(--color-text);
+}
+
+.about-block > p + p {
+  margin-top: 0.75rem; /* как расстояние абзацев .stone-section p */
 }
 
 .palette {
