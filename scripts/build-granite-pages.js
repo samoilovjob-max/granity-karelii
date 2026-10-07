@@ -103,7 +103,8 @@ function footer(prefix, note = "18 пород · калькулятор масс
       <p>${note}</p>
     </div>
   </footer>
-  <script src="${prefix}js/nav.js"></script>`;
+  <script src="${prefix}js/nav.js"></script>
+  <script src="${prefix}js/carousel.js"></script>`;
 }
 
 function keywordTag(keywords) {
@@ -145,13 +146,57 @@ function imageRel(dir, id) {
   return "";
 }
 
+/** Photos in images/{dir}/{id}/01.webp … (sorted). Falls back to a single cover file. */
+function imageGallery(dir, id) {
+  const folder = path.join(root, "images", dir, id);
+  if (fs.existsSync(folder) && fs.statSync(folder).isDirectory()) {
+    const files = fs
+      .readdirSync(folder)
+      .filter((name) => /\.(webp|jpe?g|png)$/i.test(name))
+      .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+    if (files.length) return files.map((name) => `images/${dir}/${id}/${name}`);
+  }
+  const single = imageRel(dir, id);
+  return single ? [single] : [];
+}
+
+function photoCarousel(rels, prefix, name, photoKey, compact) {
+  const slides = rels
+    .map(
+      (rel, index) =>
+        `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${rels.length}">
+          <img src="${prefix}${rel}" alt="${esc(name)} — фото ${index + 1}" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
+        </div>`
+    )
+    .join("");
+  const dots = rels
+    .map(
+      (_, index) =>
+        `<button type="button" class="photo-carousel-dot${index === 0 ? " is-active" : ""}" data-index="${index}" aria-label="Фото ${index + 1}"${index === 0 ? ' aria-current="true"' : ""}></button>`
+    )
+    .join("");
+  const caption = compact ? "" : `<figcaption>${esc(name)}</figcaption>`;
+  return `<figure class="stone-photo stone-photo--carousel" data-photo="${photoKey}">
+      <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Фотографии: ${esc(name)}">
+        <div class="photo-carousel-track" data-track>${slides}</div>
+        <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+        <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+        <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">${dots}</div>
+      </div>
+      ${caption}
+    </figure>`;
+}
+
 function photo(stone, prefix, compact) {
-  const rel = imageRel("granites", stone.id);
   const photoKey = `stone.${stone.id}.photo`;
-  if (rel) {
+  const gallery = imageGallery("granites", stone.id);
+  if (gallery.length > 1 && !compact) {
+    return photoCarousel(gallery, prefix, stone.name, photoKey, compact);
+  }
+  if (gallery.length) {
     const caption = compact ? "" : `<figcaption>${esc(stone.name)}</figcaption>`;
     return `<figure class="stone-photo" data-photo="${photoKey}">
-        <img src="${prefix}${rel}" alt="${esc(stone.name)}" loading="lazy" />
+        <img src="${prefix}${gallery[0]}" alt="${esc(stone.name)}" loading="lazy" />
         ${caption}
       </figure>`;
   }
