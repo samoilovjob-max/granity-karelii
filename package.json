@@ -4,7 +4,8 @@
   "description": "Сайт «Граниты Карелии» и админка с предпросмотром",
   "scripts": {
     "start": "node admin/server.js",
-    "build": "node scripts/build-granite-pages.js"
+    "build": "node scripts/build-granite-pages.js",
+    "icons": "node scripts/build-icons.js"
   },
   "dependencies": {
     "express": "^4.21.2",

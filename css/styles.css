@@ -101,8 +101,7 @@ select {
 .brand img {
   width: 40px;
   height: 40px;
-  border-radius: 3px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .nav {
@@ -670,7 +669,8 @@ summary:focus-visible {
 }
 
 .stone-photo-placeholder,
-.stone-photo img {
+.stone-photo > img,
+.photo-carousel-slide img {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -682,6 +682,224 @@ summary:focus-visible {
   padding: 0.7rem 0.9rem 0.85rem;
   color: var(--color-muted);
   font-size: 0.82rem;
+}
+
+.photo-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 2px);
+  touch-action: pan-y;
+  user-select: none;
+  cursor: zoom-in;
+}
+
+.photo-carousel-track {
+  position: relative;
+}
+
+.photo-carousel-track.is-dragging {
+  cursor: grabbing;
+}
+
+.photo-carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+  pointer-events: none;
+}
+
+.photo-carousel-slide.is-active {
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.photo-carousel-slide img {
+  transition: transform 0.35s ease;
+}
+
+.photo-carousel::after {
+  content: "На весь экран";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 18, 20, 0.62);
+  color: #fff;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.photo-carousel:hover::after {
+  opacity: 1;
+}
+
+.photo-carousel:hover .photo-carousel-slide.is-active img {
+  transform: scale(1.03);
+}
+
+.photo-carousel-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--brand-dark);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.photo-carousel-prev { left: 0.55rem; }
+.photo-carousel-next { right: 0.55rem; }
+
+.photo-carousel-nav:hover {
+  background: #fff;
+}
+
+.photo-carousel-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.7rem;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  pointer-events: none;
+}
+
+.photo-carousel-dot {
+  pointer-events: auto;
+  width: 0.55rem;
+  height: 0.55rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+
+.photo-carousel-dot.is-active {
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(37, 42, 44, 0.35);
+}
+
+body.has-lightbox {
+  overflow: hidden;
+}
+
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.photo-lightbox[hidden] {
+  display: none;
+}
+
+.photo-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 18, 20, 0.92);
+  cursor: zoom-out;
+}
+
+.photo-lightbox-figure {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: min(96vw, 1100px);
+  max-height: 92vh;
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.photo-lightbox-figure img {
+  display: block;
+  max-width: 100%;
+  max-height: 84vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.photo-lightbox-figure figcaption {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
+
+.photo-lightbox-close,
+.photo-lightbox-nav {
+  position: absolute;
+  z-index: 2;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  cursor: pointer;
+}
+
+.photo-lightbox-close {
+  top: 1rem;
+  right: 1rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.photo-lightbox-nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.8rem;
+  height: 2.8rem;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.photo-lightbox-prev { left: 0.75rem; }
+.photo-lightbox-next { right: 0.75rem; }
+
+.photo-lightbox-close:hover,
+.photo-lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 640px) {
+  .photo-carousel-nav {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.2rem;
+  }
+
+  .photo-lightbox-nav {
+    width: 2.3rem;
+    height: 2.3rem;
+  }
 }
 
 .specs {
@@ -1143,6 +1361,20 @@ summary:focus-visible {
 
 .about-block > p + p {
   margin-top: 0.75rem; /* как расстояние абзацев .stone-section p */
+}
+
+.palette-logo {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 1rem 0;
+}
+
+.palette-logo img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 72px;
 }
 
 .palette {

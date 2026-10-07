@@ -57,7 +57,7 @@ function nav(prefix, active) {
   return `<header class="site-header">
     <div class="header-inner">
       <a class="brand" href="${href("index.html")}" aria-label="Граниты Карелии">
-        <img src="${href("images/brand/logo-gk.jpg")}" alt="" width="40" height="40" />
+        <img src="${href("images/brand/logo-gk-transparent.svg")}" alt="" width="40" height="40" />
         <span>Граниты Карелии</span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
@@ -82,11 +82,13 @@ function footer(prefix, note = "18 пород · калькулятор масс
     <div class="footer-inner">
       <div class="footer-id">
         <a class="brand" href="${prefix}index.html" aria-label="Граниты Карелии">
-          <img src="${prefix}images/brand/logo-gk.jpg" alt="" width="36" height="36" />
+          <img src="${prefix}images/brand/logo-gk-transparent.svg" alt="" width="36" height="36" />
           <span>Граниты Карелии</span>
         </a>
         <ul class="footer-contacts">
           <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
+          <li class="footer-copy">© 2014 Граниты Карелии</li>
+          <li><a href="${prefix}produkciya.html">Производство изделий из гранита</a></li>
           <li class="footer-phone">
             <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
@@ -103,7 +105,8 @@ function footer(prefix, note = "18 пород · калькулятор масс
       <p>${note}</p>
     </div>
   </footer>
-  <script src="${prefix}js/nav.js"></script>`;
+  <script src="${prefix}js/nav.js"></script>
+  <script src="${prefix}js/carousel.js"></script>`;
 }
 
 function keywordTag(keywords) {
@@ -126,7 +129,8 @@ function head(prefix, title, description, extra = "", keywords = []) {
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:type" content="website" />
   ${extra}
-  <link rel="icon" href="${prefix}favicon.ico" sizes="any" />
+  <link rel="icon" href="${prefix}favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/svg+xml" href="${prefix}images/brand/logo-gk-transparent.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="${prefix}images/brand/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="${prefix}images/brand/apple-touch-icon.png" />
   <link rel="apple-touch-icon" href="${prefix}images/brand/apple-touch-icon.png" />
@@ -144,13 +148,57 @@ function imageRel(dir, id) {
   return "";
 }
 
+/** Photos in images/{dir}/{id}/01.webp … (sorted). Falls back to a single cover file. */
+function imageGallery(dir, id) {
+  const folder = path.join(root, "images", dir, id);
+  if (fs.existsSync(folder) && fs.statSync(folder).isDirectory()) {
+    const files = fs
+      .readdirSync(folder)
+      .filter((name) => /\.(webp|jpe?g|png)$/i.test(name))
+      .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+    if (files.length) return files.map((name) => `images/${dir}/${id}/${name}`);
+  }
+  const single = imageRel(dir, id);
+  return single ? [single] : [];
+}
+
+function photoCarousel(rels, prefix, name, photoKey, compact) {
+  const slides = rels
+    .map(
+      (rel, index) =>
+        `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${rels.length}">
+          <img src="${prefix}${rel}" alt="${esc(name)} — фото ${index + 1}" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
+        </div>`
+    )
+    .join("");
+  const dots = rels
+    .map(
+      (_, index) =>
+        `<button type="button" class="photo-carousel-dot${index === 0 ? " is-active" : ""}" data-index="${index}" aria-label="Фото ${index + 1}"${index === 0 ? ' aria-current="true"' : ""}></button>`
+    )
+    .join("");
+  const caption = compact ? "" : `<figcaption>${esc(name)}</figcaption>`;
+  return `<figure class="stone-photo stone-photo--carousel" data-photo="${photoKey}">
+      <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Фотографии: ${esc(name)}">
+        <div class="photo-carousel-track" data-track>${slides}</div>
+        <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+        <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+        <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">${dots}</div>
+      </div>
+      ${caption}
+    </figure>`;
+}
+
 function photo(stone, prefix, compact) {
-  const rel = imageRel("granites", stone.id);
   const photoKey = `stone.${stone.id}.photo`;
-  if (rel) {
+  const gallery = imageGallery("granites", stone.id);
+  if (gallery.length > 1 && !compact) {
+    return photoCarousel(gallery, prefix, stone.name, photoKey, compact);
+  }
+  if (gallery.length) {
     const caption = compact ? "" : `<figcaption>${esc(stone.name)}</figcaption>`;
     return `<figure class="stone-photo" data-photo="${photoKey}">
-        <img src="${prefix}${rel}" alt="${esc(stone.name)}" loading="lazy" />
+        <img src="${prefix}${gallery[0]}" alt="${esc(stone.name)}" loading="lazy" />
         ${caption}
       </figure>`;
   }
