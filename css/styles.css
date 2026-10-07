@@ -391,7 +391,15 @@ select {
 }
 
 .site-footer .footer-inner {
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: start;
+  gap: 1rem 1.5rem;
+}
+
+.footer-col {
+  min-width: 0;
+  line-height: 1.5;
 }
 
 .footer-id {
@@ -399,7 +407,15 @@ select {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.45rem;
-  min-width: 0;
+}
+
+.footer-mid {
+  justify-self: center;
+}
+
+.footer-note {
+  justify-self: end;
+  text-align: right;
 }
 
 .footer-contacts {
@@ -407,9 +423,10 @@ select {
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.1rem;
+  gap: 0;
   color: var(--color-muted);
   font-size: 0.9rem; /* как .site-footer p */
+  line-height: 1.5;
 }
 
 .footer-inn {
@@ -442,13 +459,14 @@ select {
 }
 
 .footer-contacts a {
-  min-height: 44px;
+  min-height: 0;
   display: inline-flex;
   align-items: center;
   color: var(--brand-primary);
   text-decoration: underline;
   text-underline-offset: 0.15em;
   overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .site-footer p {
@@ -458,16 +476,17 @@ select {
 }
 
 .footer-legal {
-  margin: 0.2rem 0 0;
+  margin: 0;
 }
 
 .footer-legal a {
-  min-height: 44px; /* как .footer-contacts a */
+  min-height: 0;
   display: inline-flex;
   align-items: center;
   color: var(--brand-primary);
   text-decoration: underline;
   text-underline-offset: 0.15em;
+  line-height: 1.5;
 }
 
 .consent-note {
@@ -519,9 +538,17 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .footer-inner {
+  .footer-inner,
+  .site-footer .footer-inner {
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .footer-mid,
+  .footer-note {
+    justify-self: start;
+    text-align: left;
   }
 
   /* Шесть колонок с nowrap не помещаются: порода сверху, цифры строками. */
