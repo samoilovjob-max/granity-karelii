@@ -57,7 +57,7 @@ function nav(prefix, active) {
   return `<header class="site-header">
     <div class="header-inner">
       <a class="brand" href="${href("index.html")}" aria-label="Граниты Карелии">
-        <img src="${href("images/brand/logo-gk.jpg")}" alt="" width="40" height="40" />
+        <img src="${href("images/brand/logo-gk-transparent.svg")}" alt="" width="40" height="40" />
         <span>Граниты Карелии</span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
@@ -82,7 +82,7 @@ function footer(prefix, note = "18 пород · калькулятор масс
     <div class="footer-inner">
       <div class="footer-id">
         <a class="brand" href="${prefix}index.html" aria-label="Граниты Карелии">
-          <img src="${prefix}images/brand/logo-gk.jpg" alt="" width="36" height="36" />
+          <img src="${prefix}images/brand/logo-gk-transparent.svg" alt="" width="36" height="36" />
           <span>Граниты Карелии</span>
         </a>
         <ul class="footer-contacts">
@@ -126,7 +126,8 @@ function head(prefix, title, description, extra = "", keywords = []) {
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:type" content="website" />
   ${extra}
-  <link rel="icon" href="${prefix}favicon.ico" sizes="any" />
+  <link rel="icon" href="${prefix}favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/svg+xml" href="${prefix}images/brand/logo-gk-transparent.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="${prefix}images/brand/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="${prefix}images/brand/apple-touch-icon.png" />
   <link rel="apple-touch-icon" href="${prefix}images/brand/apple-touch-icon.png" />

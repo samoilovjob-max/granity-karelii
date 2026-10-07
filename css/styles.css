@@ -101,8 +101,7 @@ select {
 .brand img {
   width: 40px;
   height: 40px;
-  border-radius: 3px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .nav {
@@ -1143,6 +1142,20 @@ summary:focus-visible {
 
 .about-block > p + p {
   margin-top: 0.75rem; /* как расстояние абзацев .stone-section p */
+}
+
+.palette-logo {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 1rem 0;
+}
+
+.palette-logo img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 72px;
 }
 
 .palette {
