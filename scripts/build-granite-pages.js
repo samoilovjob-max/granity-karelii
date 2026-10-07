@@ -87,6 +87,8 @@ function footer(prefix, note = "18 пород · калькулятор масс
         </a>
         <ul class="footer-contacts">
           <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
+          <li class="footer-copy">© 2014 Граниты Карелии</li>
+          <li><a href="${prefix}produkciya.html">Производство изделий из гранита</a></li>
           <li class="footer-phone">
             <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
