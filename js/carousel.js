@@ -37,66 +37,74 @@
 
   function restartTimer(root) {
     clearInterval(root._timer);
+    root._timer = null;
     if (root.dataset.paused === "1" || document.hidden) return;
     const ms = Number(root.dataset.interval) || INTERVAL_DEFAULT;
-    root._timer = setInterval(() => goTo(root, currentIndex(root) + 1), ms);
+    root._timer = setInterval(() => {
+      goTo(root, currentIndex(root) + 1);
+    }, ms);
   }
 
   function pause(root) {
     root.dataset.paused = "1";
     clearInterval(root._timer);
+    root._timer = null;
   }
 
   function resume(root) {
+    if (lightbox && !lightbox.hidden && lightboxRoot === root) return;
     root.dataset.paused = "0";
     restartTimer(root);
   }
 
-  function bindDrag(root, onSwipe) {
-    const track = root.querySelector("[data-track]") || root;
+  function bindDrag(surface, onSwipe, { onTap } = {}) {
     let startX = 0;
     let startY = 0;
     let dragging = false;
     let locked = null;
+    let moved = false;
 
-    const start = (clientX, clientY) => {
+    const begin = (clientX, clientY) => {
       startX = clientX;
       startY = clientY;
       dragging = true;
       locked = null;
-      pause(root);
+      moved = false;
     };
 
     const move = (clientX, clientY, event) => {
       if (!dragging) return;
       const dx = clientX - startX;
       const dy = clientY - startY;
+      if (!moved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) moved = true;
       if (locked === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
         locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
       }
-      if (locked === "x" && event) event.preventDefault();
+      if (locked === "x" && event && event.cancelable) event.preventDefault();
     };
 
-    const end = (clientX) => {
+    const finish = (clientX) => {
       if (!dragging) return;
       const dx = clientX - startX;
       dragging = false;
+      surface.classList.remove("is-dragging");
       if (locked === "x" && Math.abs(dx) >= SWIPE_THRESHOLD) {
         onSwipe(dx < 0 ? 1 : -1);
+      } else if (!moved && onTap) {
+        onTap();
       }
-      resume(root);
       locked = null;
     };
 
-    track.addEventListener(
+    surface.addEventListener(
       "touchstart",
       (event) => {
         if (event.touches.length !== 1) return;
-        start(event.touches[0].clientX, event.touches[0].clientY);
+        begin(event.touches[0].clientX, event.touches[0].clientY);
       },
       { passive: true }
     );
-    track.addEventListener(
+    surface.addEventListener(
       "touchmove",
       (event) => {
         if (event.touches.length !== 1) return;
@@ -104,34 +112,32 @@
       },
       { passive: false }
     );
-    track.addEventListener(
+    surface.addEventListener(
       "touchend",
       (event) => {
         const touch = event.changedTouches[0];
-        end(touch ? touch.clientX : startX);
+        finish(touch ? touch.clientX : startX);
       },
       { passive: true }
     );
 
-    track.addEventListener("pointerdown", (event) => {
+    surface.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "touch" || event.button !== 0) return;
-      track.setPointerCapture(event.pointerId);
-      start(event.clientX, event.clientY);
-      track.classList.add("is-dragging");
+      surface.setPointerCapture?.(event.pointerId);
+      begin(event.clientX, event.clientY);
+      surface.classList.add("is-dragging");
     });
-    track.addEventListener("pointermove", (event) => {
-      if (!dragging || event.pointerType === "touch") return;
+    surface.addEventListener("pointermove", (event) => {
+      if (event.pointerType === "touch") return;
       move(event.clientX, event.clientY);
     });
-    track.addEventListener("pointerup", (event) => {
+    surface.addEventListener("pointerup", (event) => {
       if (event.pointerType === "touch") return;
-      track.classList.remove("is-dragging");
-      end(event.clientX);
+      finish(event.clientX);
     });
-    track.addEventListener("pointercancel", () => {
-      track.classList.remove("is-dragging");
+    surface.addEventListener("pointercancel", () => {
       dragging = false;
-      resume(root);
+      surface.classList.remove("is-dragging");
     });
   }
 
@@ -206,57 +212,84 @@
     if (!lightbox || lightbox.hidden) return;
     lightbox.hidden = true;
     document.body.classList.remove("has-lightbox");
-    if (lightboxRoot) resume(lightboxRoot);
+    const root = lightboxRoot;
     lightboxRoot = null;
+    if (root) resume(root);
   }
 
   carousels.forEach((root) => {
     root.dataset.index = "0";
-    root.querySelector("[data-prev]")?.addEventListener("click", () => goTo(root, currentIndex(root) - 1));
-    root.querySelector("[data-next]")?.addEventListener("click", () => goTo(root, currentIndex(root) + 1));
+    root.dataset.paused = "0";
+
+    const prev = root.querySelector("[data-prev]");
+    const next = root.querySelector("[data-next]");
+    const step = (index) => {
+      root.dataset.paused = "0";
+      goTo(root, index);
+      // Blur controls so focus does not keep autoplay paused.
+      if (document.activeElement instanceof HTMLElement && root.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    };
+
+    prev?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      step(currentIndex(root) - 1);
+    });
+    next?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      step(currentIndex(root) + 1);
+    });
     root.querySelectorAll(".photo-carousel-dot").forEach((dot) => {
-      dot.addEventListener("click", () => goTo(root, Number(dot.dataset.index)));
+      dot.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        step(Number(dot.dataset.index));
+      });
     });
 
     const track = root.querySelector("[data-track]");
-    let pointerDownAt = null;
     let hoverTimer = null;
-    const canHover = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const finePointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-    track?.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 && event.pointerType !== "touch") return;
-      pointerDownAt = { x: event.clientX, y: event.clientY };
-      clearTimeout(hoverTimer);
-    });
-    track?.addEventListener("pointerup", (event) => {
-      if (!pointerDownAt) return;
-      const dx = Math.abs(event.clientX - pointerDownAt.x);
-      const dy = Math.abs(event.clientY - pointerDownAt.y);
-      pointerDownAt = null;
-      if (dx < 10 && dy < 10) openLightbox(root, currentIndex(root));
-    });
+    bindDrag(
+      track,
+      (dir) => {
+        clearTimeout(hoverTimer);
+        root.dataset.paused = "0";
+        goTo(root, currentIndex(root) + dir);
+      },
+      {
+        onTap: () => {
+          clearTimeout(hoverTimer);
+          openLightbox(root, currentIndex(root));
+        }
+      }
+    );
 
-    // Fullscreen on intentional hover over the photo (desktop). Arrows/dots are outside the track.
+    // Desktop: intentional hover over the photo opens fullscreen.
+    // Delay keeps arrow/dot clicks usable; phones use tap instead.
     track?.addEventListener("mouseenter", () => {
-      if (!canHover()) return;
+      if (!finePointer()) return;
       clearTimeout(hoverTimer);
-      hoverTimer = setTimeout(() => openLightbox(root, currentIndex(root)), 280);
+      hoverTimer = setTimeout(() => openLightbox(root, currentIndex(root)), 550);
     });
     track?.addEventListener("mouseleave", () => clearTimeout(hoverTimer));
+    track?.addEventListener("pointerdown", () => clearTimeout(hoverTimer));
 
-    root.addEventListener("focusin", () => pause(root));
-    root.addEventListener("focusout", () => {
-      if (lightbox?.hidden !== false) resume(root);
-    });
-
-    bindDrag(root, (dir) => goTo(root, currentIndex(root) + dir));
     restartTimer(root);
   });
 
   document.addEventListener("visibilitychange", () => {
     carousels.forEach((root) => {
-      if (document.hidden) clearInterval(root._timer);
-      else if (lightbox?.hidden !== false) restartTimer(root);
+      if (document.hidden) {
+        clearInterval(root._timer);
+        root._timer = null;
+      } else if (root.dataset.paused !== "1") {
+        restartTimer(root);
+      }
     });
   });
 })();
