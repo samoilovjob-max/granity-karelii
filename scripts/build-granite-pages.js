@@ -152,14 +152,21 @@ function imageRel(dir, id) {
   return "";
 }
 
-/** Photos in images/{dir}/{id}/01.webp … (sorted). Falls back to a single cover file. */
+function isPolishedName(name) {
+  return /polir|polish|polirov/i.test(name);
+}
+
+/** Photos in images/{dir}/{id}/. Polished finish always comes first on catalog cards and in the carousel. */
 function imageGallery(dir, id) {
   const folder = path.join(root, "images", dir, id);
   if (fs.existsSync(folder) && fs.statSync(folder).isDirectory()) {
     const files = fs
       .readdirSync(folder)
       .filter((name) => /\.(webp|jpe?g|png)$/i.test(name))
-      .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+      .sort((a, b) => {
+        const polished = Number(isPolishedName(b)) - Number(isPolishedName(a));
+        return polished || a.localeCompare(b, "en", { numeric: true });
+      });
     if (files.length) return files.map((name) => `images/${dir}/${id}/${name}`);
   }
   const single = imageRel(dir, id);
