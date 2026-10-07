@@ -399,7 +399,7 @@ select {
 
 .footer-col {
   min-width: 0;
-  line-height: 1.5;
+  line-height: 2;
 }
 
 .footer-id {
@@ -426,7 +426,7 @@ select {
   gap: 0;
   color: var(--color-muted);
   font-size: 0.9rem; /* как .site-footer p */
-  line-height: 1.5;
+  line-height: 2;
 }
 
 .footer-inn {
@@ -466,7 +466,7 @@ select {
   text-decoration: underline;
   text-underline-offset: 0.15em;
   overflow-wrap: anywhere;
-  line-height: 1.5;
+  line-height: 2;
 }
 
 .site-footer p {
@@ -486,7 +486,7 @@ select {
   color: var(--brand-primary);
   text-decoration: underline;
   text-underline-offset: 0.15em;
-  line-height: 1.5;
+  line-height: 2;
 }
 
 .consent-note {
