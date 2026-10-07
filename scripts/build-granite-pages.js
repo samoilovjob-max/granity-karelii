@@ -80,7 +80,7 @@ function consentNote(prefix) {
 function footer(prefix, note = "18 пород · калькулятор массы") {
   return `<footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-id">
+      <div class="footer-col footer-id">
         <a class="brand" href="${prefix}index.html" aria-label="Граниты Карелии">
           <img src="${prefix}images/brand/logo-gk-transparent.svg" alt="" width="36" height="36" />
           <span>Граниты Карелии</span>
@@ -89,6 +89,10 @@ function footer(prefix, note = "18 пород · калькулятор масс
           <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
           <li class="footer-copy">© 2014 Граниты Карелии</li>
           <li><a href="${prefix}produkciya.html">Производство изделий из гранита</a></li>
+        </ul>
+      </div>
+      <div class="footer-col footer-mid">
+        <ul class="footer-contacts">
           <li class="footer-phone">
             <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
@@ -99,10 +103,10 @@ function footer(prefix, note = "18 пород · калькулятор масс
             </span>
           </li>
           <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>
+          <li class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></li>
         </ul>
-        <p class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></p>
       </div>
-      <p>${note}</p>
+      <p class="footer-note">${note}</p>
     </div>
   </footer>
   <script src="${prefix}js/nav.js"></script>
