@@ -114,7 +114,7 @@ function seoBlock() {
     <h2>Продвижение в поиске</h2>
     <p class="hint">Так строка выглядит в Яндексе. Она обновляется сразу и может отличаться от заголовка на странице.</p>
     <article class="snippet" aria-label="Как страница выглядит в поиске">
-      <p class="snippet-url"><img src="/images/brand/favicon-32.png" alt="" width="16" height="16" /><span id="snippetUrl">${escapeHtml(displayUrl(seo.url))}</span></p>
+      <p class="snippet-url"><img src="/images/brand/logo-gk-transparent.svg" alt="" width="16" height="16" /><span id="snippetUrl">${escapeHtml(displayUrl(seo.url))}</span></p>
       <p class="snippet-title" id="snippetTitle">${escapeHtml(seo.title)}</p>
       <p class="snippet-text" id="snippetText">${escapeHtml(seo.description)}</p>
     </article>
