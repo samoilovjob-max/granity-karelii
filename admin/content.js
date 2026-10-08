@@ -74,8 +74,6 @@ const HAND = {
       ]},
       { title: "Дальше", fields: [
         { id: "home.steps.title", label: "Шаги" },
-        { id: "home.docs.title", label: "Документы" },
-        { id: "home.docs.p", label: "Документы, текст", type: "textarea" },
         { id: "home.faq.title", label: "Вопросы" },
         { id: "home.cta.title", label: "Заявка" },
         { id: "home.cta.p", label: "Заявка, текст", type: "textarea" }
