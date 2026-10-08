@@ -2038,6 +2038,7 @@ ul.stone-links {
 .home-photo-placeholder {
   display: block;
   width: 100%;
+  height: auto; /* атрибуты width/height не растягивают кадр */
   aspect-ratio: 3 / 2; /* как .gallery-grid img */
   object-fit: cover;
 }
