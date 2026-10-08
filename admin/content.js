@@ -58,11 +58,7 @@ const HAND = {
         { id: "home.why5.title", label: "Факт 5" },
         { id: "home.why5.text", label: "Факт 5, текст", type: "textarea" },
         { id: "home.why6.title", label: "Факт 6" },
-        { id: "home.why6.text", label: "Факт 6, текст", type: "textarea" },
-        { id: "home.why7.title", label: "Факт 7" },
-        { id: "home.why7.text", label: "Факт 7, текст", type: "textarea" },
-        { id: "home.why8.title", label: "Факт 8" },
-        { id: "home.why8.text", label: "Факт 8, текст", type: "textarea" }
+        { id: "home.why6.text", label: "Факт 6, текст", type: "textarea" }
       ]},
       { title: "Цифры", fields: [
         { id: "home.stats.title", label: "Цифры" },
