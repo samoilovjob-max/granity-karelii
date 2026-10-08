@@ -64,24 +64,7 @@ const HAND = {
         { id: "home.why8.title", label: "Факт 8" },
         { id: "home.why8.text", label: "Факт 8, текст", type: "textarea" }
       ]},
-      { title: "Условия", fields: [
-        { id: "home.terms.title", label: "Заголовок" },
-        { id: "home.term1.title", label: "Минимальная партия" },
-        { id: "home.term1.text", label: "Минимальная партия, текст", type: "textarea" },
-        { id: "home.term2.title", label: "Прайс" },
-        { id: "home.term2.text", label: "Прайс, текст", type: "textarea" },
-        { id: "home.term3.title", label: "Объём" },
-        { id: "home.term3.text", label: "Объём, текст", type: "textarea" },
-        { id: "home.term4.title", label: "Договор" },
-        { id: "home.term4.text", label: "Договор, текст", type: "textarea" }
-      ]},
-      { title: "Логистика и цифры", fields: [
-        { id: "home.logistics.title", label: "Логистика" },
-        { id: "home.logistics.p", label: "Логистика, текст", type: "textarea" },
-        { id: "home.own.title", label: "Ваш транспорт" },
-        { id: "home.own.p", label: "Ваш транспорт, текст", type: "textarea" },
-        { id: "home.ours.title", label: "Наша логистика" },
-        { id: "home.ours.p", label: "Наша логистика, текст", type: "textarea" },
+      { title: "Цифры", fields: [
         { id: "home.stats.title", label: "Цифры" },
         { id: "home.stat1.value", label: "Лет" },
         { id: "home.stat1.label", label: "Лет, подпись" },
