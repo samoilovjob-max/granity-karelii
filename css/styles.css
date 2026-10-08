@@ -1028,11 +1028,23 @@ body.has-lightbox {
   text-underline-offset: 0.15em;
 }
 
-.stone-grid,
 .perk-grid {
   display: grid;
   gap: 0.9rem;
   grid-template-columns: 1fr;
+}
+
+.stone-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* неполный ряд пород и продукции по центру */
+  gap: 0.9rem;
+}
+
+.stone-grid > .stone-card {
+  flex: 1 1 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .stone-card {
@@ -1113,15 +1125,20 @@ body.has-lightbox {
     grid-row: 1 / span 2;
   }
 
-  .stone-grid,
   .perk-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .stone-grid > .stone-card {
+    flex-basis: calc((100% - 0.9rem) / 2); /* одна щель gap .stone-grid */
+    max-width: calc((100% - 0.9rem) / 2);
   }
 }
 
 @media (min-width: 1200px) {
-  .stone-grid {
-    grid-template-columns: repeat(4, 1fr);
+  .stone-grid > .stone-card {
+    flex-basis: calc((100% - 2.7rem) / 4); /* три щели по 0.9rem, как gap .stone-grid */
+    max-width: calc((100% - 2.7rem) / 4);
   }
 
   .perk-grid {
@@ -1550,6 +1567,7 @@ body.has-lightbox {
 
 /* Каталог продукции использует ту же .stone-grid, что и «Виды гранитов»:
    1 колонка, 2 колонки с 768px, 4 колонки с 1200px.
+   Неполный последний ряд центрируется через justify-content.
    Отдельного правила на 480px у сетки пород нет — до 768px остаётся одна колонка. */
 
 .product-block > h2 {
