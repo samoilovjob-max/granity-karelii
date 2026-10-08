@@ -2137,6 +2137,11 @@ ul.stone-links {
   .home-stats {
     grid-template-columns: 1fr 1fr 1fr;
   }
+
+  .supply .home-faq {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
 }
 
 @media (min-width: 1200px) {
