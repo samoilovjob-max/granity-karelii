@@ -43,9 +43,9 @@
       <h1 data-edit="contacts.h1">Как с нами связаться</h1>
       <p class="lead" data-edit="contacts.lead">Заявку отправляйте на info@granit-karel.ru.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="mailto:info@granit-karel.ru?subject=%D0%97%D0%B0%D1%8F%D0%B2%D0%BA%D0%B0">Оставить заявку</a>
+        <a class="btn btn-primary js-lead" href="#zayavka">Оставить заявку</a>
       </div>
-      <p class="consent-note">Письмо уйдёт из вашей почтовой программы и на сайте не сохранится. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
+      <p class="consent-note">Заявка уходит на почту производства и на сайте не сохраняется. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
       <p class="tool-links"><a href="postavka-granita-petrozavodsk-kareliya.html">Поставка гранита оптом</a></p>
     </section>
 
@@ -151,6 +151,7 @@
   </footer>
 
   <script src="js/nav.js"></script>
+  <script src="js/lead.js"></script>
   <script>
     document.querySelectorAll(".requisites").forEach((block) => {
       ["selectstart", "copy", "cut", "dragstart"].forEach((eventName) => {

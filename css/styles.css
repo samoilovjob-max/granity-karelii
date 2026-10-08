@@ -446,15 +446,18 @@ select {
 }
 
 .footer-contacts .footer-apps a {
-  min-width: 0;
-  padding: 0 0.1rem;
+  min-width: 44px; /* как .location-apps a */
+  min-height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   text-decoration: none;
 }
 
 .footer-apps img {
-  width: 1.15em; /* чуть больше кегля номера: .footer-contacts 0.9rem */
-  height: 1.15em;
+  width: 1.5rem; /* 24px при корне 16px: компактная иконка внутри зоны 44px */
+  height: 1.5rem;
   object-fit: contain;
 }
 
@@ -2189,5 +2192,179 @@ ul.stone-links {
     grid-column: auto;
     width: auto;
     justify-self: stretch;
+  }
+}
+
+/* Заявка, производственная база, шкала машины. Цвета и радиус — из :root. */
+.lead-form {
+  display: grid;
+  gap: 0.8rem; /* как .calc-grid */
+  margin-top: 0.9rem;
+}
+
+.lead-form textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 7rem;
+  border: 1px solid var(--border); /* как .home .calc-form textarea */
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  resize: vertical;
+}
+
+.lead-form input[type="checkbox"] {
+  width: 1.15rem;
+  min-width: 1.15rem;
+  min-height: 1.15rem;
+  padding: 0;
+}
+
+.lead-form .lead-consent {
+  display: flex; /* перекрывает grid у .calc-form label */
+  align-items: flex-start;
+  gap: 0.65rem; /* как .hero-actions */
+  min-height: 44px;
+  color: var(--color-text);
+  font-size: 0.92rem; /* как .stone-card p */
+}
+
+.lead-consent a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lead-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.lead-status {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 0.92rem; /* как .calc-note */
+}
+
+.lead-status.is-ok {
+  color: var(--success);
+}
+
+.lead-status.is-err {
+  color: var(--color-accent); /* как .pave-error */
+}
+
+.lead-status a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lead-dialog {
+  width: min(36rem, calc(100% - 2rem)); /* как .consent-note */
+  max-height: calc(100% - 2rem);
+  margin: auto;
+  padding: 1rem; /* как .cta-band */
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+}
+
+.lead-dialog::backdrop {
+  background: rgba(37, 42, 44, 0.45);
+}
+
+.lead-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lead-dialog-head .supply-title {
+  margin: 0;
+}
+
+.home-plant {
+  display: grid;
+  gap: 0.9rem; /* как .home-grid */
+  min-width: 0;
+}
+
+.home-plant figure {
+  min-width: 0;
+  margin: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  overflow: hidden;
+}
+
+.home-plant img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2; /* как .home-photo img */
+  object-fit: cover;
+  background: var(--brand-primary);
+}
+
+.home-plant figcaption {
+  padding: 0.7rem 0.9rem 0.85rem; /* как .stone-photo figcaption */
+  color: var(--color-text);
+  font-size: 0.92rem; /* как .stone-card p */
+  overflow-wrap: anywhere;
+}
+
+.home-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem; /* как .hero-actions */
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-badges li {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--brand-primary);
+  font-size: 0.86rem; /* как .calc-note */
+  font-weight: 600;
+}
+
+.truck-load {
+  margin-top: 0.9rem;
+}
+
+.truck-load .supply-meter-track span {
+  width: 0;
+}
+
+@media (max-width: 479px) {
+  .lead-form .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-plant {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .home-plant {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

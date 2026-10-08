@@ -62,11 +62,29 @@
     itemMass.textContent = formatMass(mass);
   };
 
+  const truckNow = document.getElementById("truckNow");
+  const truckLeft = document.getElementById("truckLeft");
+  const truckFill = document.getElementById("truckFill");
+  const truckMeter = document.getElementById("truckMeter");
+  const TRUCK_TONS = 20;
+
+  const updateTruck = (massKg) => {
+    if (!truckNow || !truckLeft || !truckFill || !truckMeter) return;
+    const tons = massKg / 1000;
+    const left = Math.max(0, TRUCK_TONS - tons);
+    truckNow.textContent = tons.toFixed(1);
+    truckLeft.textContent = left.toFixed(1);
+    const share = Math.min(tons / TRUCK_TONS, 1);
+    truckFill.style.width = `${share * 100}%`;
+    truckMeter.setAttribute("aria-valuenow", tons.toFixed(1));
+  };
+
   const renderItems = () => {
     if (!items.length) {
       itemsBody.innerHTML = '<tr class="empty-row"><td colspan="6">Позиций пока нет — добавьте изделие</td></tr>';
       totalVolume.textContent = "0";
       totalMass.textContent = "0";
+      updateTruck(0);
       return;
     }
 
@@ -95,6 +113,7 @@
 
     totalVolume.textContent = formatVolume(totals.volume);
     totalMass.textContent = formatMass(totals.mass);
+    updateTruck(totals.mass);
   };
 
   stoneSelect.addEventListener("change", updatePreview);

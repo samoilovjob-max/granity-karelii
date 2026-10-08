@@ -75,7 +75,7 @@ function nav(prefix, active) {
 }
 
 function consentNote(prefix) {
-  return `<p class="consent-note">Письмо уйдёт из вашей почтовой программы и на сайте не сохранится. Отправляя заявку, вы соглашаетесь на <a href="${prefix}politika.html">обработку персональных данных</a>.</p>`;
+  return `<p class="consent-note">Заявка уходит на почту производства и на сайте не сохраняется. Отправляя заявку, вы соглашаетесь на <a href="${prefix}politika.html">обработку персональных данных</a>.</p>`;
 }
 
 function footer(prefix, note = "18 пород · калькулятор массы") {
@@ -111,7 +111,8 @@ function footer(prefix, note = "18 пород · калькулятор масс
     </div>
   </footer>
   <script src="${prefix}js/nav.js"></script>
-  <script src="${prefix}js/carousel.js"></script>`;
+  <script src="${prefix}js/carousel.js"></script>
+  <script src="${prefix}js/lead.js"></script>`;
 }
 
 function keywordTag(keywords) {
@@ -294,7 +295,7 @@ function stonePage(stone, index) {
         ${article.lead.map((paragraph, leadIndex) => `<p class="lead" data-edit="stone.${stone.id}.lead.${leadIndex}">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
           <a class="btn btn-primary" href="../kalkulyator-massy-granita.html">Рассчитать массу</a>
-          <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(stone.name)}">Оставить заявку</a>
+          <a class="btn btn-ghost js-lead" href="#zayavka" data-lead-topic="${esc(stone.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
       </div>
@@ -471,7 +472,7 @@ function productPage(product, siblings) {
           ${product.id === "bruschatka"
             ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Калькулятор брусчатки</a>`
             : `<a class="btn btn-primary" href="../kalkulyator-massy-granita.html">Рассчитать массу</a>`}
-          <a class="btn btn-ghost" href="mailto:${esc(site.email)}?subject=${encodeURIComponent(product.name)}">Оставить заявку</a>
+          <a class="btn btn-ghost js-lead" href="#zayavka" data-lead-topic="${esc(product.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
       </div>
