@@ -17,6 +17,89 @@ const paths = {
 };
 
 const HAND = {
+  home: {
+    title: "Главная",
+    group: "Страницы",
+    file: "index.html",
+    groups: [
+      { title: "Шапка", open: true, fields: [
+        { id: "home.h1", label: "Заголовок" },
+        { id: "home.lead", label: "Вступление", type: "textarea" }
+      ]},
+      { title: "Кому поставляем", fields: [
+        { id: "home.segments.title", label: "Заголовок" },
+        { id: "home.seg1.title", label: "Сегмент 1" },
+        { id: "home.seg1.text", label: "Сегмент 1, текст", type: "textarea" },
+        { id: "home.seg2.title", label: "Сегмент 2" },
+        { id: "home.seg2.text", label: "Сегмент 2, текст", type: "textarea" },
+        { id: "home.seg3.title", label: "Сегмент 3" },
+        { id: "home.seg3.text", label: "Сегмент 3, текст", type: "textarea" },
+        { id: "home.seg4.title", label: "Сегмент 4" },
+        { id: "home.seg4.text", label: "Сегмент 4, текст", type: "textarea" },
+        { id: "home.seg5.title", label: "Сегмент 5" },
+        { id: "home.seg5.text", label: "Сегмент 5, текст", type: "textarea" }
+      ]},
+      { title: "Что поставляем", fields: [
+        { id: "home.offer.title", label: "Заголовок" },
+        { id: "home.offer1.title", label: "Блок 1" },
+        { id: "home.offer2.title", label: "Блок 2" },
+        { id: "home.offer3.title", label: "Блок 3" }
+      ]},
+      { title: "Почему мы", fields: [
+        { id: "home.why.title", label: "Заголовок" },
+        { id: "home.why1.title", label: "Факт 1" },
+        { id: "home.why1.text", label: "Факт 1, текст", type: "textarea" },
+        { id: "home.why2.title", label: "Факт 2" },
+        { id: "home.why2.text", label: "Факт 2, текст", type: "textarea" },
+        { id: "home.why3.title", label: "Факт 3" },
+        { id: "home.why3.text", label: "Факт 3, текст", type: "textarea" },
+        { id: "home.why4.title", label: "Факт 4" },
+        { id: "home.why4.text", label: "Факт 4, текст", type: "textarea" },
+        { id: "home.why5.title", label: "Факт 5" },
+        { id: "home.why5.text", label: "Факт 5, текст", type: "textarea" },
+        { id: "home.why6.title", label: "Факт 6" },
+        { id: "home.why6.text", label: "Факт 6, текст", type: "textarea" }
+      ]},
+      { title: "Условия", fields: [
+        { id: "home.terms.title", label: "Заголовок" },
+        { id: "home.term1.title", label: "Минимальная партия" },
+        { id: "home.term1.text", label: "Минимальная партия, текст", type: "textarea" },
+        { id: "home.term2.title", label: "Прайс" },
+        { id: "home.term2.text", label: "Прайс, текст", type: "textarea" },
+        { id: "home.term3.title", label: "Объём" },
+        { id: "home.term3.text", label: "Объём, текст", type: "textarea" },
+        { id: "home.term4.title", label: "Договор" },
+        { id: "home.term4.text", label: "Договор, текст", type: "textarea" },
+        { id: "home.term5.title", label: "Отсрочка" },
+        { id: "home.term5.text", label: "Отсрочка, текст", type: "textarea" }
+      ]},
+      { title: "Логистика и цифры", fields: [
+        { id: "home.logistics.title", label: "Логистика" },
+        { id: "home.logistics.p", label: "Логистика, текст", type: "textarea" },
+        { id: "home.own.title", label: "Ваш транспорт" },
+        { id: "home.own.p", label: "Ваш транспорт, текст", type: "textarea" },
+        { id: "home.ours.title", label: "Наша логистика" },
+        { id: "home.ours.p", label: "Наша логистика, текст", type: "textarea" },
+        { id: "home.stats.title", label: "Цифры" },
+        { id: "home.stat1.value", label: "Лет" },
+        { id: "home.stat1.label", label: "Лет, подпись" },
+        { id: "home.stat2.value", label: "Тонны" },
+        { id: "home.stat2.label", label: "Тонны, подпись" },
+        { id: "home.stat3.value", label: "Регионы" },
+        { id: "home.stat3.label", label: "Регионы, подпись" },
+        { id: "home.stat4.value", label: "Партнёры" },
+        { id: "home.stat4.label", label: "Партнёры, подпись" }
+      ]},
+      { title: "Дальше", fields: [
+        { id: "home.steps.title", label: "Шаги" },
+        { id: "home.docs.title", label: "Документы" },
+        { id: "home.docs.p", label: "Документы, текст", type: "textarea" },
+        { id: "home.faq.title", label: "Вопросы" },
+        { id: "home.cta.title", label: "Заявка" },
+        { id: "home.cta.p", label: "Заявка, текст", type: "textarea" }
+      ]}
+    ]
+  },
   about: {
     title: "О компании",
     group: "Страницы",
@@ -743,6 +826,7 @@ function listPages() {
     return rank[a.category] - rank[b.category] || a.order - b.order;
   });
   return [
+    { id: "home", title: "Главная", group: "Страницы" },
     { id: "about", title: "О компании", group: "Страницы" },
     { id: "contacts", title: "Контакты", group: "Страницы" },
     { id: "gallery", title: "Галерея", group: "Страницы" },

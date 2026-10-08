@@ -1981,3 +1981,178 @@ ul.stone-links {
     grid-template-columns: 1fr 1fr; /* не 4 колонки .perk-grid */
   }
 }
+
+/* Главная. Переменные только из :root.
+   Отдельных --font-size-* нет: h1 как .page-intro h1, h2 как .stone-section h2,
+   карточки как .stone-card h2 (1.15rem), подписи как .eyebrow.
+   Новых шрифтов, цветов и теней нет. Точки 480 / 768 / 1200 — как у калькулятора брусчатки. */
+.home-hero {
+  display: grid;
+  gap: 1.25rem; /* как .calc-shell */
+  min-width: 0;
+}
+
+.home-hero-copy {
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.home-hero-copy .hero-actions {
+  margin-top: 1.1rem; /* как .hero-actions */
+}
+
+.home .calc-form {
+  min-width: 0;
+}
+
+.home .calc-form textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 7rem;
+  border: 1px solid var(--border); /* как .calc-form input */
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  resize: vertical;
+}
+
+.home input:focus-visible,
+.home textarea:focus-visible {
+  outline: 2px solid var(--color-accent); /* как a:focus-visible */
+  outline-offset: 3px;
+}
+
+.home-photo {
+  margin: 0;
+  min-width: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px); /* как .gallery-grid figure */
+  overflow: hidden;
+}
+
+.home-photo img,
+.home-photo-placeholder {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2; /* как .gallery-grid img */
+  object-fit: cover;
+}
+
+.home-photo-placeholder {
+  background: var(--brand-primary);
+}
+
+.home-grid,
+.home-faq {
+  display: grid;
+  gap: 0.9rem; /* как .perk-grid */
+  min-width: 0;
+}
+
+.home-grid > *,
+.home-faq > * {
+  min-width: 0;
+}
+
+.home-card {
+  min-width: 0;
+  padding: 1rem; /* как .cta-band */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+}
+
+.home-card h3,
+.home-stat strong {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-heading);
+  font-size: 1.15rem; /* как .stone-card h2 */
+  letter-spacing: -0.02em;
+  color: var(--brand-dark);
+  overflow-wrap: anywhere;
+}
+
+.home-card p,
+.home-stat span {
+  margin: 0;
+  color: var(--color-muted); /* как .perk-grid p */
+  font-size: 0.92rem; /* как .stone-card p */
+  overflow-wrap: anywhere;
+}
+
+.home-card .points {
+  margin-top: 0.75rem;
+}
+
+.home-stat strong {
+  display: block;
+  font-family: var(--font-technical);
+  color: var(--brand-primary);
+}
+
+.home-faq .fold + .fold {
+  margin-top: 0;
+}
+
+.home [id] {
+  scroll-margin-top: calc(var(--header-h) + 0.5rem); /* как #massa */
+}
+
+.home .cta-band .consent-note,
+.home .calc-form .consent-note {
+  margin: 1.25rem 0 0; /* родительские p обнуляют верхний отступ */
+}
+
+@media (max-width: 479px) {
+  .home .hero-actions .btn,
+  .home .calc-form .btn,
+  .home .cta-band .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    grid-template-areas:
+      "copy photo"
+      "form photo";
+    align-items: start;
+  }
+
+  .home-hero-copy { grid-area: copy; }
+  .home-hero-form { grid-area: form; }
+  .home-hero-photo { grid-area: photo; }
+
+  .home-grid-2,
+  .home-segments,
+  .home-why,
+  .home-terms,
+  .home-steps,
+  .home-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .home-segments,
+  .home-offer,
+  .home-why,
+  .home-terms,
+  .home-steps {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .home-stats {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  .home-faq {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
