@@ -24,7 +24,8 @@ const HAND = {
     groups: [
       { title: "Шапка", open: true, fields: [
         { id: "home.h1", label: "Заголовок" },
-        { id: "home.lead", label: "Вступление", type: "textarea" }
+        { id: "home.lead", label: "Вступление", type: "textarea" },
+        { id: "home.lead2", label: "Вступление, второй абзац", type: "textarea" }
       ]},
       { title: "Кому поставляем", fields: [
         { id: "home.segments.title", label: "Заголовок" },
