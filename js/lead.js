@@ -45,10 +45,10 @@
       <input type="text" name="botcheck" tabindex="-1" autocomplete="off" />
     </label>
     <input type="hidden" name="subject" value="Заявка на партию" />
-    <label class="lead-consent">
-      <input type="checkbox" name="consent" required />
-      <span>Соглашаюсь на <a href="${policyHref()}">обработку персональных данных</a>.</span>
-    </label>
+    <div class="form-agreement">
+      <input type="checkbox" id="agreement" name="agreement" required checked />
+      <label for="agreement">Нажимая кнопку, я даю согласие на <a href="${policyHref()}" target="_blank" rel="noopener noreferrer">обработку персональных данных</a> и соглашаюсь с Политикой конфиденциальности.</label>
+    </div>
     <p class="lead-status" role="status" aria-live="polite"></p>
     <button class="btn btn-primary" type="submit">Отправить заявку</button>
   `;

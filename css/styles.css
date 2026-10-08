@@ -2241,19 +2241,70 @@ ul.stone-links {
   padding: 0;
 }
 
-.lead-form .lead-consent {
-  display: flex; /* перекрывает grid у .calc-form label */
+.lead-form .form-agreement {
+  display: flex;
   align-items: flex-start;
   gap: 0.65rem; /* как .hero-actions */
   min-height: 44px;
+}
+
+.lead-form .form-agreement label {
+  display: block; /* не колонка .calc-form label: чекбокс стоит рядом */
+  margin: 0;
   color: var(--color-text);
   font-size: 0.92rem; /* как .stone-card p */
 }
 
-.lead-consent a {
+.form-agreement a {
   color: var(--brand-primary);
   text-decoration: underline;
   text-underline-offset: 0.15em;
+}
+
+.privacy-content {
+  max-width: 46rem; /* как .about-block > p */
+  margin-inline: auto;
+  line-height: 1.5; /* как body */
+}
+
+.privacy-content h1 {
+  margin: 0 0 0.7rem; /* как .page-intro h1 */
+  font-family: var(--font-main);
+  font-size: clamp(1.8rem, 4vw, 2.6rem); /* как .page-intro h1 */
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1; /* как .page-intro h1 */
+  color: var(--brand-dark);
+}
+
+.privacy-content h2 {
+  margin: 2rem 0 0.55rem; /* верх как .about-block, низ как .about-block h2 */
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem); /* как .about-block h2 */
+  letter-spacing: -0.03em;
+  line-height: 1.2; /* как .about-block h2 */
+  color: var(--brand-dark);
+}
+
+.privacy-content p,
+.privacy-content li {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.privacy-content p + p,
+.privacy-content ul + p,
+.privacy-content p + ul {
+  margin-top: 0.75rem; /* как .about-block > p + p */
+}
+
+.privacy-content ul {
+  margin-top: 0.75rem;
+  padding-left: 1.6rem; /* как .fold ul */
+}
+
+.privacy-content li + li {
+  margin-top: 0.35rem;
 }
 
 .lead-hp {

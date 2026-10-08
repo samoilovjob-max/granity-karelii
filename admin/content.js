@@ -136,30 +136,52 @@ const HAND = {
     group: "Страницы",
     file: "politika.html",
     groups: [
-      { title: "Шапка", open: true, fields: [
-        { id: "policy.h1", label: "Заголовок" },
-        { id: "policy.lead", label: "Вступление", type: "textarea" }
+      { title: "Заголовок", open: true, fields: [
+        { id: "policy.h1", label: "Заголовок" }
       ]},
-      { title: "Кто получает данные", fields: [
-        { id: "policy.who.title", label: "Заголовок блока" },
-        { id: "policy.who.operator", label: "Оператор", type: "textarea" },
-        { id: "policy.who.address", label: "Почтовый адрес", type: "textarea" }
+      { title: "1. Общие положения", fields: [
+        { id: "policy.s1.title", label: "Заголовок" },
+        { id: "policy.s1.p1", label: "1.1", type: "textarea" },
+        { id: "policy.s1.p2", label: "1.2", type: "textarea" },
+        { id: "policy.s1.p3", label: "1.3", type: "textarea" }
       ]},
-      { title: "Какие данные и зачем", fields: [
-        { id: "policy.what.title", label: "Заголовок блока" },
-        { id: "policy.what.p1", label: "Абзац 1", type: "textarea" },
-        { id: "policy.what.p2", label: "Абзац 2", type: "textarea" },
-        { id: "policy.what.p3", label: "Абзац 3", type: "textarea" }
+      { title: "2. Состав данных", fields: [
+        { id: "policy.s2.title", label: "Заголовок" },
+        { id: "policy.s2.p1", label: "2.1", type: "textarea" },
+        { id: "policy.s2.li1", label: "Имя", type: "textarea" },
+        { id: "policy.s2.li2", label: "Телефон", type: "textarea" },
+        { id: "policy.s2.li3", label: "Город", type: "textarea" },
+        { id: "policy.s2.li4", label: "Текст заявки", type: "textarea" },
+        { id: "policy.s2.p2", label: "2.2", type: "textarea" }
       ]},
-      { title: "Где это хранится", fields: [
-        { id: "policy.store.title", label: "Заголовок блока" },
-        { id: "policy.store.p1", label: "Абзац 1", type: "textarea" },
-        { id: "policy.store.p2", label: "Абзац 2", type: "textarea" }
+      { title: "3. Цели", fields: [
+        { id: "policy.s3.title", label: "Заголовок" },
+        { id: "policy.s3.p1", label: "3.1", type: "textarea" },
+        { id: "policy.s3.li1", label: "Заявки", type: "textarea" },
+        { id: "policy.s3.li2", label: "Расчёт", type: "textarea" },
+        { id: "policy.s3.li3", label: "Связь", type: "textarea" },
+        { id: "policy.s3.li4", label: "Предложения", type: "textarea" }
       ]},
-      { title: "Ваши права", fields: [
-        { id: "policy.rights.title", label: "Заголовок блока" },
-        { id: "policy.rights.p1", label: "Абзац 1", type: "textarea" },
-        { id: "policy.rights.p2", label: "Абзац 2", type: "textarea" }
+      { title: "4. Основания и сроки", fields: [
+        { id: "policy.s4.title", label: "Заголовок" },
+        { id: "policy.s4.p1", label: "4.1", type: "textarea" },
+        { id: "policy.s4.p2", label: "4.2", type: "textarea" }
+      ]},
+      { title: "5. Передача и безопасность", fields: [
+        { id: "policy.s5.title", label: "Заголовок" },
+        { id: "policy.s5.p1", label: "5.1", type: "textarea" },
+        { id: "policy.s5.li1", label: "Сервисы", type: "textarea" },
+        { id: "policy.s5.li2", label: "Логистика", type: "textarea" },
+        { id: "policy.s5.li3", label: "Госорганы", type: "textarea" },
+        { id: "policy.s5.p2", label: "5.2", type: "textarea" }
+      ]},
+      { title: "6. Права", fields: [
+        { id: "policy.s6.title", label: "Заголовок" },
+        { id: "policy.s6.p1", label: "6.1", type: "textarea" }
+      ]},
+      { title: "7. Изменение политики", fields: [
+        { id: "policy.s7.title", label: "Заголовок" },
+        { id: "policy.s7.p1", label: "7.1", type: "textarea" }
       ]}
     ]
   },
