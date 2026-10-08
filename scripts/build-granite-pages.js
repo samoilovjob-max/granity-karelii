@@ -9,6 +9,7 @@ const gallery = require("../data/gallery.json");
 const pagesCopy = require("../data/pages.json");
 const seoDefaults = require("../data/seo-defaults.json");
 const productOverrides = require("../data/product-overrides.json");
+const { imageGallery } = require("./image-gallery");
 
 products.forEach((product) => {
   const extra = productOverrides[product.id];
@@ -144,33 +145,6 @@ function head(prefix, title, description, extra = "", keywords = []) {
   <link rel="stylesheet" href="${prefix}css/styles.css" />
 </head>
 <body>`;
-}
-
-function imageRel(dir, id) {
-  if (fs.existsSync(path.join(root, "images", dir, `${id}.webp`))) return `images/${dir}/${id}.webp`;
-  if (fs.existsSync(path.join(root, "images", dir, `${id}.jpg`))) return `images/${dir}/${id}.jpg`;
-  return "";
-}
-
-function isPolishedName(name) {
-  return /polir|polish|polirov/i.test(name);
-}
-
-/** Photos in images/{dir}/{id}/. Polished finish always comes first on catalog cards and in the carousel. */
-function imageGallery(dir, id) {
-  const folder = path.join(root, "images", dir, id);
-  if (fs.existsSync(folder) && fs.statSync(folder).isDirectory()) {
-    const files = fs
-      .readdirSync(folder)
-      .filter((name) => /\.(webp|jpe?g|png)$/i.test(name))
-      .sort((a, b) => {
-        const polished = Number(isPolishedName(b)) - Number(isPolishedName(a));
-        return polished || a.localeCompare(b, "en", { numeric: true });
-      });
-    if (files.length) return files.map((name) => `images/${dir}/${id}/${name}`);
-  }
-  const single = imageRel(dir, id);
-  return single ? [single] : [];
 }
 
 function photoCarousel(rels, prefix, name, photoKey, compact) {
@@ -380,12 +354,15 @@ function catalogPage() {
 
 function productPhoto(product, prefix, compact) {
   const stone = stoneById[product.granites[0]];
-  const rel = imageRel("products", product.id);
   const photoKey = `product.${product.id}.photo`;
-  if (rel) {
+  const shots = imageGallery("products", product.id);
+  if (shots.length > 1 && !compact) {
+    return photoCarousel(shots, prefix, product.name, photoKey, compact);
+  }
+  if (shots.length) {
     const caption = compact ? "" : `<figcaption>${esc(product.name)}</figcaption>`;
     return `<figure class="stone-photo" data-photo="${photoKey}">
-        <img src="${prefix}${rel}" alt="${esc(product.name)}" loading="lazy" />
+        <img src="${prefix}${shots[0]}" alt="${esc(product.name)}" loading="lazy" />
         ${caption}
       </figure>`;
   }

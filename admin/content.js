@@ -617,11 +617,9 @@ function stoneGroups(stone, article) {
 }
 
 function photoInfo(dir, id, key) {
-  const webp = path.join(root, "images", dir, `${id}.webp`);
-  const jpg = path.join(root, "images", dir, `${id}.jpg`);
-  if (fs.existsSync(webp)) return { key, url: `/images/${dir}/${id}.webp` };
-  if (fs.existsSync(jpg)) return { key, url: `/images/${dir}/${id}.jpg` };
-  return { key, url: "" };
+  const { imageGallery } = require("../scripts/image-gallery");
+  const shots = imageGallery(dir, id);
+  return { key, url: shots[0] ? `/${shots[0]}` : "" };
 }
 
 function getPage(id) {
