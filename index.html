@@ -142,25 +142,10 @@
         <h1 id="home-title" data-edit="home.h1">Гранит оптом из Карелии — памятники, изделия, стройматериалы от производителя</h1>
         <p class="lead" data-edit="home.lead">Цех в Петрозаводске. Гранит оптом: памятники, изделия из гранита и строительные материалы. Для оптовых компаний, перепродавцов, ритуальных фирм, мастерских и строительных предприятий. Цена от производителя, партия под машину, доставка по РФ и ЕАЭС.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#opt-price">Получить оптовый прайс</a>
-          <a class="btn btn-ghost" href="#hero-form">Оставить заявку на партию</a>
+          <a class="btn btn-primary" href="mailto:info@granit-karel.ru?subject=%D0%97%D0%B0%D1%8F%D0%B2%D0%BA%D0%B0">Оставить заявку</a>
         </div>
-      </div>
-
-      <form class="calc-form home-hero-form" id="hero-form" data-subject="Заявка на партию гранита">
-        <p class="eyebrow">Заявка на партию</p>
-        <label for="hero-name">Имя
-          <input id="hero-name" name="Имя" type="text" autocomplete="name" required />
-        </label>
-        <label for="hero-phone">Телефон
-          <input id="hero-phone" name="Телефон" type="tel" autocomplete="tel" required />
-        </label>
-        <label for="hero-city">Город
-          <input id="hero-city" name="Город" type="text" autocomplete="address-level2" required />
-        </label>
-        <button class="btn btn-primary" type="submit">Оставить заявку на партию</button>
         <p class="consent-note">Письмо уйдёт из вашей почтовой программы и на сайте не сохранится. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
-      </form>
+      </div>
 
       <figure class="home-photo home-hero-photo">
         <!-- ФОТО производства: images/home/proizvodstvo.webp, alt уже на заглушке -->
@@ -441,25 +426,13 @@
       </div>
     </section>
 
-    <section class="cta-band section-gap" id="opt-price" aria-labelledby="cta-title">
-      <h2 id="cta-title" data-edit="home.cta.title">Получить оптовый прайс</h2>
-      <p data-edit="home.cta.p">Компания, город, объём и контакт. Письмо откроется в вашей почте. Цену партии пришлём в ответ. На сайте заявка не сохраняется.</p>
-      <form class="calc-form home-form" id="price-form" data-subject="Оптовый прайс на гранит">
-        <label for="price-company">Компания
-          <input id="price-company" name="Компания" type="text" autocomplete="organization" required />
-        </label>
-        <label for="price-city">Город
-          <input id="price-city" name="Город" type="text" autocomplete="address-level2" required />
-        </label>
-        <label for="price-volume">Объём
-          <input id="price-volume" name="Объём" type="text" required />
-        </label>
-        <label for="price-contact">Контакт
-          <input id="price-contact" name="Контакт" type="text" autocomplete="name" required />
-        </label>
-        <button class="btn btn-primary" type="submit">Получить оптовый прайс</button>
-        <p class="consent-note">Письмо уйдёт из вашей почтовой программы и на сайте не сохранится. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
-      </form>
+    <section class="cta-band section-gap" id="zayavka" aria-labelledby="cta-title">
+      <h2 id="cta-title" data-edit="home.cta.title">Оставить заявку</h2>
+      <p data-edit="home.cta.p">Напишите изделие, объём и город. Письмо откроется в вашей почте.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="mailto:info@granit-karel.ru?subject=%D0%97%D0%B0%D1%8F%D0%B2%D0%BA%D0%B0">Оставить заявку</a>
+      </div>
+      <p class="consent-note">Письмо уйдёт из вашей почтовой программы и на сайте не сохранится. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
     </section>
   </main>
 
@@ -496,29 +469,5 @@
   </footer>
 
   <script src="js/nav.js"></script>
-  <script>
-    (function () {
-      document.querySelectorAll(".home form").forEach(function (form) {
-        form.addEventListener("submit", function (event) {
-          event.preventDefault();
-          var lines = [];
-          new FormData(form).forEach(function (value, name) {
-            lines.push(name + ": " + String(value).trim());
-          });
-          var subject = form.getAttribute("data-subject") || "Заявка";
-          window.location.href = "mailto:info@granit-karel.ru?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
-        });
-      });
-      document.querySelectorAll('.home a[href^="#"]').forEach(function (link) {
-        link.addEventListener("click", function (event) {
-          var id = link.getAttribute("href").slice(1);
-          var target = document.getElementById(id);
-          if (!target) return;
-          event.preventDefault();
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-      });
-    })();
-  </script>
 </body>
 </html>
