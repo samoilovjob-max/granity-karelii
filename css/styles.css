@@ -2129,6 +2129,10 @@ ul.stone-links {
   .home-stats {
     grid-template-columns: 1fr 1fr;
   }
+
+  .home-stats .home-stat:last-child {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (min-width: 1200px) {
@@ -2141,7 +2145,11 @@ ul.stone-links {
   }
 
   .home-stats {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1.4fr;
+  }
+
+  .home-stats .home-stat:last-child {
+    grid-column: auto;
   }
 
   .home-faq {

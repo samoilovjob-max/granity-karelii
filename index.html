@@ -68,11 +68,6 @@
       },
       {
         "@type": "Question",
-        "name": "Есть отсрочка?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Если она нужна — напишите в заявке, обсудим отдельно. В договоре по умолчанию её нет." }
-      },
-      {
-        "@type": "Question",
         "name": "Как получить предложение?",
         "acceptedAnswer": { "@type": "Answer", "text": "Направьте к нам заявку любым удобным для Вас способом и мы ее просчитаем." }
       },
@@ -130,8 +125,8 @@
 
   <main class="page home">
     <!-- ТЕКСТЫ: поля data-edit правит админка. Списки со ссылками и ответы FAQ — только здесь. FAQ совпадает с FAQPage в head.
-         ЦИФРЫ: stat2–stat4 сейчас «уточняется». Не подставлять выдуманные тонны, регионы и партнёров. «Более 10» — со страницы «О компании».
-         ТАРИФЫ: прайс, скидочная сетка и отсрочка не выдуманы. Минимума нет — как на странице поставки.
+         ЦИФРЫ: 200+ тонн в месяц. География — вся Россия и ближнее зарубежье, без числа регионов и партнёров. «Более 10» — со страницы «О компании».
+         ТАРИФЫ: прайс на сайте не публикуем. Скидка от объёма оговаривается индивидуально, полная машина дешевле на тонну. Минимума нет. Вопроса про отсрочку нет.
          СЕГМЕНТЫ: home.seg1–home.seg5.
          ФОТО: заглушки ниже. Файлы images/home/proizvodstvo.webp, sklad.webp, otgruzka.webp, produkciya.webp, komanda.webp.
          Когда файл появится, замените заглушку картинкой с тем же alt, loading=lazy и object-fit уже задан в css. В комментарии не писать тег картинки. -->
@@ -271,15 +266,11 @@
         </article>
         <article class="home-card">
           <h3 data-edit="home.term3.title">Цена от объёма</h3>
-          <p data-edit="home.term3.text">Отдельной скидочной сетки нет. Рейс стоит одинаково, делится на тонны: полная машина дешевле на тонну. Цифру даём в расчёте.</p>
+          <p data-edit="home.term3.text">Полная машина дешевле на тонну. Все оговаривается индивидуально. Компромиссное решение всегда найдем.</p>
         </article>
         <article class="home-card">
           <h3 data-edit="home.term4.title">Договор</h3>
           <p data-edit="home.term4.text">Спецификация: изделия, порода, объём, город, срок, оплата. После расчёта готовим договор.</p>
-        </article>
-        <article class="home-card">
-          <h3 data-edit="home.term5.title">Отсрочка</h3>
-          <p data-edit="home.term5.text">Если она нужна — напишите в заявке, обсудим отдельно. В договоре по умолчанию её нет.</p>
         </article>
       </div>
     </section>
@@ -306,23 +297,17 @@
 
     <section class="section-gap" aria-labelledby="stats-title">
       <h2 class="supply-title" id="stats-title" data-edit="home.stats.title">Цифры</h2>
-      <!-- ЦИФРЫ: три последних значения заменить, когда будут факты. Не ставить круглые оценки. -->
       <div class="home-grid home-stats">
         <article class="home-card home-stat">
           <strong data-edit="home.stat1.value">Более 10</strong>
           <span data-edit="home.stat1.label">лет камнеобработки в Карелии</span>
         </article>
         <article class="home-card home-stat">
-          <strong data-edit="home.stat2.value">Уточняется</strong>
-          <span data-edit="home.stat2.label">тонн отгружено</span>
+          <strong data-edit="home.stat2.value">200+</strong>
+          <span data-edit="home.stat2.label">тонн в месяц</span>
         </article>
         <article class="home-card home-stat">
-          <strong data-edit="home.stat3.value">Уточняется</strong>
-          <span data-edit="home.stat3.label">регионов поставки</span>
-        </article>
-        <article class="home-card home-stat">
-          <strong data-edit="home.stat4.value">Уточняется</strong>
-          <span data-edit="home.stat4.label">оптовых партнёров</span>
+          <strong data-edit="home.stat3.value">Работаем по всей России и ближнему зарубежью.</strong>
         </article>
       </div>
     </section>
@@ -398,10 +383,6 @@
         <details class="fold">
           <summary>Как оплачивается партия?</summary>
           <p>Предоплата 50%, вторая часть 50% по факту готовности к отгрузке.</p>
-        </details>
-        <details class="fold">
-          <summary>Есть отсрочка?</summary>
-          <p>Если она нужна — напишите в заявке, обсудим отдельно. В договоре по умолчанию её нет.</p>
         </details>
         <details class="fold">
           <summary>Как получить предложение?</summary>

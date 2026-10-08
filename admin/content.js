@@ -69,9 +69,7 @@ const HAND = {
         { id: "home.term3.title", label: "Объём" },
         { id: "home.term3.text", label: "Объём, текст", type: "textarea" },
         { id: "home.term4.title", label: "Договор" },
-        { id: "home.term4.text", label: "Договор, текст", type: "textarea" },
-        { id: "home.term5.title", label: "Отсрочка" },
-        { id: "home.term5.text", label: "Отсрочка, текст", type: "textarea" }
+        { id: "home.term4.text", label: "Договор, текст", type: "textarea" }
       ]},
       { title: "Логистика и цифры", fields: [
         { id: "home.logistics.title", label: "Логистика" },
@@ -85,10 +83,7 @@ const HAND = {
         { id: "home.stat1.label", label: "Лет, подпись" },
         { id: "home.stat2.value", label: "Тонны" },
         { id: "home.stat2.label", label: "Тонны, подпись" },
-        { id: "home.stat3.value", label: "Регионы" },
-        { id: "home.stat3.label", label: "Регионы, подпись" },
-        { id: "home.stat4.value", label: "Партнёры" },
-        { id: "home.stat4.label", label: "Партнёры, подпись" }
+        { id: "home.stat3.value", label: "География" }
       ]},
       { title: "Дальше", fields: [
         { id: "home.steps.title", label: "Шаги" },
