@@ -2130,13 +2130,12 @@ ul.stone-links {
   .home-segments,
   .home-why,
   .home-terms,
-  .home-steps,
-  .home-stats {
+  .home-steps {
     grid-template-columns: 1fr 1fr;
   }
 
-  .home-stats .home-stat:last-child {
-    grid-column: 1 / -1;
+  .home-stats {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
@@ -2147,14 +2146,6 @@ ul.stone-links {
   .home-terms,
   .home-steps {
     grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .home-stats {
-    grid-template-columns: 1fr 1fr 1.4fr;
-  }
-
-  .home-stats .home-stat:last-child {
-    grid-column: auto;
   }
 
   .home-faq {

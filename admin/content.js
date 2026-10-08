@@ -67,7 +67,8 @@ const HAND = {
         { id: "home.stat1.label", label: "Лет, подпись" },
         { id: "home.stat2.value", label: "Тонны" },
         { id: "home.stat2.label", label: "Тонны, подпись" },
-        { id: "home.stat3.value", label: "География" }
+        { id: "home.stat3.value", label: "Города" },
+        { id: "home.stat3.label", label: "Города, подпись" }
       ]},
       { title: "Дальше", fields: [
         { id: "home.steps.title", label: "Шаги" },
