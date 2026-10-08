@@ -168,8 +168,12 @@ app.post("/admin/api/upload", requireAuth, upload.single("file"), async (req, re
         error.status = 400;
         throw error;
       }
-      const dir = kind === "stone" ? "granites" : "products";
-      relative = `images/${dir}/${id}.webp`;
+      if (kind === "product") {
+        const { productPhotoName } = require("../scripts/image-gallery");
+        relative = `images/products/${id}/${productPhotoName(req.file.originalname)}`;
+      } else {
+        relative = `images/granites/${id}.webp`;
+      }
     } else if (kind === "gallery") {
       relative = `images/gallery/g${Date.now().toString(36)}.webp`;
     } else {

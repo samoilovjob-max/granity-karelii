@@ -203,16 +203,22 @@ function addPhrase() {
 
 function photoBlock(page) {
   if (!page.photo) return "";
+  const product = String(page.id || "").startsWith("product:");
   const image = page.photo.url
     ? `<img src="${escapeHtml(page.photo.url)}?t=${Date.now()}" alt="" />`
     : `<div class="thumb"></div>`;
+  const label = product ? "Добавить фото" : "Заменить фото";
+  const multiple = product ? " multiple" : "";
+  const hint = product
+    ? "Порядок задаёт имя файла: 001_название, затем 002_название, затем 00_название. JPG и PNG станут WebP."
+    : "JPG и PNG при загрузке сами станут WebP: этот формат легче и страница открывается быстрее.";
   return `<div class="photo-box">
     <strong>Фотография</strong>
     ${image}
     <div class="photo-actions">
-      <label class="primary">Заменить фото<input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp" hidden /></label>
+      <label class="primary">${label}<input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp"${multiple} hidden /></label>
     </div>
-    <p class="hint">JPG и PNG при загрузке сами станут WebP: этот формат легче и страница открывается быстрее.</p>
+    <p class="hint">${hint}</p>
   </div>`;
 }
 
