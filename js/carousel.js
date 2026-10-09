@@ -3,7 +3,6 @@
   const SWIPE_THRESHOLD = 48;
 
   const carousels = [...document.querySelectorAll("[data-carousel]")];
-  if (!carousels.length) return;
 
   let lightbox = null;
   let lightboxIndex = 0;
@@ -182,6 +181,13 @@
     if (lightboxRoot) goTo(lightboxRoot, lightboxIndex, { restart: false });
   }
 
+  function presentLightbox() {
+    showLightboxSlide();
+    lightbox.hidden = false;
+    document.body.classList.add("has-lightbox");
+    lightbox.querySelector(".photo-lightbox-close").focus({ preventScroll: true });
+  }
+
   function openLightbox(root, index) {
     ensureLightbox();
     lightboxRoot = root;
@@ -191,10 +197,46 @@
     });
     lightboxIndex = index;
     pause(root);
-    showLightboxSlide();
-    lightbox.hidden = false;
-    document.body.classList.add("has-lightbox");
-    lightbox.querySelector(".photo-lightbox-close").focus({ preventScroll: true });
+    presentLightbox();
+  }
+
+  function galleryImages() {
+    return [...document.querySelectorAll(".gallery-grid img")];
+  }
+
+  function openGallery(img) {
+    const images = galleryImages();
+    const index = images.indexOf(img);
+    if (index < 0) return;
+    ensureLightbox();
+    lightboxRoot = null;
+    lightboxImages = images.map((item) => ({ src: item.currentSrc || item.src, alt: item.alt || "" }));
+    lightboxIndex = index;
+    presentLightbox();
+  }
+
+  function armGallery(root) {
+    root.querySelectorAll("img").forEach((img) => {
+      img.tabIndex = 0;
+    });
+  }
+
+  const gallery = document.querySelector(".gallery-grid");
+  if (gallery) {
+    armGallery(gallery);
+    new MutationObserver(() => armGallery(gallery)).observe(gallery, { childList: true, subtree: true });
+    document.addEventListener("click", (event) => {
+      const img = event.target.closest(".gallery-grid img");
+      if (!img) return;
+      openGallery(img);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const img = event.target.closest(".gallery-grid img");
+      if (!img) return;
+      event.preventDefault();
+      openGallery(img);
+    });
   }
 
   function closeLightbox() {
