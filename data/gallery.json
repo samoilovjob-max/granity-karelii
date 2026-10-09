@@ -1,5 +1,21 @@
 {
   "title": "Галерея",
   "lead": "Фактуры камня и готовые изделия цеха.",
-  "items": []
+  "items": [
+    {
+      "id": "gmv1hp0il",
+      "src": "images/gallery/gmv1hp0il.webp",
+      "caption": ""
+    },
+    {
+      "id": "gmv1hp0im",
+      "src": "images/gallery/gmv1hp0im.webp",
+      "caption": ""
+    },
+    {
+      "id": "gmv1hp0in",
+      "src": "images/gallery/gmv1hp0in.webp",
+      "caption": ""
+    }
+  ]
 }
