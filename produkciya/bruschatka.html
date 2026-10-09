@@ -50,11 +50,27 @@
         </div>
         <p class="consent-note">Заявка уходит на почту производства и на сайте не сохраняется. Отправляя заявку, вы соглашаетесь на <a href="../politika.html">обработку персональных данных</a>.</p>
       </div>
-      <figure class="stone-photo" data-photo="product.bruschatka.photo">
-        <!-- Фото продукции подставляет админка в images/products/bruschatka.webp -->
-        <div class="stone-photo-placeholder" style="background:#1b2429" role="img" aria-label="Место для фотографии: Брусчатка"></div>
-        <figcaption>Фото появится здесь: images/products/bruschatka.webp</figcaption>
-      </figure>
+      <figure class="stone-photo stone-photo--carousel" data-photo="product.bruschatka.photo">
+      <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Фотографии: Брусчатка">
+        <div class="photo-carousel-track" data-track><div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 6">
+          <img src="../images/products/bruschatka/001_svetlye-kubiki.webp" alt="Брусчатка — фото 1"  draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 6">
+          <img src="../images/products/bruschatka/002_kubiki-v-cehe.webp" alt="Брусчатка — фото 2" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 6">
+          <img src="../images/products/bruschatka/003_kubiki-v-yashchike.webp" alt="Брусчатка — фото 3" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 6">
+          <img src="../images/products/bruschatka/004_partiya-vo-dvore.webp" alt="Брусчатка — фото 4" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="4" role="group" aria-roledescription="слайд" aria-label="5 из 6">
+          <img src="../images/products/bruschatka/005_kubiki-krupno.webp" alt="Брусчатка — фото 5" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="5" role="group" aria-roledescription="слайд" aria-label="6 из 6">
+          <img src="../images/products/bruschatka/006_pryamougolnye.webp" alt="Брусчатка — фото 6" loading="lazy" draggable="false" />
+        </div></div>
+        <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+        <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+        <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото"><button type="button" class="photo-carousel-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button><button type="button" class="photo-carousel-dot" data-index="1" aria-label="Фото 2"></button><button type="button" class="photo-carousel-dot" data-index="2" aria-label="Фото 3"></button><button type="button" class="photo-carousel-dot" data-index="3" aria-label="Фото 4"></button><button type="button" class="photo-carousel-dot" data-index="4" aria-label="Фото 5"></button><button type="button" class="photo-carousel-dot" data-index="5" aria-label="Фото 6"></button></div>
+      </div>
+      <figcaption>Брусчатка</figcaption>
+    </figure>
     </section>
     <section class="stone-section" aria-label="Используемые граниты">
       <h2>Используемые граниты</h2>
