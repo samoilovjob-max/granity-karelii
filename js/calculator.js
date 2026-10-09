@@ -39,12 +39,13 @@
     return { volume, mass };
   };
 
-  const formatVolume = (value) => value.toFixed(4).replace(/\.?0+$/, (m) => (m.includes(".") ? m.replace(/0+$/, "").replace(/\.$/, "") : m)) || "0";
-  const formatMass = (value) => {
-    if (value >= 100) return value.toFixed(1);
-    if (value >= 10) return value.toFixed(2);
-    return value.toFixed(3);
+  const trimFixed = (value, digits) => {
+    if (!Number.isFinite(value)) return "0";
+    const text = value.toFixed(digits).replace(/\.?0+$/, "");
+    return text === "" ? "0" : text;
   };
+  const formatVolume = (value) => trimFixed(value, 6);
+  const formatMass = (value) => trimFixed(value, 3);
 
   const currentValues = () => ({
     length: toNumber(fields.length.value),
