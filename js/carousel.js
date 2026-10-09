@@ -120,25 +120,14 @@
       },
       { passive: true }
     );
-
-    surface.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "touch" || event.button !== 0) return;
-      surface.setPointerCapture?.(event.pointerId);
-      begin(event.clientX, event.clientY);
-      surface.classList.add("is-dragging");
-    });
-    surface.addEventListener("pointermove", (event) => {
-      if (event.pointerType === "touch") return;
-      move(event.clientX, event.clientY);
-    });
-    surface.addEventListener("pointerup", (event) => {
-      if (event.pointerType === "touch") return;
-      finish(event.clientX);
-    });
-    surface.addEventListener("pointercancel", () => {
-      dragging = false;
-      surface.classList.remove("is-dragging");
-    });
+    surface.addEventListener(
+      "touchcancel",
+      () => {
+        dragging = false;
+        surface.classList.remove("is-dragging");
+      },
+      { passive: true }
+    );
   }
 
   function ensureLightbox() {
@@ -242,42 +231,36 @@
       event.stopPropagation();
       step(currentIndex(root) + 1);
     });
-    root.querySelectorAll(".photo-carousel-dot").forEach((dot) => {
-      dot.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        step(Number(dot.dataset.index));
-      });
-    });
-
     const track = root.querySelector("[data-track]");
-    let hoverTimer = null;
-    const finePointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    let touched = false;
+    track?.addEventListener("touchstart", () => {
+      touched = true;
+    }, { passive: true });
 
     bindDrag(
       track,
       (dir) => {
-        clearTimeout(hoverTimer);
+        touched = true;
         root.dataset.paused = "0";
         goTo(root, currentIndex(root) + dir);
       },
       {
         onTap: () => {
-          clearTimeout(hoverTimer);
+          touched = true;
           openLightbox(root, currentIndex(root));
         }
       }
     );
 
-    // Desktop: intentional hover over the photo opens fullscreen.
-    // Delay keeps arrow/dot clicks usable; phones use tap instead.
-    track?.addEventListener("mouseenter", () => {
-      if (!finePointer()) return;
-      clearTimeout(hoverTimer);
-      hoverTimer = setTimeout(() => openLightbox(root, currentIndex(root)), 550);
+    // Mouse and trackpad open the photo on click. They do not drag to the next frame.
+    track?.addEventListener("click", (event) => {
+      if (touched) {
+        touched = false;
+        return;
+      }
+      if (event.target.closest(".photo-carousel-nav")) return;
+      openLightbox(root, currentIndex(root));
     });
-    track?.addEventListener("mouseleave", () => clearTimeout(hoverTimer));
-    track?.addEventListener("pointerdown", () => clearTimeout(hoverTimer));
 
     restartTimer(root);
   });

@@ -715,15 +715,12 @@ summary:focus-visible {
   border-radius: calc(var(--radius) + 2px);
   touch-action: pan-y;
   user-select: none;
-  cursor: zoom-in;
+  cursor: default;
 }
 
 .photo-carousel-track {
   position: relative;
-}
-
-.photo-carousel-track.is-dragging {
-  cursor: grabbing;
+  cursor: default;
 }
 
 .photo-carousel-slide {
@@ -742,36 +739,6 @@ summary:focus-visible {
   pointer-events: auto;
 }
 
-.photo-carousel-slide img {
-  transition: transform 0.35s ease;
-}
-
-.photo-carousel::after {
-  content: "На весь экран";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  transform: translate(-50%, -50%);
-  padding: 0.45rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(15, 18, 20, 0.62);
-  color: #fff;
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.photo-carousel:hover::after {
-  opacity: 1;
-}
-
-.photo-carousel:hover .photo-carousel-slide.is-active img {
-  transform: scale(1.03);
-}
-
 .photo-carousel-nav {
   position: absolute;
   top: 50%;
@@ -785,7 +752,7 @@ summary:focus-visible {
   color: var(--brand-dark);
   font-size: 1.4rem;
   line-height: 1;
-  cursor: pointer;
+  cursor: default;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
@@ -809,14 +776,13 @@ summary:focus-visible {
 }
 
 .photo-carousel-dot {
-  pointer-events: auto;
   width: 0.55rem;
   height: 0.55rem;
   padding: 0;
   border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.55);
-  cursor: pointer;
+  cursor: default;
 }
 
 .photo-carousel-dot.is-active {
@@ -845,7 +811,7 @@ body.has-lightbox {
   position: absolute;
   inset: 0;
   background: rgba(15, 18, 20, 0.92);
-  cursor: zoom-out;
+  cursor: default;
 }
 
 .photo-lightbox-figure {
@@ -858,7 +824,7 @@ body.has-lightbox {
   gap: 0.6rem;
   justify-items: center;
   touch-action: pan-y;
-  cursor: grab;
+  cursor: default;
 }
 
 .photo-lightbox-figure img {
@@ -885,7 +851,7 @@ body.has-lightbox {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
-  cursor: pointer;
+  cursor: default;
 }
 
 .photo-lightbox-close {
@@ -914,16 +880,10 @@ body.has-lightbox {
   background: rgba(255, 255, 255, 0.28);
 }
 
-@media (max-width: 640px) {
-  .photo-carousel-nav {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1.2rem;
-  }
-
+@media (pointer: coarse) {
+  .photo-carousel-nav,
   .photo-lightbox-nav {
-    width: 2.3rem;
-    height: 2.3rem;
+    display: none;
   }
 }
 
