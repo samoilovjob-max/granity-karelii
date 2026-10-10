@@ -295,7 +295,7 @@ function stonePage(stone, index) {
         ${article.lead.map((paragraph, leadIndex) => `<p class="lead" data-edit="stone.${stone.id}.lead.${leadIndex}">${esc(paragraph)}</p>`).join("")}
         <div class="hero-actions">
           <a class="btn btn-primary" href="../kalkulyator-massy-granita.html">Рассчитать массу</a>
-          <a class="btn btn-primary js-lead" href="#zayavka" data-lead-topic="${esc(stone.name)}">Оставить заявку</a>
+          <a class="btn btn-primary btn-lead js-lead" href="#zayavka" data-lead-topic="${esc(stone.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
       </div>
@@ -472,7 +472,7 @@ function productPage(product, siblings) {
           ${product.id === "bruschatka"
             ? `<a class="btn btn-primary" href="../kalkulyator-bruschatki.html">Калькулятор брусчатки</a>`
             : `<a class="btn btn-primary" href="../kalkulyator-massy-granita.html">Рассчитать массу</a>`}
-          <a class="btn btn-primary js-lead" href="#zayavka" data-lead-topic="${esc(product.name)}">Оставить заявку</a>
+          <a class="btn btn-primary btn-lead js-lead" href="#zayavka" data-lead-topic="${esc(product.name)}">Оставить заявку</a>
         </div>
         ${consentNote("../")}
       </div>

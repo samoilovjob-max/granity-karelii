@@ -260,6 +260,105 @@ select {
   background: #b55c37;
 }
 
+/* Lead CTA: solid primary + soft lift, breath glow, occasional shimmer */
+.btn-lead {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  font-weight: 700;
+  padding: 0.82rem 1.28rem;
+  box-shadow:
+    0 4px 10px rgba(37, 42, 44, 0.18),
+    0 12px 28px rgba(198, 106, 66, 0.38);
+  transition:
+    transform 0.25s var(--ease),
+    background 0.2s var(--ease),
+    box-shadow 0.25s var(--ease);
+  animation: lead-glow 2.8s ease-in-out infinite;
+}
+
+.btn-lead::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.34) 48%,
+    transparent 100%
+  );
+  transform: translateX(-160%) skewX(-16deg);
+  animation: lead-shimmer 4.4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-lead > * {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-lead:hover {
+  transform: scale(1.03);
+  background: #b55c37;
+  box-shadow:
+    0 6px 14px rgba(37, 42, 44, 0.22),
+    0 18px 36px rgba(198, 106, 66, 0.5);
+  animation-duration: 1.5s;
+}
+
+.btn-lead:hover::before {
+  animation-duration: 2.2s;
+}
+
+.btn-lead:active {
+  transform: scale(0.99);
+  box-shadow:
+    0 3px 8px rgba(37, 42, 44, 0.14),
+    0 8px 18px rgba(198, 106, 66, 0.28);
+}
+
+@keyframes lead-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 10px rgba(37, 42, 44, 0.18),
+      0 12px 28px rgba(198, 106, 66, 0.32),
+      0 0 0 0 rgba(198, 106, 66, 0.34);
+  }
+  50% {
+    box-shadow:
+      0 6px 14px rgba(37, 42, 44, 0.2),
+      0 16px 34px rgba(198, 106, 66, 0.48),
+      0 0 0 12px rgba(198, 106, 66, 0);
+  }
+}
+
+@keyframes lead-shimmer {
+  0%,
+  62% {
+    transform: translateX(-160%) skewX(-16deg);
+  }
+  78%,
+  100% {
+    transform: translateX(280%) skewX(-16deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-lead,
+  .btn-lead::before {
+    animation: none;
+  }
+
+  .btn-lead:hover {
+    transform: none;
+  }
+}
+
 .btn-ghost {
   background: transparent;
   border-color: var(--border);
