@@ -112,6 +112,7 @@ function footer(prefix, note = "18 пород · калькулятор масс
   </footer>
   <script src="${prefix}js/nav.js"></script>
   <script src="${prefix}js/carousel.js"></script>
+  <script src="${prefix}js/phone-countries.js"></script>
   <script src="${prefix}js/lead.js"></script>`;
 }
 

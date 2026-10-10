@@ -420,9 +420,19 @@
           Имя / организация
           <input type="text" name="name" required autocomplete="name" placeholder="Ваше имя или компания" />
         </label>
-        <label>
+        <label class="phone-label">
           Телефон / WhatsApp
-          <input type="tel" name="phone" required autocomplete="tel" placeholder="+7 (___) ___-__-__" />
+          <div class="phone-field">
+            <button type="button" class="phone-country" aria-haspopup="listbox" aria-expanded="false" aria-label="Код страны">
+              <span class="phone-flag" aria-hidden="true">🇷🇺</span>
+              <span class="phone-code">+7</span>
+              <span class="phone-caret" aria-hidden="true">▾</span>
+            </button>
+            <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="(___) ___-__-__" />
+            <input type="hidden" name="phone_country" value="RU" />
+            <input type="hidden" name="phone_dial" value="7" />
+          </div>
+          <div class="phone-dropdown" hidden role="listbox" aria-label="Страна"></div>
         </label>
         <label>
           Тип продукции
@@ -491,6 +501,7 @@
   </footer>
 
   <script src="js/nav.js"></script>
+  <script src="js/phone-countries.js"></script>
   <script src="js/lead.js"></script>
 </body>
 </html>
