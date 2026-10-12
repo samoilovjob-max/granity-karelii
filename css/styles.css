@@ -839,20 +839,7 @@ summary:focus-visible {
 }
 
 .photo-carousel-nav {
-  position: absolute;
-  top: 50%;
-  z-index: 2;
-  transform: translateY(-50%);
-  width: 2.4rem;
-  height: 2.4rem;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--brand-dark);
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: default;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  display: none;
 }
 
 .photo-carousel-prev { left: 0.55rem; }
@@ -980,8 +967,7 @@ body.has-lightbox {
 }
 
 @media (pointer: coarse) {
-  .photo-carousel-nav,
-  .photo-lightbox-nav {
+  .photo-carousel-nav {
     display: none;
   }
 }
@@ -1119,6 +1105,27 @@ body.has-lightbox {
 
 .stone-card:hover {
   border-color: var(--brand-primary);
+}
+
+.stone-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+}
+
+.stone-card .photo-carousel-nav {
+  width: 1.7rem;
+  height: 1.7rem;
+  font-size: 1.05rem;
+}
+
+.stone-card .photo-carousel-prev { left: 0.35rem; }
+.stone-card .photo-carousel-next { right: 0.35rem; }
+
+.stone-card .photo-carousel-dots {
+  bottom: 0.4rem;
 }
 
 .stone-card h2 {
@@ -1709,8 +1716,9 @@ body.has-lightbox {
 .gallery-grid img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3; /* как фото на странице породы */
   object-fit: cover;
+  cursor: default;
 }
 
 .gallery-grid figcaption {

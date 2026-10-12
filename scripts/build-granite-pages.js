@@ -179,7 +179,7 @@ function photoCarousel(rels, prefix, name, photoKey, compact) {
 function photo(stone, prefix, compact) {
   const photoKey = `stone.${stone.id}.photo`;
   const gallery = imageGallery("granites", stone.id);
-  if (gallery.length > 1 && !compact) {
+  if (gallery.length > 1) {
     return photoCarousel(gallery, prefix, stone.name, photoKey, compact);
   }
   if (gallery.length) {
@@ -316,13 +316,28 @@ function stonePage(stone, index) {
 `;
 }
 
-function catalogPage() {
-  const cards = stones.map((stone) => `<a class="stone-card" href="granity/${stone.id}.html">
-        ${photo(stone, "", true)}
-        <h2>${esc(stone.name)}</h2>
+function catalogCard(stone) {
+  const figure = photo(stone, "", true);
+  const body = `<h2>${esc(stone.name)}</h2>
         <p>${esc(cardLead(articleById[stone.id]))}</p>
-        <p class="density">${esc(stone.density)}</p>
-      </a>`).join("\n");
+        <p class="density">${esc(stone.density)}</p>`;
+  const shots = imageGallery("granites", stone.id);
+  if (shots.length > 1) {
+    return `<article class="stone-card">
+        ${figure}
+        <a class="stone-card-body" href="granity/${stone.id}.html">
+        ${body}
+        </a>
+      </article>`;
+  }
+  return `<a class="stone-card" href="granity/${stone.id}.html">
+        ${figure}
+        ${body}
+      </a>`;
+}
+
+function catalogPage() {
+  const cards = stones.map(catalogCard).join("\n");
 
   return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description)}
   ${nav("", "types")}
@@ -358,7 +373,7 @@ function productPhoto(product, prefix, compact) {
   const stone = stoneById[product.granites[0]];
   const photoKey = `product.${product.id}.photo`;
   const shots = imageGallery("products", product.id);
-  if (shots.length > 1 && !compact) {
+  if (shots.length > 1) {
     return photoCarousel(shots, prefix, product.name, photoKey, compact);
   }
   if (shots.length) {
@@ -390,16 +405,29 @@ function productCard(product) {
   const paving = product.id === "bruschatka"
     ? `\n          <p class="card-calc"><a href="kalkulyator-bruschatki.html">Калькулятор брусчатки</a></p>`
     : "";
-  return `<article class="stone-card">
-        <a class="card-main" href="produkciya/${product.id}.html">
-          ${productPhoto(product, "", true)}
-          <h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
-          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>
-        </a>
-        <div class="stone-links">
+  const shots = imageGallery("products", product.id);
+  const figure = productPhoto(product, "", true);
+  const text = `<h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
+          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>`;
+  const links = `<div class="stone-links">
           <p>Используемые граниты</p>
           <ul>${graniteLinks(product, "")}</ul>${paving}
-        </div>
+        </div>`;
+  if (shots.length > 1) {
+    return `<article class="stone-card">
+        ${figure}
+        <a class="card-main" href="produkciya/${product.id}.html">
+          ${text}
+        </a>
+        ${links}
+      </article>`;
+  }
+  return `<article class="stone-card">
+        <a class="card-main" href="produkciya/${product.id}.html">
+          ${figure}
+          ${text}
+        </a>
+        ${links}
       </article>`;
 }
 
