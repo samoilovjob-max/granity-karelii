@@ -1121,6 +1121,27 @@ body.has-lightbox {
   border-color: var(--brand-primary);
 }
 
+.stone-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+}
+
+.stone-card .photo-carousel-nav {
+  width: 1.7rem;
+  height: 1.7rem;
+  font-size: 1.05rem;
+}
+
+.stone-card .photo-carousel-prev { left: 0.35rem; }
+.stone-card .photo-carousel-next { right: 0.35rem; }
+
+.stone-card .photo-carousel-dots {
+  bottom: 0.4rem;
+}
+
 .stone-card h2 {
   margin: 0.85rem 0.95rem 0.3rem;
   font-family: var(--font-heading);
