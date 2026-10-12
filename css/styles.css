@@ -839,20 +839,7 @@ summary:focus-visible {
 }
 
 .photo-carousel-nav {
-  position: absolute;
-  top: 50%;
-  z-index: 2;
-  transform: translateY(-50%);
-  width: 2.4rem;
-  height: 2.4rem;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--brand-dark);
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: default;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  display: none;
 }
 
 .photo-carousel-prev { left: 0.55rem; }
@@ -980,8 +967,7 @@ body.has-lightbox {
 }
 
 @media (pointer: coarse) {
-  .photo-carousel-nav,
-  .photo-lightbox-nav {
+  .photo-carousel-nav {
     display: none;
   }
 }
