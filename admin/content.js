@@ -392,7 +392,23 @@ function normalizeKeywords(value) {
 }
 
 function cleanSearchText(value, max) {
-  return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
+  const clean = String(value || "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  let slice = clean.slice(0, max + 1);
+  const space = slice.lastIndexOf(" ");
+  slice = space > Math.floor(max * 0.55) ? slice.slice(0, space) : clean.slice(0, max);
+  let out = slice.replace(/[\s.,:;|–—\-]+$/u, "");
+  const dangling = /(?:^|\s)(?:и|в|на|с|со|по|для|из|от|без|не|или|а|к|о|об|при|под|над|до|за|через|которому|который|которая|которые)$/iu;
+  while (dangling.test(out)) out = out.replace(dangling, "");
+  const open = out.lastIndexOf("(");
+  const close = out.lastIndexOf(")");
+  if (open > close) out = out.slice(0, open);
+  out = out.replace(/\s+\S*(?:ого|его|ому|ему)$/iu, "");
+  while (dangling.test(out)) out = out.replace(dangling, "");
+  out = out.replace(/[\s.,:;|–—\-(]+$/u, "").trim();
+  const brand = " — Граниты Карелии";
+  if (out.length < 28 && out.length + brand.length <= max) out += brand;
+  return out;
 }
 
 function readHeadSeo(html) {
@@ -407,8 +423,8 @@ function readHeadSeo(html) {
 }
 
 function writeHeadSeo(html, seo) {
-  const title = cleanSearchText(seo && seo.title, 300);
-  const description = cleanSearchText(seo && seo.description, 4000);
+  const title = cleanSearchText(seo && seo.title, 60);
+  const description = cleanSearchText(seo && seo.description, 160);
   if (!title) {
     const error = new Error("Заголовок в поиске не может быть пустым");
     error.status = 400;
@@ -448,28 +464,14 @@ function withSeo(page, relativeFile) {
   return { ...page, seo };
 }
 
-function isPositioningSection(section) {
-  return /^6\.\s/.test(section.title)
-    || section.title.includes("Рыночное позиционирование")
-    || section.title.includes("причин выбрать");
-}
-
-function sectionPlainText(section) {
-  return section.blocks.map((block) => {
-    if (block.type === "p") return block.text;
-    return block.items.map((item) => `${item.label}: ${item.text}`).join(" ");
-  }).join(" ");
-}
-
 function defaultArticleDescription(article) {
-  const positioning = (article.sections || []).find(isPositioningSection);
-  return [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+  return String(article.meta || "").replace(/\s+/g, " ").trim();
 }
 
 function applyArticleSeo(article, seo) {
   if (!seo || typeof seo !== "object") return false;
-  const title = cleanSearchText(seo.title, 300);
-  const description = cleanSearchText(seo.description, 4000);
+  const title = cleanSearchText(seo.title, 60);
+  const description = cleanSearchText(seo.description, 160);
   if (!title) {
     const error = new Error("Заголовок в поиске не может быть пустым");
     error.status = 400;
@@ -511,8 +513,8 @@ function gallerySearchTitle(title) {
 
 function storedSearchSeo(input, fallbackTitle, fallbackDescription) {
   if (!input || typeof input !== "object") return undefined;
-  const title = cleanSearchText(input.title, 300);
-  const description = cleanSearchText(input.description, 4000);
+  const title = cleanSearchText(input.title, 60);
+  const description = cleanSearchText(input.description, 160);
   if (!title) {
     const error = new Error("Заголовок в поиске не может быть пустым");
     error.status = 400;
