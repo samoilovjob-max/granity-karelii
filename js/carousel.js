@@ -239,6 +239,16 @@
     });
   }
 
+  document.addEventListener("click", (event) => {
+    const img = event.target.closest(".stone-hero .stone-photo > img");
+    if (!img || img.closest("a")) return;
+    ensureLightbox();
+    lightboxRoot = null;
+    lightboxImages = [{ src: img.currentSrc || img.src, alt: img.alt || "" }];
+    lightboxIndex = 0;
+    presentLightbox();
+  });
+
   function closeLightbox() {
     if (!lightbox || lightbox.hidden) return;
     lightbox.hidden = true;

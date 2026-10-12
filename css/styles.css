@@ -1730,8 +1730,9 @@ body.has-lightbox {
 .gallery-grid img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3; /* как фото на странице породы */
   object-fit: cover;
+  cursor: default;
 }
 
 .gallery-grid figcaption {

@@ -373,7 +373,7 @@ function productPhoto(product, prefix, compact) {
   const stone = stoneById[product.granites[0]];
   const photoKey = `product.${product.id}.photo`;
   const shots = imageGallery("products", product.id);
-  if (shots.length > 1 && !compact) {
+  if (shots.length > 1) {
     return photoCarousel(shots, prefix, product.name, photoKey, compact);
   }
   if (shots.length) {
@@ -405,16 +405,29 @@ function productCard(product) {
   const paving = product.id === "bruschatka"
     ? `\n          <p class="card-calc"><a href="kalkulyator-bruschatki.html">Калькулятор брусчатки</a></p>`
     : "";
-  return `<article class="stone-card">
-        <a class="card-main" href="produkciya/${product.id}.html">
-          ${productPhoto(product, "", true)}
-          <h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
-          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>
-        </a>
-        <div class="stone-links">
+  const shots = imageGallery("products", product.id);
+  const figure = productPhoto(product, "", true);
+  const text = `<h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
+          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>`;
+  const links = `<div class="stone-links">
           <p>Используемые граниты</p>
           <ul>${graniteLinks(product, "")}</ul>${paving}
-        </div>
+        </div>`;
+  if (shots.length > 1) {
+    return `<article class="stone-card">
+        ${figure}
+        <a class="card-main" href="produkciya/${product.id}.html">
+          ${text}
+        </a>
+        ${links}
+      </article>`;
+  }
+  return `<article class="stone-card">
+        <a class="card-main" href="produkciya/${product.id}.html">
+          ${figure}
+          ${text}
+        </a>
+        ${links}
       </article>`;
 }
 
