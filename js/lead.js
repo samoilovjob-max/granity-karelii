@@ -14,22 +14,47 @@
     return link ? link.getAttribute("href") : "politika.html";
   };
 
-  const phoneFieldHtml = () => `
-    <label class="phone-label">
-      Телефон / WhatsApp
+  let phoneFieldSeq = 0;
+  let lockedScrollY = 0;
+
+  const setScrollLock = (locked) => {
+    document.documentElement.classList.toggle("has-lead-dialog", locked);
+    if (locked) {
+      lockedScrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${lockedScrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+      return;
+    }
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    window.scrollTo(0, lockedScrollY);
+  };
+
+  const phoneFieldHtml = () => {
+    const id = `lead-phone-${++phoneFieldSeq}`;
+    return `
+    <div class="phone-label">
+      <label class="phone-caption" for="${id}">Телефон / WhatsApp</label>
       <div class="phone-field">
         <button type="button" class="phone-country" aria-haspopup="listbox" aria-expanded="false" aria-label="Код страны">
           <span class="phone-flag" aria-hidden="true">🇷🇺</span>
           <span class="phone-code">+7</span>
           <span class="phone-caret" aria-hidden="true">▾</span>
         </button>
-        <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="(___) ___-__-__" />
+        <input id="${id}" type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="(___) ___-__-__" />
         <input type="hidden" name="phone_country" value="RU" />
         <input type="hidden" name="phone_dial" value="7" />
       </div>
       <div class="phone-dropdown" hidden role="listbox" aria-label="Страна"></div>
-    </label>
+    </div>
   `;
+  };
 
   const fieldsHtml = () => `
     <label>
@@ -51,7 +76,7 @@
     </label>
     <label>
       Город доставки
-      <input type="text" name="city" autocomplete="address-level2" placeholder="Город доставки (для расчета логистики)" />
+      <input type="text" name="city" autocomplete="address-level2" placeholder="Москва" />
     </label>
     <label>
       Текст заявки / объём
@@ -389,6 +414,7 @@
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
     });
+    dialog.addEventListener("close", () => setScrollLock(false));
     document.body.appendChild(dialog);
     bindForm(dialog.querySelector("form"));
     return dialog;
@@ -414,7 +440,10 @@
     const form = dialog.querySelector("form");
     form.dataset.topic = topic;
     applyTopic(form, topic);
-    if (!dialog.open) dialog.showModal();
+    if (!dialog.open) {
+      dialog.showModal();
+      setScrollLock(true);
+    }
     const name = form.querySelector("[name=name]");
     if (name) name.focus();
   });

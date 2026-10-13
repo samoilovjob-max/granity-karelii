@@ -1,46 +1,46 @@
 {
   "title": "Галерея",
-  "lead": "Фактуры камня и готовые изделия цеха.",
+  "lead": "Фактуры карельского камня, блоки на складе и работа цеха: распил, полировка, брусчатка и мемориальные изделия.",
   "items": [
     {
       "id": "gmv1hp0il",
       "src": "images/gallery/gmv1hp0il.webp",
-      "caption": ""
+      "caption": "Распил чёрной гранитной плиты на станке с ЧПУ"
     },
     {
       "id": "gmv1hp0im",
       "src": "images/gallery/gmv1hp0im.webp",
-      "caption": ""
+      "caption": "Продольный рез тёмной плиты на камнерезном станке"
     },
     {
       "id": "gmv1hp0in",
       "src": "images/gallery/gmv1hp0in.webp",
-      "caption": ""
+      "caption": "Обработка гранитной заготовки на портальном станке"
     },
     {
       "id": "gmv1i1sln",
       "src": "images/gallery/gmv1i1sln.webp",
-      "caption": ""
+      "caption": "Гранитные блоки на открытой площадке склада"
     },
     {
       "id": "gmv1i1slo",
       "src": "images/gallery/gmv1i1slo.webp",
-      "caption": ""
+      "caption": "Блоки гранита у цеха, на подкладках"
     },
     {
       "id": "gmv1i1slp",
       "src": "images/gallery/gmv1i1slp.webp",
-      "caption": ""
+      "caption": "Крупные блоки габбро на складской площадке"
     },
     {
       "id": "gmv1i1slq",
       "src": "images/gallery/gmv1i1slq.webp",
-      "caption": ""
+      "caption": "Партия гранитных блоков вдоль края площадки"
     },
     {
       "id": "gmv1i1slr",
       "src": "images/gallery/gmv1i1slr.webp",
-      "caption": ""
+      "caption": "Крупный план фактуры гранитного блока"
     }
   ]
 }
