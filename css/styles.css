@@ -1,7 +1,7 @@
 :root {
   --brand-primary: #233B46;
   --brand-dark: #252A2C;
-  --accent-cta: #C66A42;
+  --accent-cta: #A35436; /* белый текст на кнопке: контраст 5.41:1 */
 
   --bg-page: #F1F1EE;
   --bg-card: #FFFFFF;
@@ -18,7 +18,7 @@
 
   --color-bg: #F1F1EE; /* --bg-page */
   --color-text: #25282A;
-  --color-accent: #C66A42;
+  --color-accent: #A35436; /* как --accent-cta */
   --color-muted: #657075;
   --container: 1120px;
 
@@ -112,6 +112,9 @@ select {
 }
 
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 0.9rem;
   color: var(--text-secondary);
   transition: color 0.2s var(--ease);
@@ -257,7 +260,7 @@ select {
 }
 
 .btn-primary:hover {
-  background: #b55c37;
+  background: #8C452C;
 }
 
 /* Lead CTA: solid primary + soft lift, breath glow, occasional shimmer */
@@ -303,7 +306,7 @@ select {
 
 .btn-lead:hover {
   transform: scale(1.03);
-  background: #b55c37;
+  background: #8C452C;
   box-shadow:
     0 6px 14px rgba(37, 42, 44, 0.22),
     0 18px 36px rgba(198, 106, 66, 0.5);
@@ -839,20 +842,7 @@ summary:focus-visible {
 }
 
 .photo-carousel-nav {
-  position: absolute;
-  top: 50%;
-  z-index: 2;
-  transform: translateY(-50%);
-  width: 2.4rem;
-  height: 2.4rem;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--brand-dark);
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: default;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  display: none;
 }
 
 .photo-carousel-prev { left: 0.55rem; }
@@ -956,8 +946,8 @@ body.has-lightbox {
 .photo-lightbox-close {
   top: 1rem;
   right: 1rem;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.75rem;
+  height: 2.75rem;
   font-size: 1.6rem;
   line-height: 1;
 }
@@ -980,8 +970,7 @@ body.has-lightbox {
 }
 
 @media (pointer: coarse) {
-  .photo-carousel-nav,
-  .photo-lightbox-nav {
+  .photo-carousel-nav {
     display: none;
   }
 }
@@ -1119,6 +1108,27 @@ body.has-lightbox {
 
 .stone-card:hover {
   border-color: var(--brand-primary);
+}
+
+.stone-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+}
+
+.stone-card .photo-carousel-nav {
+  width: 1.7rem;
+  height: 1.7rem;
+  font-size: 1.05rem;
+}
+
+.stone-card .photo-carousel-prev { left: 0.35rem; }
+.stone-card .photo-carousel-next { right: 0.35rem; }
+
+.stone-card .photo-carousel-dots {
+  bottom: 0.4rem;
 }
 
 .stone-card h2 {
@@ -1709,8 +1719,9 @@ body.has-lightbox {
 .gallery-grid img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3; /* как фото на странице породы */
   object-fit: cover;
+  cursor: default;
 }
 
 .gallery-grid figcaption {
@@ -2281,6 +2292,10 @@ ul.stone-links {
 
 .phone-label {
   position: relative;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
 }
 
 .phone-field {
@@ -2388,7 +2403,7 @@ ul.stone-links {
   align-items: center;
   gap: 0.55rem;
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0.45rem 0.75rem;
   border: 0;
   background: transparent;
@@ -2451,10 +2466,13 @@ ul.stone-links {
 }
 
 .lead-form input[type="checkbox"] {
-  width: 1.15rem;
-  min-width: 1.15rem;
-  min-height: 1.15rem;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
   padding: 0;
+  accent-color: var(--accent-cta);
 }
 
 .lead-form .form-agreement {
@@ -2551,7 +2569,14 @@ ul.stone-links {
   text-underline-offset: 0.15em;
 }
 
+html.has-lead-dialog,
+html.has-lead-dialog body {
+  overflow: hidden;
+}
+
 .lead-dialog {
+  display: flex;
+  flex-direction: column;
   width: min(36rem, calc(100% - 2rem)); /* как .consent-note */
   max-height: calc(100% - 2rem);
   margin: auto;
@@ -2561,6 +2586,20 @@ ul.stone-links {
   background: var(--bg-card);
   color: var(--text-primary);
   box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.lead-dialog form.lead-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 0.75rem;
+  overflow: auto;
+}
+
+.lead-dialog form .btn[type="submit"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
 }
 
 .lead-dialog::backdrop {

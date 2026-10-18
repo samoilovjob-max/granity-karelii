@@ -124,17 +124,55 @@ function keywordTag(keywords) {
   return `\n  <meta name="keywords" content="${esc(phrases.join(", "))}" />`;
 }
 
-function head(prefix, title, description, extra = "", keywords = []) {
+const SITE = "https://samoilovjob-max.github.io/granity-karelii/";
+const DEFAULT_OG_IMAGE = "images/granites/gabbro-diabaz/01-polirovka.webp";
+
+function clip(text, max) {
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  let slice = clean.slice(0, max + 1);
+  const space = slice.lastIndexOf(" ");
+  slice = space > Math.floor(max * 0.55) ? slice.slice(0, space) : clean.slice(0, max);
+  let out = slice.replace(/[\s.,:;|–—\-]+$/u, "");
+  const dangling = /(?:^|\s)(?:и|в|на|с|со|по|для|из|от|без|не|или|а|к|о|об|при|под|над|до|за|через|которому|который|которая|которые)$/iu;
+  while (dangling.test(out)) out = out.replace(dangling, "");
+  const open = out.lastIndexOf("(");
+  const close = out.lastIndexOf(")");
+  if (open > close) out = out.slice(0, open);
+  out = out.replace(/\s+\S*(?:ого|его|ому|ему)$/iu, "");
+  while (dangling.test(out)) out = out.replace(dangling, "");
+  out = out.replace(/[\s.,:;|–—\-(]+$/u, "").trim();
+  const brand = " — Граниты Карелии";
+  if (out.length < 28 && out.length + brand.length <= max) out += brand;
+  return out;
+}
+
+function absoluteUrl(rel) {
+  const value = String(rel || "").trim();
+  if (!value) return SITE;
+  if (/^https?:/i.test(value)) return value;
+  return SITE + value.replace(/^\.\//, "").replace(/^\//, "");
+}
+
+function head(prefix, title, description, extra = "", keywords = [], page = {}) {
+  const safeTitle = clip(title, 60);
+  const safeDescription = clip(description, 160);
+  const pageUrl = absoluteUrl(page.path || "");
+  const imageUrl = absoluteUrl(page.image || DEFAULT_OG_IMAGE);
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${esc(title)}</title>
-  <meta name="description" content="${esc(description)}" />${keywordTag(keywords)}
-  <meta property="og:title" content="${esc(title)}" />
-  <meta property="og:description" content="${esc(description)}" />
+  <title>${esc(safeTitle)}</title>
+  <meta name="description" content="${esc(safeDescription)}" />${keywordTag(keywords)}
+  <meta property="og:title" content="${esc(safeTitle)}" />
+  <meta property="og:description" content="${esc(safeDescription)}" />
   <meta property="og:type" content="website" />
+  <link rel="canonical" href="${esc(pageUrl)}" />
+  <meta property="og:url" content="${esc(pageUrl)}" />
+  <meta property="og:image" content="${esc(imageUrl)}" />
+  <meta property="og:locale" content="ru_RU" />
   ${extra}
   <link rel="icon" href="${prefix}favicon.ico" sizes="32x32" />
   <link rel="icon" type="image/svg+xml" href="${prefix}images/brand/logo-gk-transparent.svg" />
@@ -179,7 +217,7 @@ function photoCarousel(rels, prefix, name, photoKey, compact) {
 function photo(stone, prefix, compact) {
   const photoKey = `stone.${stone.id}.photo`;
   const gallery = imageGallery("granites", stone.id);
-  if (gallery.length > 1 && !compact) {
+  if (gallery.length > 1) {
     return photoCarousel(gallery, prefix, stone.name, photoKey, compact);
   }
   if (gallery.length) {
@@ -218,20 +256,18 @@ function sectionPlainText(section) {
   }).join(" ");
 }
 
-// Если в админке задано своё описание, оно заменяет склейку meta и скрытого
-// блока позиционирования. Пока своего описания нет, строка в поиске прежняя.
+// В сниппет поиска попадает короткое описание, а не весь блок позиционирования.
 function articleDescription(article) {
-  if (article.seoDescription && String(article.seoDescription).trim()) return String(article.seoDescription).trim();
-  const positioning = article.sections.find(isPositioning);
-  return [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+  const custom = article.seoDescription && String(article.seoDescription).trim();
+  return custom || String(article.meta || "").trim();
 }
 
-function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "") {
+function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "", page = {}) {
   const seo = stored && typeof stored === "object" ? stored : {};
   const title = String(seo.title || fallbackTitle);
   const description = String(seo.description || fallbackDescription);
   const keywords = Array.isArray(seo.keywords) ? seo.keywords : [];
-  return head(prefix, title, description, extra, keywords);
+  return head(prefix, title, description, extra, keywords, page);
 }
 
 function story(article, keyPrefix) {
@@ -285,7 +321,11 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation, "radiation"]
   ].map(([label, value, key]) => `<div><dt>${label}</dt><dd data-edit="stone.${stone.id}.${key}">${esc(value)}</dd></div>`).join("");
 
-  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), article.keywords)}
+  const shots = imageGallery("granites", stone.id);
+  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), article.keywords, {
+    path: `granity/${stone.id}.html`,
+    image: shots[0] || DEFAULT_OG_IMAGE
+  })}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span data-edit="stone.${stone.id}.name">${esc(stone.name)}</span></p>
@@ -316,15 +356,33 @@ function stonePage(stone, index) {
 `;
 }
 
-function catalogPage() {
-  const cards = stones.map((stone) => `<a class="stone-card" href="granity/${stone.id}.html">
-        ${photo(stone, "", true)}
-        <h2>${esc(stone.name)}</h2>
+function catalogCard(stone) {
+  const figure = photo(stone, "", true);
+  const body = `<h2>${esc(stone.name)}</h2>
         <p>${esc(cardLead(articleById[stone.id]))}</p>
-        <p class="density">${esc(stone.density)}</p>
-      </a>`).join("\n");
+        <p class="density">${esc(stone.density)}</p>`;
+  const shots = imageGallery("granites", stone.id);
+  if (shots.length > 1) {
+    return `<article class="stone-card">
+        ${figure}
+        <a class="stone-card-body" href="granity/${stone.id}.html">
+        ${body}
+        </a>
+      </article>`;
+  }
+  return `<a class="stone-card" href="granity/${stone.id}.html">
+        ${figure}
+        ${body}
+      </a>`;
+}
 
-  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description)}
+function catalogPage() {
+  const cards = stones.map(catalogCard).join("\n");
+
+  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description, "", {
+    path: "vidy.html",
+    image: imageGallery("granites", "gabbro-diabaz")[0] || DEFAULT_OG_IMAGE
+  })}
   ${nav("", "types")}
   <main class="page">
     <section class="page-intro">
@@ -358,7 +416,7 @@ function productPhoto(product, prefix, compact) {
   const stone = stoneById[product.granites[0]];
   const photoKey = `product.${product.id}.photo`;
   const shots = imageGallery("products", product.id);
-  if (shots.length > 1 && !compact) {
+  if (shots.length > 1) {
     return photoCarousel(shots, prefix, product.name, photoKey, compact);
   }
   if (shots.length) {
@@ -390,16 +448,29 @@ function productCard(product) {
   const paving = product.id === "bruschatka"
     ? `\n          <p class="card-calc"><a href="kalkulyator-bruschatki.html">Калькулятор брусчатки</a></p>`
     : "";
-  return `<article class="stone-card">
-        <a class="card-main" href="produkciya/${product.id}.html">
-          ${productPhoto(product, "", true)}
-          <h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
-          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>
-        </a>
-        <div class="stone-links">
+  const shots = imageGallery("products", product.id);
+  const figure = productPhoto(product, "", true);
+  const text = `<h2 data-edit="product.${product.id}.name">${esc(product.name)}</h2>
+          <p data-edit="product.${product.id}.summary">${esc(product.summary)}</p>`;
+  const links = `<div class="stone-links">
           <p>Используемые граниты</p>
           <ul>${graniteLinks(product, "")}</ul>${paving}
-        </div>
+        </div>`;
+  if (shots.length > 1) {
+    return `<article class="stone-card">
+        ${figure}
+        <a class="card-main" href="produkciya/${product.id}.html">
+          ${text}
+        </a>
+        ${links}
+      </article>`;
+  }
+  return `<article class="stone-card">
+        <a class="card-main" href="produkciya/${product.id}.html">
+          ${figure}
+          ${text}
+        </a>
+        ${links}
       </article>`;
 }
 
@@ -460,7 +531,11 @@ function productPage(product, siblings) {
     prev ? `<a href="${prev.id}.html">← ${esc(prev.name)}</a>` : "<span></span>",
     next ? `<a href="${next.id}.html">${esc(next.name)} →</a>` : "<span></span>"
   ].join("");
-  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), article.keywords)}
+  const shots = imageGallery("products", product.id);
+  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), article.keywords, {
+    path: `produkciya/${product.id}.html`,
+    image: shots[0] || DEFAULT_OG_IMAGE
+  })}
   ${nav("../", "products")}
   <main class="page">
     <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span data-edit="product.${product.id}.name">${esc(product.name)}</span></p>
@@ -493,7 +568,10 @@ function productPage(product, siblings) {
 }
 
 function productsPage(list) {
-  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description)}
+  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description, "", {
+    path: "produkciya.html",
+    image: DEFAULT_OG_IMAGE
+  })}
   ${nav("", "products")}
   <main class="page">
     <section class="page-intro">
@@ -583,7 +661,11 @@ function galleryPage() {
   const grid = items.length
     ? `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии">${figures}</section>`
     : `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии"><p class="gallery-empty">Фотографии работ появятся здесь.</p></section>`;
-  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead)}
+  const cover = items[0] && items[0].src ? items[0].src : DEFAULT_OG_IMAGE;
+  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead, "", {
+    path: "galereya.html",
+    image: cover
+  })}
   ${nav("", "gallery")}
   <main class="page">
     <section class="page-intro">

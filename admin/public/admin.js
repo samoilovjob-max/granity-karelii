@@ -13,6 +13,11 @@ let fields = {};
 let gallery = null;
 let seo = { title: "", description: "", keywords: [], url: "" };
 let ready = false;
+let csrfToken = "";
+
+function rememberCsrf(data) {
+  if (data && typeof data.csrf === "string") csrfToken = data.csrf;
+}
 
 function signs(count) {
   const mod10 = count % 10;
@@ -32,12 +37,19 @@ function escapeHtml(value) {
 }
 
 async function api(url, options = {}) {
+  const method = (options.method || "GET").toUpperCase();
+  const headers = { ...(options.headers || {}) };
+  if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+  if (method !== "GET" && method !== "HEAD" && !url.endsWith("/admin/api/login") && csrfToken) {
+    headers["X-CSRF-Token"] = csrfToken;
+  }
   const response = await fetch(url, {
     ...options,
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+    headers
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || "Не получилось");
+  rememberCsrf(data);
   return data;
 }
 
@@ -295,8 +307,11 @@ async function uploadFiles(files, kind, id) {
   for (const file of files) {
     const body = new FormData();
     body.append("file", file);
+    const uploadHeaders = {};
+    if (csrfToken) uploadHeaders["X-CSRF-Token"] = csrfToken;
     const response = await fetch(`/admin/api/upload?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id || "")}`, {
       method: "POST",
+      headers: uploadHeaders,
       body
     });
     const data = await response.json().catch(() => ({}));
@@ -323,10 +338,11 @@ document.querySelector("#loginForm").addEventListener("submit", async (event) =>
   event.preventDefault();
   document.querySelector("#loginError").hidden = true;
   try {
-    await api("/admin/api/login", {
+    const loginResult = await api("/admin/api/login", {
       method: "POST",
       body: JSON.stringify({ password: document.querySelector("#password").value })
     });
+    rememberCsrf(loginResult);
     pages = (await api("/admin/api/pages")).pages;
     showApp(true);
     renderPages("");
@@ -483,6 +499,7 @@ window.addEventListener("message", (event) => {
 
 api("/admin/api/me").then((me) => {
   if (!me.ok) return;
+  rememberCsrf(me);
   showApp(true);
   return api("/admin/api/pages").then(async (data) => {
     pages = data.pages;

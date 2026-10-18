@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Гранит оптом из Карелии — памятники, изделия из гранита и стройматериалы от производителя</title>
-  <meta name="description" content="Гранит оптом из Карелии. Гранит оптом Петрозаводск: свой цех, прямые поставки гранита с карьеров, без посредников. Памятники оптом, изделия из гранита оптом и строительные материалы из гранита. Гранит от производителя, партия под машину, доставка по РФ и ЕАЭС без пошлин." />
+  <title>Гранит оптом из Карелии — от производителя</title>
+  <meta name="description" content="Гранит оптом из Карелии: свой цех в Петрозаводске и прямые поставки с карьеров. Памятники, изделия и стройматериалы, доставка по РФ и ЕАЭС." />
   <meta name="keywords" content="гранит оптом, гранит оптом из Карелии, гранит оптом Петрозаводск, памятники оптом, изделия из гранита оптом, строительные материалы из гранита, гранит от производителя, прямые поставки гранита, доставка по РФ и ЕАЭС" />
-  <meta property="og:title" content="Гранит оптом из Карелии — памятники, изделия из гранита и стройматериалы от производителя" />
-  <meta property="og:description" content="Гранит оптом из Карелии. Гранит оптом Петрозаводск: свой цех, прямые поставки гранита с карьеров, без посредников. Памятники оптом, изделия из гранита оптом и строительные материалы из гранита. Гранит от производителя, партия под машину, доставка по РФ и ЕАЭС без пошлин." />
+  <meta property="og:title" content="Гранит оптом из Карелии — от производителя" />
+  <meta property="og:description" content="Гранит оптом из Карелии: свой цех в Петрозаводске и прямые поставки с карьеров. Памятники, изделия и стройматериалы, доставка по РФ и ЕАЭС." />
   <meta property="og:type" content="website" />
   <link rel="canonical" href="https://samoilovjob-max.github.io/granity-karelii/" />
   <meta property="og:image" content="https://samoilovjob-max.github.io/granity-karelii/images/granites/gabbro-diabaz/01-polirovka.webp" />
@@ -15,8 +15,8 @@
   <meta property="og:locale" content="ru_RU" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://samoilovjob-max.github.io/granity-karelii/images/granites/gabbro-diabaz/01-polirovka.webp" />
-  <meta name="twitter:title" content="Гранит оптом из Карелии — памятники, изделия из гранита и стройматериалы от производителя" />
-  <meta name="twitter:description" content="Гранит оптом из Карелии. Гранит оптом Петрозаводск: свой цех, прямые поставки гранита с карьеров, без посредников. Памятники оптом, изделия из гранита оптом и строительные материалы из гранита. Гранит от производителя, партия под машину, доставка по РФ и ЕАЭС без пошлин." />
+  <meta name="twitter:title" content="Гранит оптом из Карелии — от производителя" />
+  <meta name="twitter:description" content="Гранит оптом из Карелии: свой цех в Петрозаводске и прямые поставки с карьеров. Памятники, изделия и стройматериалы, доставка по РФ и ЕАЭС." />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -420,20 +420,20 @@
           Имя / организация
           <input type="text" name="name" required autocomplete="name" placeholder="Ваше имя или компания" />
         </label>
-        <label class="phone-label">
-          Телефон / WhatsApp
+        <div class="phone-label">
+          <label class="phone-caption" for="lead-phone">Телефон / WhatsApp</label>
           <div class="phone-field">
             <button type="button" class="phone-country" aria-haspopup="listbox" aria-expanded="false" aria-label="Код страны">
               <span class="phone-flag" aria-hidden="true">🇷🇺</span>
               <span class="phone-code">+7</span>
               <span class="phone-caret" aria-hidden="true">▾</span>
             </button>
-            <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="(___) ___-__-__" />
+            <input id="lead-phone" type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="(___) ___-__-__" />
             <input type="hidden" name="phone_country" value="RU" />
             <input type="hidden" name="phone_dial" value="7" />
           </div>
           <div class="phone-dropdown" hidden role="listbox" aria-label="Страна"></div>
-        </label>
+        </div>
         <label>
           Тип продукции
           <select name="product">
@@ -448,7 +448,7 @@
         </label>
         <label>
           Город доставки
-          <input type="text" name="city" autocomplete="address-level2" placeholder="Город доставки (для расчета логистики)" />
+          <input type="text" name="city" autocomplete="address-level2" placeholder="Москва" />
         </label>
         <label>
           Текст заявки / объём
