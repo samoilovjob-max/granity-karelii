@@ -4,11 +4,71 @@ const crypto = require("crypto");
 const express = require("express");
 const multer = require("multer");
 const sharp = require("sharp");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const content = require("./content");
 
 const PORT = Number(process.env.PORT) || 8787;
-const PASSWORD = process.env.ADMIN_PASSWORD || "karelia";
-const sessions = new Set();
+const HOST = process.env.ADMIN_BIND_HOST || "127.0.0.1";
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const SESSION_TTL_MS = Number(process.env.ADMIN_SESSION_TTL_MS) || 12 * 60 * 60 * 1000;
+const sessions = new Map();
+
+function resolveAdminPassword() {
+  const password = process.env.ADMIN_PASSWORD;
+  if (password && password.length >= 16) return password;
+  if (!IS_PRODUCTION && password && password.length >= 8) return password;
+  if (!IS_PRODUCTION && process.env.ADMIN_ALLOW_DEFAULT === "1") {
+    console.warn("ADMIN_ALLOW_DEFAULT=1: используется пароль karelia только для локальной разработки");
+    return "karelia";
+  }
+  throw new Error(
+    "Задайте ADMIN_PASSWORD (не короче 16 символов в production, не короче 8 в development)"
+  );
+}
+
+const PASSWORD = resolveAdminPassword();
+
+function passwordMatches(candidate, expected) {
+  const digest = (value) => crypto.createHash("sha256").update(String(value), "utf8").digest();
+  return crypto.timingSafeEqual(digest(candidate), digest(expected));
+}
+
+function cookieHeader(value, maxAgeSeconds) {
+  const parts = [`gk_admin=${value}`, "HttpOnly", "SameSite=Strict", "Path=/admin"];
+  if (IS_PRODUCTION || process.env.ADMIN_COOKIE_SECURE === "1") parts.push("Secure");
+  if (maxAgeSeconds !== undefined) parts.push(`Max-Age=${maxAgeSeconds}`);
+  return parts.join("; ");
+}
+
+function createSession() {
+  const token = crypto.randomBytes(24).toString("hex");
+  const csrf = crypto.randomBytes(16).toString("hex");
+  const expiresAt = Date.now() + SESSION_TTL_MS;
+  sessions.set(token, { csrf, expiresAt });
+  return { token, csrf };
+}
+
+function getSession(token) {
+  if (!token) return null;
+  const session = sessions.get(token);
+  if (!session) return null;
+  if (session.expiresAt <= Date.now()) {
+    sessions.delete(token);
+    return null;
+  }
+  session.expiresAt = Date.now() + SESSION_TTL_MS;
+  return session;
+}
+
+function purgeExpiredSessions() {
+  const now = Date.now();
+  for (const [token, session] of sessions) {
+    if (session.expiresAt <= now) sessions.delete(token);
+  }
+}
+
+setInterval(purgeExpiredSessions, 15 * 60 * 1000).unref();
 
 const previewScript = `<script>
 (function () {
@@ -70,6 +130,17 @@ const previewScript = `<script>
 })();
 </script>`;
 
+const BLOCKED_STATIC_PREFIXES = [
+  "/data",
+  "/scripts",
+  "/admin/server.js",
+  "/admin/content.js",
+  "/package.json",
+  "/package-lock.json",
+  "/node_modules",
+  "/.git"
+];
+
 function tokenFrom(req) {
   const raw = req.headers.cookie || "";
   const match = raw.match(/(?:^|; )gk_admin=([^;]+)/);
@@ -77,8 +148,19 @@ function tokenFrom(req) {
 }
 
 function requireAuth(req, res, next) {
-  if (sessions.has(tokenFrom(req))) return next();
-  res.status(401).json({ error: "Нужно войти" });
+  const session = getSession(tokenFrom(req));
+  if (!session) return res.status(401).json({ error: "Нужно войти" });
+  req.adminSession = session;
+  next();
+}
+
+function requireCsrf(req, res, next) {
+  const session = req.adminSession;
+  const header = req.headers["x-csrf-token"];
+  if (!header || header !== session.csrf) {
+    return res.status(403).json({ error: "Нужно обновить страницу админки" });
+  }
+  next();
 }
 
 const upload = multer({
@@ -100,28 +182,54 @@ async function toWebp(buffer, destination) {
 
 const app = express();
 app.disable("x-powered-by");
+if (IS_PRODUCTION) app.set("trust proxy", 1);
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    hsts: IS_PRODUCTION ? { maxAge: 31536000, includeSubDomains: true } : false
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 
-app.post("/admin/api/login", (req, res) => {
-  const password = String(req.body && req.body.password || "");
-  const left = Buffer.from(password);
-  const right = Buffer.from(PASSWORD);
-  const same = left.length === right.length && crypto.timingSafeEqual(left, right);
-  if (!same) return res.status(401).json({ error: "Неверный пароль" });
-  const token = crypto.randomBytes(24).toString("hex");
-  sessions.add(token);
-  res.setHeader("Set-Cookie", `gk_admin=${token}; HttpOnly; SameSite=Lax; Path=/`);
-  res.json({ ok: true });
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Слишком много попыток входа. Попробуйте позже." }
 });
 
-app.post("/admin/api/logout", (req, res) => {
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Слишком много запросов. Подождите минуту." }
+});
+
+app.post("/admin/api/login", loginLimiter, (req, res) => {
+  const password = String((req.body && req.body.password) || "");
+  if (!passwordMatches(password, PASSWORD)) {
+    return res.status(401).json({ error: "Неверный пароль" });
+  }
+  const { token, csrf } = createSession();
+  res.setHeader("Set-Cookie", cookieHeader(token));
+  res.json({ ok: true, csrf });
+});
+
+app.use("/admin/api", apiLimiter);
+
+app.post("/admin/api/logout", requireAuth, requireCsrf, (req, res) => {
   sessions.delete(tokenFrom(req));
-  res.setHeader("Set-Cookie", "gk_admin=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0");
+  res.setHeader("Set-Cookie", cookieHeader("", 0));
   res.json({ ok: true });
 });
 
 app.get("/admin/api/me", (req, res) => {
-  res.json({ ok: sessions.has(tokenFrom(req)) });
+  const session = getSession(tokenFrom(req));
+  if (!session) return res.json({ ok: false });
+  res.json({ ok: true, csrf: session.csrf });
 });
 
 app.get("/admin/api/pages", requireAuth, (req, res) => {
@@ -136,7 +244,7 @@ app.get("/admin/api/page", requireAuth, (req, res, next) => {
   }
 });
 
-app.put("/admin/api/page", requireAuth, (req, res, next) => {
+app.put("/admin/api/page", requireAuth, requireCsrf, (req, res, next) => {
   try {
     res.json(content.savePage(String(req.body.id || ""), req.body.fields || {}, req.body.seo));
   } catch (error) {
@@ -144,7 +252,7 @@ app.put("/admin/api/page", requireAuth, (req, res, next) => {
   }
 });
 
-app.put("/admin/api/gallery", requireAuth, (req, res, next) => {
+app.put("/admin/api/gallery", requireAuth, requireCsrf, (req, res, next) => {
   try {
     res.json(content.saveGallery(req.body || {}));
   } catch (error) {
@@ -152,7 +260,7 @@ app.put("/admin/api/gallery", requireAuth, (req, res, next) => {
   }
 });
 
-app.post("/admin/api/upload", requireAuth, upload.single("file"), async (req, res, next) => {
+app.post("/admin/api/upload", requireAuth, requireCsrf, upload.single("file"), async (req, res, next) => {
   try {
     if (!req.file) {
       const error = new Error("Файл не пришёл");
@@ -199,12 +307,23 @@ app.post("/admin/api/upload", requireAuth, upload.single("file"), async (req, re
 });
 
 app.get("/admin", (req, res) => {
+  res.setHeader("X-Frame-Options", "DENY");
   res.sendFile(path.join(__dirname, "public/index.html"));
+});
+app.use("/admin", (req, res, next) => {
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
 });
 app.use("/admin", express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  if (req.path.startsWith("/node_modules") || req.path.startsWith("/.git") || req.path.includes(".local-password")) {
+  const blocked = BLOCKED_STATIC_PREFIXES.some(
+    (prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`)
+  );
+  if (blocked || req.path.includes(".local-password")) {
+    return res.status(404).end();
+  }
+  if (req.path.startsWith("/node_modules") || req.path.startsWith("/.git")) {
     return res.status(404).end();
   }
   if (req.query.preview === "1" && req.path.endsWith(".html")) {
@@ -225,7 +344,9 @@ app.use((error, req, res, next) => {
   res.status(status).json({ error: status >= 500 ? "Не получилось сохранить" : error.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`Админка: http://127.0.0.1:${PORT}/admin`);
-  console.log("Пароль берётся из ADMIN_PASSWORD, иначе karelia");
+app.listen(PORT, HOST, () => {
+  console.log(`Админка: http://${HOST}:${PORT}/admin`);
+  if (!IS_PRODUCTION) {
+    console.log("Production: задайте NODE_ENV=production, ADMIN_PASSWORD (≥16), ADMIN_BIND_HOST при необходимости");
+  }
 });
