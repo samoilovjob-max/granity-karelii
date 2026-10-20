@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://samoilovjob-max.github.io/granity-karelii/sitemap.xml
+Sitemap: https://granit-karel.ru/sitemap.xml
