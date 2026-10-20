@@ -36,7 +36,8 @@ function passwordMatches(candidate, expected) {
 
 function cookieHeader(value, maxAgeSeconds) {
   const parts = [`gk_admin=${value}`, "HttpOnly", "SameSite=Strict", "Path=/admin"];
-  if (IS_PRODUCTION || process.env.ADMIN_COOKIE_SECURE === "1") parts.push("Secure");
+  // Secure только явно: иначе по HTTP (до certbot / по IP) браузер не сохраняет cookie.
+  if (process.env.ADMIN_COOKIE_SECURE === "1") parts.push("Secure");
   if (maxAgeSeconds !== undefined) parts.push(`Max-Age=${maxAgeSeconds}`);
   return parts.join("; ");
 }

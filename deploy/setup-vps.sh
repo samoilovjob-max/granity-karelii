@@ -51,7 +51,7 @@ if [[ ! -f "$ENV_FILE" ]]; then
 NODE_ENV=production
 PORT=8787
 ADMIN_BIND_HOST=127.0.0.1
-ADMIN_COOKIE_SECURE=1
+# После certbot (HTTPS) добавьте: ADMIN_COOKIE_SECURE=1
 ADMIN_PASSWORD=${ADMIN_PASSWORD}
 EOF
   chmod 600 "$ENV_FILE"
@@ -61,6 +61,11 @@ EOF
   echo "========================================================="
 else
   echo "Файл $ENV_FILE уже есть — пароль не менялся."
+  # Пока сайт открывают по HTTP/IP — Secure-cookie ломает вход в админку
+  if grep -q '^ADMIN_COOKIE_SECURE=1' "$ENV_FILE" 2>/dev/null; then
+    sed -i 's/^ADMIN_COOKIE_SECURE=1/# ADMIN_COOKIE_SECURE=1  # включите после HTTPS/' "$ENV_FILE"
+    echo "Отключил ADMIN_COOKIE_SECURE (вход по HTTP снова возможен)."
+  fi
 fi
 
 START_WRAPPER="/usr/local/bin/granity-karelii-start"
