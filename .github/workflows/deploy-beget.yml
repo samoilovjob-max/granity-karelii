@@ -1,6 +1,5 @@
-# Деплой статики на Beget по FTP после push в main.
-# Секреты репозитория: BEGET_FTP_HOST, BEGET_FTP_USER, BEGET_FTP_PASSWORD
-# (хост вида ftp.beget.com или IP; корень сайта — обычно public_html или granit-karel.ru/public_html)
+﻿# Деплой статики на Beget по FTP после push в main.
+# Секреты: BEGET_FTP_HOST, BEGET_FTP_USER, BEGET_FTP_PASSWORD, optional BEGET_FTP_DIR
 name: Deploy to Beget FTP
 
 on:
@@ -12,18 +11,23 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Require FTP secrets
+      - name: Check FTP secrets
+        id: check
         env:
           HOST: ${{ secrets.BEGET_FTP_HOST }}
           USER: ${{ secrets.BEGET_FTP_USER }}
           PASS: ${{ secrets.BEGET_FTP_PASSWORD }}
         run: |
           if [ -z "$HOST" ] || [ -z "$USER" ] || [ -z "$PASS" ]; then
-            echo "Add BEGET_FTP_HOST, BEGET_FTP_USER, BEGET_FTP_PASSWORD (and optional BEGET_FTP_DIR) in repo secrets."
-            exit 1
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Beget FTP secrets not set — skip upload. Add BEGET_FTP_HOST/USER/PASSWORD (optional BEGET_FTP_DIR)."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.configured == 'true'
       - name: Upload site to Beget
+        if: steps.check.outputs.configured == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.BEGET_FTP_HOST }}
