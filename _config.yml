@@ -1,0 +1,11 @@
+# GitHub Pages (Jekyll): не публиковать CMS и Node-артефакты.
+# Админка работает только локально через `npm start`.
+exclude:
+  - admin
+  - node_modules
+  - package.json
+  - package-lock.json
+  - AGENTS.md
+  - PLAN.md
+  - .gitignore
+  - .cursor

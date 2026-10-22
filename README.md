@@ -27,10 +27,22 @@ python3 -m http.server 8080
 
 ```bash
 npm install
-npm start
 ```
 
-Адрес: http://127.0.0.1:8787/admin  
-Пароль по умолчанию `karelia`. Свой пароль: `ADMIN_PASSWORD=... npm start`.
+Пароль (обязательно, без него сервер не стартует):
 
-Пункт меню «Галерея» открывает `galereya.html`. GitHub Pages отдаёт уже сохранённые страницы; сама админка работает, пока запущен `npm start`.
+```bash
+# Windows PowerShell
+$env:ADMIN_PASSWORD="YourStrongPass1"; npm start
+
+# macOS / Linux
+ADMIN_PASSWORD="YourStrongPass1" npm start
+```
+
+Или положите пароль в `admin/.local-password` (файл в `.gitignore`, не коммитить) и запустите `npm start`.
+
+Требования: минимум 12 символов, буква и цифра.
+
+Адрес: http://127.0.0.1:8787/admin — только localhost, снаружи сети недоступен.
+
+Пункт меню «Галерея» открывает `galereya.html`. GitHub Pages отдаёт уже сохранённые страницы (`admin/` в публикацию не входит — см. `_config.yml`); сама админка работает, пока запущен `npm start`.

@@ -109,6 +109,7 @@ select {
   flex-wrap: wrap;
   gap: 0.95rem;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .nav a {
@@ -117,9 +118,46 @@ select {
   transition: color 0.2s var(--ease);
 }
 
-.nav a:hover,
-.nav a.is-active {
+.nav-useful {
+  position: relative;
+}
+
+.nav-useful > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.nav-useful > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-useful > summary.is-active,
+.nav-useful[open] > summary,
+.nav a.is-active,
+.nav a:hover {
   color: var(--brand-primary);
+}
+
+.nav-useful-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 14rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+@media (min-width: 900px) {
+  .nav-useful-menu {
+    position: absolute;
+    top: calc(100% + 0.45rem);
+    right: 0;
+    z-index: 20;
+  }
 }
 
 .page {
@@ -1391,19 +1429,18 @@ body.has-lightbox {
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
   padding: 1.1rem 1rem 1.2rem;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
 }
 
-.requisites,
-.requisites * {
-  -webkit-user-select: none;
-  user-select: none;
+.requisites-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
 }
 
-.requisites ::selection {
-  background: transparent;
+.requisites-head h2 {
+  margin: 0;
 }
 
 .requisites h2 {

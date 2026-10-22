@@ -1,46 +1,46 @@
 {
   "title": "Галерея",
-  "lead": "Фактуры камня и готовые изделия цеха.",
+  "lead": "Фактуры камня и готовые изделия цеха в Петрозаводске.",
   "items": [
     {
       "id": "gmv1hp0il",
       "src": "images/gallery/gmv1hp0il.webp",
-      "caption": ""
+      "caption": "Полированная фактура тёмного камня"
     },
     {
       "id": "gmv1hp0im",
       "src": "images/gallery/gmv1hp0im.webp",
-      "caption": ""
+      "caption": "Обработка поверхности в цехе"
     },
     {
       "id": "gmv1hp0in",
       "src": "images/gallery/gmv1hp0in.webp",
-      "caption": ""
+      "caption": "Готовые плиты перед отгрузкой"
     },
     {
       "id": "gmv1i1sln",
       "src": "images/gallery/gmv1i1sln.webp",
-      "caption": ""
+      "caption": "Блоки гранита на площадке"
     },
     {
       "id": "gmv1i1slo",
       "src": "images/gallery/gmv1i1slo.webp",
-      "caption": ""
+      "caption": "Склад блоков у цеха"
     },
     {
       "id": "gmv1i1slp",
       "src": "images/gallery/gmv1i1slp.webp",
-      "caption": ""
+      "caption": "Партия камня на гравии"
     },
     {
       "id": "gmv1i1slq",
       "src": "images/gallery/gmv1i1slq.webp",
-      "caption": ""
+      "caption": "Крупный план поверхности слэба"
     },
     {
       "id": "gmv1i1slr",
       "src": "images/gallery/gmv1i1slr.webp",
-      "caption": ""
+      "caption": "Фактура готового изделия"
     }
   ]
 }

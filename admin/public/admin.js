@@ -13,6 +13,7 @@ let fields = {};
 let gallery = null;
 let seo = { title: "", description: "", keywords: [], url: "" };
 let ready = false;
+let csrf = "";
 
 function signs(count) {
   const mod10 = count % 10;
@@ -32,11 +33,17 @@ function escapeHtml(value) {
 }
 
 async function api(url, options = {}) {
-  const response = await fetch(url, {
-    ...options,
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) }
-  });
+  const method = (options.method || "GET").toUpperCase();
+  const headers = { ...(options.headers || {}) };
+  if (!headers["Content-Type"] && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+  if (csrf && method !== "GET" && method !== "HEAD") {
+    headers["X-CSRF-Token"] = csrf;
+  }
+  const response = await fetch(url, { ...options, headers });
   const data = await response.json().catch(() => ({}));
+  if (typeof data.csrf === "string" && data.csrf) csrf = data.csrf;
   if (!response.ok) throw new Error(data.error || "Не получилось");
   return data;
 }
@@ -297,6 +304,7 @@ async function uploadFiles(files, kind, id) {
     body.append("file", file);
     const response = await fetch(`/admin/api/upload?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id || "")}`, {
       method: "POST",
+      headers: csrf ? { "X-CSRF-Token": csrf } : {},
       body
     });
     const data = await response.json().catch(() => ({}));
@@ -339,8 +347,12 @@ document.querySelector("#loginForm").addEventListener("submit", async (event) =>
 });
 
 document.querySelector("#logout").addEventListener("click", async () => {
-  await api("/admin/api/logout", { method: "POST", body: "{}" });
-  showApp(false);
+  try {
+    await api("/admin/api/logout", { method: "POST", body: "{}" });
+  } finally {
+    csrf = "";
+    showApp(false);
+  }
 });
 
 document.querySelector("#filter").addEventListener("input", (event) => {
@@ -483,6 +495,7 @@ window.addEventListener("message", (event) => {
 
 api("/admin/api/me").then((me) => {
   if (!me.ok) return;
+  if (me.csrf) csrf = me.csrf;
   showApp(true);
   return api("/admin/api/pages").then(async (data) => {
     pages = data.pages;

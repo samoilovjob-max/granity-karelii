@@ -23,6 +23,13 @@ const stoneById = Object.fromEntries(stones.map((stone) => [stone.id, stone]));
 const root = path.join(__dirname, "..");
 const stoneDir = path.join(root, "granity");
 const productDir = path.join(root, "produkciya");
+const SITE_URL = String(site.siteUrl || "https://granit-karel.ru").replace(/\/$/, "");
+const DEFAULT_OG_IMAGE = `${SITE_URL}/images/granites/gabbro-diabaz/01-polirovka.webp`;
+
+function absoluteUrl(pagePath = "") {
+  const clean = String(pagePath || "").replace(/^\//, "");
+  return clean ? `${SITE_URL}/${clean}` : `${SITE_URL}/`;
+}
 
 /**
  * Порядок блоков каталога продукции.
@@ -55,6 +62,7 @@ function nav(prefix, active) {
   const href = (file) => `${prefix}${file}`;
   const item = (file, label, key) =>
     `<a${active === key ? ' class="is-active"' : ""} href="${href(file)}">${label}</a>`;
+  const usefulOpen = active === "calc" || active === "useful";
   return `<header class="site-header">
     <div class="header-inner">
       <a class="brand" href="${href("index.html")}" aria-label="Граниты Карелии">
@@ -67,7 +75,15 @@ function nav(prefix, active) {
         ${item("vidy.html", "Виды гранитов", "types")}
         ${item("produkciya.html", "Продукция", "products")}
         <a${active === "gallery" ? ' class="is-active"' : ""} href="${href("galereya.html")}">Галерея</a>
-        ${item("kalkulyator-massy-granita.html", "Полезно", "calc")}
+        <details class="nav-useful"${usefulOpen ? " open" : ""}>
+          <summary${usefulOpen ? ' class="is-active"' : ""}>Полезно</summary>
+          <div class="nav-useful-menu">
+            <a href="${href("polezno.html")}">Обзор</a>
+            <a href="${href("kalkulyator-massy-granita.html")}">Калькулятор массы</a>
+            <a href="${href("kalkulyator-bruschatki.html")}">Калькулятор брусчатки</a>
+            <a href="${href("postavka-granita-petrozavodsk-kareliya.html")}">Поставка и доставка</a>
+          </div>
+        </details>
         <a${active === "contacts" ? ' class="is-active"' : ""} href="${href("kontakty.html")}">Контакты</a>
       </nav>
     </div>
@@ -98,9 +114,8 @@ function footer(prefix, note = "18 пород · калькулятор масс
             <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
               <a href="https://wa.me/${esc(site.phoneTel.replace(/^\+/, ""))}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
-              <a href="https://t.me/${esc(site.phoneTel)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
-              <!-- Профиль MAX: когда появится ссылка https://max.ru/u/…, подставьте её вместо https://max.ru/ -->
-              <a href="https://max.ru/" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>
+              <a href="${esc(site.telegramUrl || `https://t.me/+${site.phoneTel.replace(/^\+/, "")}`)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
+              ${site.maxUrl ? `<a href="${esc(site.maxUrl)}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>` : ""}
             </span>
           </li>
           <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>
@@ -124,7 +139,8 @@ function keywordTag(keywords) {
   return `\n  <meta name="keywords" content="${esc(phrases.join(", "))}" />`;
 }
 
-function head(prefix, title, description, extra = "", keywords = []) {
+function head(prefix, title, description, extra = "", keywords = [], pagePath = "") {
+  const pageUrl = absoluteUrl(pagePath);
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -135,6 +151,10 @@ function head(prefix, title, description, extra = "", keywords = []) {
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:type" content="website" />
+  <link rel="canonical" href="${esc(pageUrl)}" />
+  <meta property="og:url" content="${esc(pageUrl)}" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:image" content="${esc(DEFAULT_OG_IMAGE)}" />
   ${extra}
   <link rel="icon" href="${prefix}favicon.ico" sizes="32x32" />
   <link rel="icon" type="image/svg+xml" href="${prefix}images/brand/logo-gk-transparent.svg" />
@@ -206,9 +226,11 @@ function cardLead(article) {
 }
 
 function isPositioning(section) {
-  return /^6\.\s/.test(section.title)
-    || section.title.includes("Рыночное позиционирование")
-    || section.title.includes("причин выбрать");
+  const title = String(section.title || "");
+  if (/^6\.\s/.test(title)) return true;
+  if (/позиционирование|причин выбрать|выбирают нас|почему (клиенты|нас)/i.test(title)) return true;
+  const blocks = Array.isArray(section.blocks) ? section.blocks : [];
+  return blocks.some((block) => /👉|ОСТАВИТЬ ЗАЯВКУ|ПОЗВОНИТЬ СЕЙЧАС/.test(String(block.text || "")));
 }
 
 function sectionPlainText(section) {
@@ -218,20 +240,51 @@ function sectionPlainText(section) {
   }).join(" ");
 }
 
-// Если в админке задано своё описание, оно заменяет склейку meta и скрытого
-// блока позиционирования. Пока своего описания нет, строка в поиске прежняя.
-function articleDescription(article) {
-  if (article.seoDescription && String(article.seoDescription).trim()) return String(article.seoDescription).trim();
-  const positioning = article.sections.find(isPositioning);
-  return [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+/** Убрать CTA/эмодзи и обрезать текст до длины сниппета (~160). */
+function scrubSeoJunk(text) {
+  return String(text || "")
+    .replace(/👉\s*\[[^\]]*\]/g, " ")
+    .replace(/📞\s*\[[^\]]*\]/g, " ")
+    .replace(/[✔✅❌⚠⚠️📌✨🔥💡⭐️⭐]/gu, " ")
+    .replace(/Почему клиенты выбирают нас\?[\s\S]*$/i, " ")
+    .replace(/Не откладывайте[\s\S]*$/i, " ")
+    .replace(/Заполните форму[\s\S]*$/i, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "") {
+function clipSeoDescription(text, max = 160) {
+  const clean = scrubSeoJunk(text);
+  if (!clean) return "";
+  if (clean.length <= max) return clean;
+  const slice = clean.slice(0, max - 1);
+  const dot = slice.lastIndexOf(". ");
+  const comma = slice.lastIndexOf(", ");
+  const space = slice.lastIndexOf(" ");
+  let cut = slice;
+  if (dot >= max * 0.55) cut = slice.slice(0, dot + 1);
+  else if (comma >= max * 0.55) cut = slice.slice(0, comma);
+  else if (space >= max * 0.55) cut = slice.slice(0, space);
+  cut = cut.replace(/[,:;–—\-]\s*$/u, "").trim();
+  if (!cut) cut = clean.slice(0, max - 1).trim();
+  return /[.!?…]$/u.test(cut) ? cut : `${cut}…`;
+}
+
+// Своё seoDescription из админки; иначе только meta/lead — без блока позиционирования и CTA.
+function articleDescription(article) {
+  if (article.seoDescription && String(article.seoDescription).trim()) {
+    return clipSeoDescription(article.seoDescription, 160);
+  }
+  const source = article.meta || (Array.isArray(article.lead) && article.lead[0]) || "";
+  return clipSeoDescription(source, 160);
+}
+
+function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "", pagePath = "") {
   const seo = stored && typeof stored === "object" ? stored : {};
   const title = String(seo.title || fallbackTitle);
   const description = String(seo.description || fallbackDescription);
   const keywords = Array.isArray(seo.keywords) ? seo.keywords : [];
-  return head(prefix, title, description, extra, keywords);
+  return head(prefix, title, description, extra, keywords, pagePath);
 }
 
 function story(article, keyPrefix) {
@@ -252,22 +305,17 @@ function story(article, keyPrefix) {
 }
 
 function structuredData(stone, article) {
-  const positioning = article.sections.find(isPositioning);
+  const shots = imageGallery("granites", stone.id);
   const data = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: stone.name,
     alternateName: stone.latin,
+    url: absoluteUrl(`granity/${stone.id}.html`),
     description: articleDescription(article),
-    brand: { "@type": "Brand", name: "Граниты Карелии" },
-    additionalProperty: positioning
-      ? {
-          "@type": "PropertyValue",
-          name: positioning.title.replace(/^\d+\.\s*/, ""),
-          value: sectionPlainText(positioning)
-        }
-      : undefined
+    brand: { "@type": "Brand", name: "Граниты Карелии" }
   };
+  if (shots[0]) data.image = absoluteUrl(shots[0]);
   return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
 }
 
@@ -285,7 +333,7 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation, "radiation"]
   ].map(([label, value, key]) => `<div><dt>${label}</dt><dd data-edit="stone.${stone.id}.${key}">${esc(value)}</dd></div>`).join("");
 
-  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), article.keywords)}
+  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), article.keywords, `granity/${stone.id}.html`)}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span data-edit="stone.${stone.id}.name">${esc(stone.name)}</span></p>
@@ -324,7 +372,7 @@ function catalogPage() {
         <p class="density">${esc(stone.density)}</p>
       </a>`).join("\n");
 
-  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description)}
+  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description, "", "vidy.html")}
   ${nav("", "types")}
   <main class="page">
     <section class="page-intro">
@@ -431,22 +479,17 @@ function appliedProducts(stone) {
 }
 
 function productStructuredData(product, article) {
-  const positioning = article.sections.find(isPositioning);
+  const shots = imageGallery("products", product.id);
   const data = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     category: CATEGORY_LABEL[product.category],
+    url: absoluteUrl(`produkciya/${product.id}.html`),
     description: articleDescription(article),
-    brand: { "@type": "Brand", name: "Граниты Карелии" },
-    additionalProperty: positioning
-      ? {
-          "@type": "PropertyValue",
-          name: positioning.title.replace(/^\d+\.\s*/, ""),
-          value: sectionPlainText(positioning)
-        }
-      : undefined
+    brand: { "@type": "Brand", name: "Граниты Карелии" }
   };
+  if (shots[0]) data.image = absoluteUrl(shots[0]);
   return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
 }
 
@@ -460,7 +503,7 @@ function productPage(product, siblings) {
     prev ? `<a href="${prev.id}.html">← ${esc(prev.name)}</a>` : "<span></span>",
     next ? `<a href="${next.id}.html">${esc(next.name)} →</a>` : "<span></span>"
   ].join("");
-  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), article.keywords)}
+  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), article.keywords, `produkciya/${product.id}.html`)}
   ${nav("../", "products")}
   <main class="page">
     <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span data-edit="product.${product.id}.name">${esc(product.name)}</span></p>
@@ -493,7 +536,7 @@ function productPage(product, siblings) {
 }
 
 function productsPage(list) {
-  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description)}
+  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description, "", "produkciya.html")}
   ${nav("", "products")}
   <main class="page">
     <section class="page-intro">
@@ -554,13 +597,15 @@ writeSitemap(orderedProducts);
 console.log(`wrote vidy.html, produkciya.html, galereya.html, sitemap.xml, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
 
 function writeSitemap(productList) {
-  const base = "https://samoilovjob-max.github.io/granity-karelii/";
+  const base = `${SITE_URL}/`;
+  const lastmod = new Date().toISOString().slice(0, 10);
   const urls = [
     "",
     "o-kompanii.html",
     "vidy.html",
     "produkciya.html",
     "galereya.html",
+    "polezno.html",
     "kalkulyator-massy-granita.html",
     "kalkulyator-bruschatki.html",
     "kontakty.html",
@@ -569,7 +614,12 @@ function writeSitemap(productList) {
     ...stones.map((stone) => `granity/${stone.id}.html`),
     ...productList.map((product) => `produkciya/${product.id}.html`)
   ];
-  const body = urls.map((url) => `  <url><loc>${base}${url}</loc></url>`).join("\n");
+  const body = urls
+    .map(
+      (url) =>
+        `  <url>\n    <loc>${base}${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`
+    )
+    .join("\n");
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
   fs.writeFileSync(path.join(root, "sitemap.xml"), xml);
 }
@@ -583,7 +633,7 @@ function galleryPage() {
   const grid = items.length
     ? `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии">${figures}</section>`
     : `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии"><p class="gallery-empty">Фотографии работ появятся здесь.</p></section>`;
-  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead)}
+  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead, "", "galereya.html")}
   ${nav("", "gallery")}
   <main class="page">
     <section class="page-intro">

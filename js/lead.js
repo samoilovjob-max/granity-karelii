@@ -32,7 +32,9 @@
     </label>
   `;
 
-  const fieldsHtml = () => `
+  const fieldsHtml = () => {
+    const agreementId = `lead-agreement-${Date.now().toString(36)}`;
+    return `
     <label>
       Имя / организация
       <input type="text" name="name" required autocomplete="name" placeholder="Ваше имя или компания" />
@@ -43,10 +45,20 @@
       <select name="product">
         <option value="">Выберите тип</option>
         <option>Памятники</option>
+        <option>Надгробные плиты</option>
+        <option>Тумбы под памятники</option>
+        <option>Цветники</option>
         <option>Плиты мощения</option>
         <option>Брусчатка</option>
         <option>Бордюры</option>
+        <option>Ступени</option>
+        <option>Облицовочные плиты</option>
+        <option>Плиты для навесных фасадов</option>
+        <option>Тактильные плиты</option>
         <option>Слэбы</option>
+        <option>Столбики и опорные столбы</option>
+        <option>Болларды</option>
+        <option>Балясины и точёные изделия</option>
         <option>Другое</option>
       </select>
     </label>
@@ -63,12 +75,13 @@
     </label>
     <input type="hidden" name="subject" value="Заявка на партию" />
     <div class="form-agreement">
-      <input type="checkbox" id="agreement" name="agreement" required checked />
-      <label for="agreement">Нажимая кнопку, я даю согласие на <a href="${policyHref()}" target="_blank" rel="noopener noreferrer">обработку персональных данных</a> и соглашаюсь с Политикой конфиденциальности.</label>
+      <input type="checkbox" id="${agreementId}" name="agreement" required />
+      <label for="${agreementId}">Нажимая кнопку, я даю согласие на <a href="${policyHref()}" target="_blank" rel="noopener noreferrer">обработку персональных данных</a> и соглашаюсь с Политикой конфиденциальности.</label>
     </div>
     <p class="lead-status" role="status" aria-live="polite"></p>
     <button class="btn btn-primary" type="submit">Отправить заявку</button>
   `;
+  };
 
   const onlyDigits = (value) => String(value || "").replace(/\D/g, "");
 

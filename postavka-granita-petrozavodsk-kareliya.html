@@ -8,8 +8,8 @@
   <meta property="og:title" content="Поставка гранита оптом — Петрозаводск, Карелия | Памятники, изделия из гранита, стройматериалы" />
   <meta property="og:description" content="Изготовление памятников и изделий из гранита оптом в Петрозаводске и Карелии. Строительные материалы из гранита. Доставка по РФ и ЕАЭС без пошлин. Полная машина — дешевле." />
   <meta property="og:type" content="website" />
-  <link rel="canonical" href="https://samoilovjob-max.github.io/granity-karelii/postavka-granita-petrozavodsk-kareliya.html" />
-  <meta property="og:url" content="https://samoilovjob-max.github.io/granity-karelii/postavka-granita-petrozavodsk-kareliya.html" />
+  <link rel="canonical" href="https://granit-karel.ru/postavka-granita-petrozavodsk-kareliya.html" />
+  <meta property="og:url" content="https://granit-karel.ru/postavka-granita-petrozavodsk-kareliya.html" />
   <meta property="og:locale" content="ru_RU" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Поставка гранита оптом — Петрозаводск, Карелия" />
@@ -19,7 +19,7 @@
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Граниты Карелии",
-    "url": "https://samoilovjob-max.github.io/granity-karelii/postavka-granita-petrozavodsk-kareliya.html",
+    "url": "https://granit-karel.ru/postavka-granita-petrozavodsk-kareliya.html",
     "email": "info@granit-karel.ru",
     "telephone": "+79218017170",
     "address": {
@@ -193,7 +193,15 @@
         <a href="vidy.html">Виды гранитов</a>
         <a href="produkciya.html">Продукция</a>
         <a href="galereya.html">Галерея</a>
-        <a href="kalkulyator-massy-granita.html">Полезно</a>
+        <details class="nav-useful">
+          <summary>Полезно</summary>
+          <div class="nav-useful-menu">
+            <a href="polezno.html">Обзор</a>
+            <a href="kalkulyator-massy-granita.html">Калькулятор массы</a>
+            <a href="kalkulyator-bruschatki.html">Калькулятор брусчатки</a>
+            <a href="postavka-granita-petrozavodsk-kareliya.html">Поставка и доставка</a>
+          </div>
+        </details>
         <a href="kontakty.html">Контакты</a>
       </nav>
     </div>
@@ -410,15 +418,69 @@
     </section>
 
     <!-- ФОТО: когда появятся снимки, alt — «Памятники из гранита оптом, Петрозаводск», «Изделия из гранита оптом, Карелия», «Строительные материалы из гранита, Петрозаводск». -->
-    <section class="cta-band section-gap" id="zayavka">
-      <h2 data-edit="supply.cta.title">Запросить расчёт доставки</h2>
+    <section class="cta-band section-gap" id="zayavka" aria-labelledby="supply-cta-title">
+      <h2 id="supply-cta-title" data-edit="supply.cta.title">Запросить расчёт доставки</h2>
       <p data-edit="supply.cta.p">Напишите: изделие, объём, город. Вернёмся с числом машин, стоимостью рейса и сроком.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary js-lead" href="#zayavka" data-lead-topic="Расчёт доставки">Рассчитать доставку</a>
-        <a class="btn btn-ghost" href="kontakty.html">Контакты</a>
-        <a class="btn btn-ghost" href="produkciya.html">Продукция</a>
-      </div>
-      <p class="consent-note">Заявка уходит на почту производства и на сайте не сохраняется. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
+      <form class="lead-form calc-form" id="lead-form">
+        <label>
+          Имя / организация
+          <input type="text" name="name" required autocomplete="name" placeholder="Ваше имя или компания" />
+        </label>
+        <label class="phone-label">
+          Телефон / WhatsApp
+          <div class="phone-field">
+            <button type="button" class="phone-country" aria-haspopup="listbox" aria-expanded="false" aria-label="Код страны">
+              <span class="phone-flag" aria-hidden="true">🇷🇺</span>
+              <span class="phone-code">+7</span>
+              <span class="phone-caret" aria-hidden="true">▾</span>
+            </button>
+            <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="(___) ___-__-__" />
+            <input type="hidden" name="phone_country" value="RU" />
+            <input type="hidden" name="phone_dial" value="7" />
+          </div>
+          <div class="phone-dropdown" hidden role="listbox" aria-label="Страна"></div>
+        </label>
+        <label>
+          Тип продукции
+          <select name="product">
+            <option value="">Выберите тип</option>
+            <option>Памятники</option>
+            <option>Надгробные плиты</option>
+            <option>Тумбы под памятники</option>
+            <option>Цветники</option>
+            <option>Плиты мощения</option>
+            <option>Брусчатка</option>
+            <option>Бордюры</option>
+            <option>Ступени</option>
+            <option>Облицовочные плиты</option>
+            <option>Плиты для навесных фасадов</option>
+            <option>Тактильные плиты</option>
+            <option>Слэбы</option>
+            <option>Столбики и опорные столбы</option>
+            <option>Болларды</option>
+            <option>Балясины и точёные изделия</option>
+            <option>Другое</option>
+          </select>
+        </label>
+        <label>
+          Город доставки
+          <input type="text" name="city" autocomplete="address-level2" placeholder="Город доставки (для расчета логистики)" />
+        </label>
+        <label>
+          Текст заявки / объём
+          <textarea name="comment" placeholder="Изделия, ориентировочный объем или размеры"></textarea>
+        </label>
+        <label class="lead-hp">Не заполняйте это поле
+          <input type="text" name="botcheck" tabindex="-1" autocomplete="off" />
+        </label>
+        <input type="hidden" name="subject" value="Расчёт доставки" />
+        <div class="form-agreement">
+          <input type="checkbox" id="supply-agreement" name="agreement" required />
+          <label for="supply-agreement">Нажимая кнопку, я даю согласие на <a href="politika.html" target="_blank" rel="noopener noreferrer">обработку персональных данных</a> и соглашаюсь с Политикой конфиденциальности.</label>
+        </div>
+        <p class="lead-status" role="status" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit">Отправить заявку</button>
+      </form>
     </section>
   </main>
 
@@ -442,8 +504,6 @@
             <span class="footer-apps">
               <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
               <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="images/messengers/telegram.png" alt="" width="18" height="18" /></a>
-              <!-- Профиль MAX: когда появится ссылка https://max.ru/u/…, подставьте её вместо https://max.ru/ -->
-              <a href="https://max.ru/" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="images/messengers/max.png" alt="" width="18" height="18" /></a>
             </span>
           </li>
           <li><a href="mailto:info@granit-karel.ru" data-edit="site.email" data-bind="mailto">info@granit-karel.ru</a></li>
@@ -457,16 +517,5 @@
   <script src="js/nav.js"></script>
   <script src="js/phone-countries.js"></script>
   <script src="js/lead.js"></script>
-  <script>
-    document.querySelectorAll('a[href="#raschet"], a[href="#zayavka"]').forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const id = link.getAttribute("href").slice(1);
-        const target = document.getElementById(id);
-        if (!target) return;
-        event.preventDefault();
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    });
-  </script>
 </body>
 </html>
