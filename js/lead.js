@@ -1,8 +1,9 @@
 (() => {
   // Куда уходит заявка. Сайт на GitHub Pages сам письма не хранит.
-  // Вставьте Access Key из кабинета https://web3forms.com — это и есть API-токен.
+  // Access Key из https://web3forms.com (привязан к info@granit-karel.ru). Ключ публичный — это нормально.
   const FORM_ENDPOINT = "https://api.web3forms.com/submit";
-  const FORM_ACCESS_KEY = "";
+  const FORM_ACCESS_KEY = "cc6875b2-d9e4-491f-94a6-e3dd68542c7d";
+  const FORM_FROM_NAME = "Граниты Карелии";
 
   const PHONE_HREF = "tel:+79218017170";
   const PHONE_TEXT = "+7 921 801 71 70";
@@ -330,15 +331,31 @@
 
       const countryIso = form.phone_country ? form.phone_country.value : "RU";
       const country = phoneData()?.byIso.get(countryIso);
+      const name = form.name.value.trim();
+      const phone = form.phone.value.trim();
+      const product = form.product.value;
+      const city = form.city.value.trim();
+      const comment = form.comment.value.trim();
+      const phoneCountry = country ? `${country.name} (+${country.dial})` : countryIso;
       const body = {
         access_key: FORM_ACCESS_KEY,
-        subject: form.subject.value,
-        name: form.name.value.trim(),
-        phone: form.phone.value.trim(),
-        phone_country: country ? `${country.name} (+${country.dial})` : countryIso,
-        product: form.product.value,
-        city: form.city.value.trim(),
-        comment: form.comment.value.trim(),
+        from_name: FORM_FROM_NAME,
+        subject: form.subject.value || "Заявка на партию",
+        name,
+        phone,
+        phone_country: phoneCountry,
+        product,
+        city,
+        comment,
+        message: [
+          `Имя / организация: ${name}`,
+          `Телефон: ${phone} (${phoneCountry})`,
+          product ? `Тип продукции: ${product}` : null,
+          city ? `Город: ${city}` : null,
+          comment ? `Комментарий: ${comment}` : null
+        ]
+          .filter(Boolean)
+          .join("\n"),
         botcheck: form.botcheck.value
       };
 
@@ -371,6 +388,34 @@
     });
   };
 
+  let lockedScrollY = 0;
+
+  const setScrollLock = (locked) => {
+    document.documentElement.classList.toggle("has-lead-dialog", locked);
+    if (locked) {
+      lockedScrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${lockedScrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+      return;
+    }
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    window.scrollTo(0, lockedScrollY);
+  };
+
+  const closeLeadDialog = (dialog) => {
+    if (!dialog) return;
+    if (typeof dialog.close === "function") dialog.close();
+    else dialog.removeAttribute("open");
+    setScrollLock(false);
+  };
+
   const ensureDialog = () => {
     let dialog = document.getElementById("lead-dialog");
     if (dialog) return dialog;
@@ -380,15 +425,24 @@
     dialog.innerHTML = `
       <div class="lead-dialog-head">
         <h2 class="supply-title" id="lead-dialog-title">Запросить оптовый расчёт / спецификацию</h2>
-        <button class="btn btn-ghost lead-close" type="button">Закрыть</button>
+        <button class="btn btn-ghost lead-close" type="button" aria-label="Закрыть">Закрыть</button>
       </div>
       <form class="lead-form calc-form"></form>
     `;
     dialog.querySelector("form").innerHTML = fieldsHtml();
-    dialog.querySelector(".lead-close").addEventListener("click", () => dialog.close());
-    dialog.addEventListener("click", (event) => {
-      if (event.target === dialog) dialog.close();
+    dialog.querySelector(".lead-close").addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      closeLeadDialog(dialog);
     });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeLeadDialog(dialog);
+    });
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeLeadDialog(dialog);
+    });
+    dialog.addEventListener("close", () => setScrollLock(false));
     document.body.appendChild(dialog);
     bindForm(dialog.querySelector("form"));
     return dialog;
@@ -414,7 +468,10 @@
     const form = dialog.querySelector("form");
     form.dataset.topic = topic;
     applyTopic(form, topic);
-    if (!dialog.open) dialog.showModal();
+    if (!dialog.open) {
+      dialog.showModal();
+      setScrollLock(true);
+    }
     const name = form.querySelector("[name=name]");
     if (name) name.focus();
   });
