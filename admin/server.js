@@ -7,8 +7,45 @@ const sharp = require("sharp");
 const content = require("./content");
 
 const PORT = Number(process.env.PORT) || 8787;
-const PASSWORD = process.env.ADMIN_PASSWORD || "karelia";
-const sessions = new Set();
+const HOST = "127.0.0.1";
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 10;
+const MIN_PASSWORD_LENGTH = 12;
+
+const sessions = new Map();
+const loginAttempts = new Map();
+
+function loadPassword() {
+  if (process.env.ADMIN_PASSWORD) return String(process.env.ADMIN_PASSWORD);
+  const file = path.join(__dirname, ".local-password");
+  if (fs.existsSync(file)) return fs.readFileSync(file, "utf8").trim();
+  return "";
+}
+
+function passwordIssues(password) {
+  const issues = [];
+  if (!password) {
+    issues.push("задайте ADMIN_PASSWORD или создайте admin/.local-password");
+    return issues;
+  }
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    issues.push(`минимум ${MIN_PASSWORD_LENGTH} символов`);
+  }
+  if (!/[A-Za-zА-Яа-я]/.test(password)) issues.push("нужна хотя бы одна буква");
+  if (!/\d/.test(password)) issues.push("нужна хотя бы одна цифра");
+  if (password === "karelia") issues.push("пароль по умолчанию запрещён");
+  return issues;
+}
+
+const PASSWORD = loadPassword();
+const passwordProblems = passwordIssues(PASSWORD);
+if (passwordProblems.length) {
+  console.error("Админка не запущена: слабый или отсутствующий пароль.");
+  console.error(`  ${passwordProblems.join("; ")}`);
+  console.error("Пример: ADMIN_PASSWORD=\"YourStrongPass1\" npm start");
+  console.error("Или: положите пароль в admin/.local-password (файл в .gitignore).");
+  process.exit(1);
+}
 
 const previewScript = `<script>
 (function () {
@@ -28,10 +65,12 @@ const previewScript = `<script>
   function photo(key, url) {
     var figure = document.querySelector('[data-photo="' + key + '"]');
     if (!figure || !url) return;
-    var alt = figure.getAttribute("data-photo");
-    figure.innerHTML = '<img src="' + url + '" alt="" />';
-    var image = figure.querySelector("img");
+    var alt = figure.getAttribute("data-photo") || "";
+    figure.textContent = "";
+    var image = document.createElement("img");
+    image.src = url;
     image.alt = alt;
+    figure.appendChild(image);
   }
   function gallery(data) {
     var root = document.getElementById("gallery-root");
@@ -70,15 +109,69 @@ const previewScript = `<script>
 })();
 </script>`;
 
+function isInsideRoot(rootDir, candidate) {
+  const rootResolved = path.resolve(rootDir);
+  const fileResolved = path.resolve(candidate);
+  const relative = path.relative(rootResolved, fileResolved);
+  return relative === "" || (relative && !relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
 function tokenFrom(req) {
   const raw = req.headers.cookie || "";
   const match = raw.match(/(?:^|; )gk_admin=([^;]+)/);
   return match ? decodeURIComponent(match[1]) : "";
 }
 
+function sessionOf(req) {
+  return sessions.get(tokenFrom(req)) || null;
+}
+
+function requestIsHttps(req) {
+  if (process.env.ADMIN_HTTPS === "1") return true;
+  if (req.secure) return true;
+  const proto = String(req.headers["x-forwarded-proto"] || "").split(",")[0].trim();
+  return proto === "https";
+}
+
+function cookieHeader(name, value, req, extra = "") {
+  const parts = [`${name}=${value}`, "HttpOnly", "SameSite=Lax", "Path=/"];
+  if (requestIsHttps(req)) parts.push("Secure");
+  if (extra) parts.push(extra);
+  return parts.join("; ");
+}
+
+function clientIp(req) {
+  return req.socket.remoteAddress || "unknown";
+}
+
+function loginAllowed(req) {
+  const ip = clientIp(req);
+  const now = Date.now();
+  let entry = loginAttempts.get(ip);
+  if (!entry || entry.resetAt <= now) {
+    entry = { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+    loginAttempts.set(ip, entry);
+  }
+  if (entry.count >= LOGIN_MAX_ATTEMPTS) {
+    return { ok: false, retryAfterSec: Math.max(1, Math.ceil((entry.resetAt - now) / 1000)) };
+  }
+  return { ok: true, entry };
+}
+
 function requireAuth(req, res, next) {
-  if (sessions.has(tokenFrom(req))) return next();
+  if (sessionOf(req)) return next();
   res.status(401).json({ error: "Нужно войти" });
+}
+
+function requireCsrf(req, res, next) {
+  const session = sessionOf(req);
+  if (!session) return res.status(401).json({ error: "Нужно войти" });
+  const header = String(req.headers["x-csrf-token"] || "");
+  const left = Buffer.from(header);
+  const right = Buffer.from(session.csrf);
+  const same = left.length === right.length && crypto.timingSafeEqual(left, right);
+  if (!same) return res.status(403).json({ error: "Неверный CSRF-токен" });
+  next();
 }
 
 const upload = multer({
@@ -103,25 +196,39 @@ app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
 
 app.post("/admin/api/login", (req, res) => {
-  const password = String(req.body && req.body.password || "");
+  const gate = loginAllowed(req);
+  if (!gate.ok) {
+    res.setHeader("Retry-After", String(gate.retryAfterSec));
+    return res.status(429).json({ error: "Слишком много попыток. Подождите и попробуйте снова." });
+  }
+
+  const password = String((req.body && req.body.password) || "");
   const left = Buffer.from(password);
   const right = Buffer.from(PASSWORD);
   const same = left.length === right.length && crypto.timingSafeEqual(left, right);
-  if (!same) return res.status(401).json({ error: "Неверный пароль" });
+  if (!same) {
+    gate.entry.count += 1;
+    return res.status(401).json({ error: "Неверный пароль" });
+  }
+
+  loginAttempts.delete(clientIp(req));
   const token = crypto.randomBytes(24).toString("hex");
-  sessions.add(token);
-  res.setHeader("Set-Cookie", `gk_admin=${token}; HttpOnly; SameSite=Lax; Path=/`);
-  res.json({ ok: true });
+  const csrf = crypto.randomBytes(24).toString("hex");
+  sessions.set(token, { csrf });
+  res.setHeader("Set-Cookie", cookieHeader("gk_admin", token, req));
+  res.json({ ok: true, csrf });
 });
 
-app.post("/admin/api/logout", (req, res) => {
+app.post("/admin/api/logout", requireAuth, requireCsrf, (req, res) => {
   sessions.delete(tokenFrom(req));
-  res.setHeader("Set-Cookie", "gk_admin=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0");
+  res.setHeader("Set-Cookie", cookieHeader("gk_admin", "", req, "Max-Age=0"));
   res.json({ ok: true });
 });
 
 app.get("/admin/api/me", (req, res) => {
-  res.json({ ok: sessions.has(tokenFrom(req)) });
+  const session = sessionOf(req);
+  if (!session) return res.json({ ok: false });
+  res.json({ ok: true, csrf: session.csrf });
 });
 
 app.get("/admin/api/pages", requireAuth, (req, res) => {
@@ -136,7 +243,7 @@ app.get("/admin/api/page", requireAuth, (req, res, next) => {
   }
 });
 
-app.put("/admin/api/page", requireAuth, (req, res, next) => {
+app.put("/admin/api/page", requireAuth, requireCsrf, (req, res, next) => {
   try {
     res.json(content.savePage(String(req.body.id || ""), req.body.fields || {}, req.body.seo));
   } catch (error) {
@@ -144,7 +251,7 @@ app.put("/admin/api/page", requireAuth, (req, res, next) => {
   }
 });
 
-app.put("/admin/api/gallery", requireAuth, (req, res, next) => {
+app.put("/admin/api/gallery", requireAuth, requireCsrf, (req, res, next) => {
   try {
     res.json(content.saveGallery(req.body || {}));
   } catch (error) {
@@ -152,7 +259,7 @@ app.put("/admin/api/gallery", requireAuth, (req, res, next) => {
   }
 });
 
-app.post("/admin/api/upload", requireAuth, upload.single("file"), async (req, res, next) => {
+app.post("/admin/api/upload", requireAuth, requireCsrf, upload.single("file"), async (req, res, next) => {
   try {
     if (!req.file) {
       const error = new Error("Файл не пришёл");
@@ -182,6 +289,11 @@ app.post("/admin/api/upload", requireAuth, upload.single("file"), async (req, re
       throw error;
     }
     const absolute = path.join(content.root, relative);
+    if (!isInsideRoot(content.root, absolute)) {
+      const error = new Error("Некуда сохранить фото");
+      error.status = 400;
+      throw error;
+    }
     fs.mkdirSync(path.dirname(absolute), { recursive: true });
     await toWebp(req.file.buffer, absolute);
     let item = null;
@@ -208,9 +320,11 @@ app.use((req, res, next) => {
     return res.status(404).end();
   }
   if (req.query.preview === "1" && req.path.endsWith(".html")) {
-    const file = path.join(content.root, req.path);
     const root = path.resolve(content.root);
-    if (!file.startsWith(root) || !fs.existsSync(file)) return next();
+    const relative = path.normalize(decodeURIComponent(req.path)).replace(/^([/\\])+/, "");
+    if (relative.includes("..")) return next();
+    const file = path.resolve(root, relative);
+    if (!isInsideRoot(root, file) || !fs.existsSync(file)) return next();
     const html = fs.readFileSync(file, "utf8").replace("</body>", `${previewScript}</body>`);
     return res.type("html").send(html);
   }
@@ -225,7 +339,7 @@ app.use((error, req, res, next) => {
   res.status(status).json({ error: status >= 500 ? "Не получилось сохранить" : error.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`Админка: http://127.0.0.1:${PORT}/admin`);
-  console.log("Пароль берётся из ADMIN_PASSWORD, иначе karelia");
+app.listen(PORT, HOST, () => {
+  console.log(`Админка: http://${HOST}:${PORT}/admin`);
+  console.log("Доступ только с этого компьютера (127.0.0.1).");
 });

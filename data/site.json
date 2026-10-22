@@ -1,6 +1,9 @@
 {
+  "siteUrl": "https://granit-karel.ru",
   "phone": "+7 921 801 71 70",
   "phoneTel": "+79218017170",
   "email": "info@granit-karel.ru",
-  "inn": "102003029438"
+  "inn": "102003029438",
+  "telegramUrl": "https://t.me/+79218017170",
+  "maxUrl": ""
 }

@@ -408,7 +408,7 @@ function readHeadSeo(html) {
 
 function writeHeadSeo(html, seo) {
   const title = cleanSearchText(seo && seo.title, 300);
-  const description = cleanSearchText(seo && seo.description, 4000);
+  const description = clipSeoDescription(cleanSearchText(seo && seo.description, 500), 160);
   if (!title) {
     const error = new Error("Заголовок в поиске не может быть пустым");
     error.status = 400;
@@ -444,14 +444,19 @@ function writeHeadSeo(html, seo) {
 function withSeo(page, relativeFile) {
   const html = fs.readFileSync(path.join(root, relativeFile), "utf8");
   const seo = readHeadSeo(html);
-  seo.url = `https://granit-karel.ru/${relativeFile.replace(/^\//, "")}`;
+  const siteData = readJson(paths.site);
+  const base = String(siteData.siteUrl || "https://granit-karel.ru").replace(/\/$/, "");
+  const pathPart = relativeFile.replace(/^\//, "");
+  seo.url = pathPart === "index.html" ? `${base}/` : `${base}/${pathPart}`;
   return { ...page, seo };
 }
 
 function isPositioningSection(section) {
-  return /^6\.\s/.test(section.title)
-    || section.title.includes("Рыночное позиционирование")
-    || section.title.includes("причин выбрать");
+  const title = String(section.title || "");
+  if (/^6\.\s/.test(title)) return true;
+  if (/позиционирование|причин выбрать|выбирают нас|почему (клиенты|нас)/i.test(title)) return true;
+  const blocks = Array.isArray(section.blocks) ? section.blocks : [];
+  return blocks.some((block) => /👉|ОСТАВИТЬ ЗАЯВКУ|ПОЗВОНИТЬ СЕЙЧАС/.test(String(block.text || "")));
 }
 
 function sectionPlainText(section) {
@@ -461,15 +466,44 @@ function sectionPlainText(section) {
   }).join(" ");
 }
 
+function scrubSeoJunk(text) {
+  return String(text || "")
+    .replace(/👉\s*\[[^\]]*\]/g, " ")
+    .replace(/📞\s*\[[^\]]*\]/g, " ")
+    .replace(/[✔✅❌⚠⚠️📌✨🔥💡⭐️⭐]/gu, " ")
+    .replace(/Почему клиенты выбирают нас\?[\s\S]*$/i, " ")
+    .replace(/Не откладывайте[\s\S]*$/i, " ")
+    .replace(/Заполните форму[\s\S]*$/i, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function clipSeoDescription(text, max = 160) {
+  const clean = scrubSeoJunk(text);
+  if (!clean) return "";
+  if (clean.length <= max) return clean;
+  const slice = clean.slice(0, max - 1);
+  const dot = slice.lastIndexOf(". ");
+  const comma = slice.lastIndexOf(", ");
+  const space = slice.lastIndexOf(" ");
+  let cut = slice;
+  if (dot >= max * 0.55) cut = slice.slice(0, dot + 1);
+  else if (comma >= max * 0.55) cut = slice.slice(0, comma);
+  else if (space >= max * 0.55) cut = slice.slice(0, space);
+  cut = cut.replace(/[,:;–—\-]\s*$/u, "").trim();
+  if (!cut) cut = clean.slice(0, max - 1).trim();
+  return /[.!?…]$/u.test(cut) ? cut : `${cut}…`;
+}
+
 function defaultArticleDescription(article) {
-  const positioning = (article.sections || []).find(isPositioningSection);
-  return [article.meta, positioning ? sectionPlainText(positioning) : ""].filter(Boolean).join(" ");
+  const source = article.meta || (Array.isArray(article.lead) && article.lead[0]) || "";
+  return clipSeoDescription(source, 160);
 }
 
 function applyArticleSeo(article, seo) {
   if (!seo || typeof seo !== "object") return false;
   const title = cleanSearchText(seo.title, 300);
-  const description = cleanSearchText(seo.description, 4000);
+  const description = clipSeoDescription(cleanSearchText(seo.description, 500), 160);
   if (!title) {
     const error = new Error("Заголовок в поиске не может быть пустым");
     error.status = 400;
@@ -512,7 +546,7 @@ function gallerySearchTitle(title) {
 function storedSearchSeo(input, fallbackTitle, fallbackDescription) {
   if (!input || typeof input !== "object") return undefined;
   const title = cleanSearchText(input.title, 300);
-  const description = cleanSearchText(input.description, 4000);
+  const description = clipSeoDescription(cleanSearchText(input.description, 500), 160);
   if (!title) {
     const error = new Error("Заголовок в поиске не может быть пустым");
     error.status = 400;
@@ -994,10 +1028,14 @@ function saveGallery(next) {
     data.seo = current.seo;
   }
   writeJson(paths.gallery, data);
+  const galleryRoot = path.resolve(root, "images/gallery");
   for (const item of current.items) {
     if (!clean.some((kept) => kept.id === item.id)) {
-      const file = path.join(root, item.src);
-      if (file.startsWith(path.join(root, "images/gallery")) && fs.existsSync(file)) fs.unlinkSync(file);
+      const file = path.resolve(root, item.src);
+      const relative = path.relative(galleryRoot, file);
+      const inside =
+        relative && !relative.startsWith("..") && !path.isAbsolute(relative);
+      if (inside && fs.existsSync(file)) fs.unlinkSync(file);
     }
   }
   rebuild();
