@@ -2551,6 +2551,12 @@ ul.stone-links {
   text-underline-offset: 0.15em;
 }
 
+/* display только при [open]: иначе close()/Esc не скрывают dialog */
+.has-lead-dialog,
+html.has-lead-dialog body {
+  overflow: hidden;
+}
+
 .lead-dialog {
   width: min(36rem, calc(100% - 2rem)); /* как .consent-note */
   max-height: calc(100% - 2rem);
@@ -2563,6 +2569,25 @@ ul.stone-links {
   box-shadow: var(--shadow);
 }
 
+.lead-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lead-dialog form.lead-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 0.75rem;
+  overflow: auto;
+}
+
+.lead-dialog form .btn[type="submit"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+
 .lead-dialog::backdrop {
   background: rgba(37, 42, 44, 0.45);
 }
@@ -2572,6 +2597,7 @@ ul.stone-links {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+  flex: 0 0 auto;
 }
 
 .lead-dialog-head .supply-title {
