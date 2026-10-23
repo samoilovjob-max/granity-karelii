@@ -1,0 +1,47 @@
+# Деплой статики на хостинг Рег.ру по FTP после push в main.
+# Секреты репозитория: REGRU_FTP_HOST, REGRU_FTP_USER, REGRU_FTP_PASSWORD
+# (хост — IP сервера или домен из вкладки «Доступы» в ЛК Рег.ру;
+#  логин вида u1234567; каталог сайта — обычно www/granit-karel.ru/ или public_html/
+#  или httpdocs/ в зависимости от панели — укажите в REGRU_FTP_DIR)
+name: Deploy to Reg.ru FTP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require FTP secrets
+        env:
+          HOST: ${{ secrets.REGRU_FTP_HOST }}
+          USER: ${{ secrets.REGRU_FTP_USER }}
+          PASS: ${{ secrets.REGRU_FTP_PASSWORD }}
+        run: |
+          if [ -z "$HOST" ] || [ -z "$USER" ] || [ -z "$PASS" ]; then
+            echo "Add REGRU_FTP_HOST, REGRU_FTP_USER, REGRU_FTP_PASSWORD (and optional REGRU_FTP_DIR) in repo secrets."
+            exit 1
+          fi
+      - name: Upload site to Reg.ru
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.REGRU_FTP_HOST }}
+          username: ${{ secrets.REGRU_FTP_USER }}
+          password: ${{ secrets.REGRU_FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: ${{ secrets.REGRU_FTP_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/admin/**
+            **/.github/**
+            **/docs/**
+            **/AGENTS.md
+            **/PLAN.md
+            **/package*.json
+            **/scripts/**
+            **/.cursor/**
