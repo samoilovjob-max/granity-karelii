@@ -245,7 +245,7 @@ function scrubSeoJunk(text) {
     .trim();
 }
 
-function clipSeoDescription(text, max = 160) {
+function clipSeoDescription(text, max = 170) {
   const clean = scrubSeoJunk(text);
   if (!clean) return "";
   if (clean.length <= max) return clean;
@@ -265,10 +265,10 @@ function clipSeoDescription(text, max = 160) {
 // Своё seoDescription из админки; иначе только meta/lead — без блока позиционирования и CTA.
 function articleDescription(article) {
   if (article.seoDescription && String(article.seoDescription).trim()) {
-    return clipSeoDescription(article.seoDescription, 160);
+    return clipSeoDescription(article.seoDescription, 170);
   }
   const source = article.meta || (Array.isArray(article.lead) && article.lead[0]) || "";
-  return clipSeoDescription(source, 160);
+  return clipSeoDescription(source, 170);
 }
 
 function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "", pagePath = "") {
