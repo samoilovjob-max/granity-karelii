@@ -81,6 +81,14 @@ function collectFields() {
       const item = gallery.items.find((entry) => entry.id === el.dataset.caption);
       if (item) item.caption = el.value;
     });
+    editor.querySelectorAll("[data-tag-blocks]").forEach((el) => {
+      const item = gallery.items.find((entry) => entry.id === el.dataset.tagBlocks);
+      if (!item) return;
+      const tags = new Set(Array.isArray(item.tags) ? item.tags : []);
+      if (el.checked) tags.add("blocks");
+      else tags.delete("blocks");
+      item.tags = [...tags];
+    });
   }
   pushPreview();
   setStatus("Есть несохранённые правки");
@@ -243,7 +251,7 @@ function renderEditor(page) {
       <label>Заголовок<input data-field="gallery.title" value="${escapeHtml(gallery.title)}" /></label>
       <label>Вступление<textarea data-field="gallery.lead">${escapeHtml(gallery.lead)}</textarea></label>
       <div class="drop" id="drop">Перетащите фотографии сюда или нажмите, чтобы выбрать<input id="galleryFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden /></div>
-      <p class="hint">Каждое фото само сожмётся в WebP. Подпись можно сразу поправить — справа видно сетку, как на сайте.</p>
+      <p class="hint">Каждое фото само сожмётся в WebP. Отметьте «На главной (блоки)» — фото попадёт в карусель на главной. Подпись со словом «блок» тоже подхватится автоматически.</p>
       <div id="items"></div>`;
     renderPhrases();
     refreshSeo(true);
@@ -267,18 +275,22 @@ function renderEditor(page) {
 function renderGalleryItems() {
   const box = document.querySelector("#items");
   if (!box) return;
-  box.innerHTML = gallery.items.map((item, index) => `
+  box.innerHTML = gallery.items.map((item, index) => {
+    const onHome = Array.isArray(item.tags) && item.tags.includes("blocks");
+    return `
     <article class="gallery-item">
       <img class="thumb" src="/${escapeHtml(item.src)}" alt="" />
       <div>
         <label>Подпись<input data-caption="${escapeHtml(item.id)}" value="${escapeHtml(item.caption || "")}" /></label>
+        <label class="check"><input type="checkbox" data-tag-blocks="${escapeHtml(item.id)}"${onHome ? " checked" : ""} /> На главной (блоки)</label>
         <div class="item-actions">
           <button class="ghost" type="button" data-move="-1" data-index="${index}" ${index === 0 ? "disabled" : ""}>Выше</button>
           <button class="ghost" type="button" data-move="1" data-index="${index}" ${index === gallery.items.length - 1 ? "disabled" : ""}>Ниже</button>
           <button class="ghost" type="button" data-remove="${escapeHtml(item.id)}">Удалить</button>
         </div>
       </div>
-    </article>`).join("");
+    </article>`;
+  }).join("");
   pushPreview();
 }
 
@@ -369,7 +381,7 @@ editor.addEventListener("input", (event) => {
     refreshSeo(false);
     return;
   }
-  if (event.target.matches("[data-field], [data-caption]")) collectFields();
+  if (event.target.matches("[data-field], [data-caption], [data-tag-blocks]")) collectFields();
 });
 
 editor.addEventListener("keydown", (event) => {
@@ -413,6 +425,10 @@ editor.addEventListener("click", (event) => {
 });
 
 editor.addEventListener("change", (event) => {
+  if (event.target.matches("[data-tag-blocks]")) {
+    collectFields();
+    return;
+  }
   if (event.target.id === "photoFile") {
     const id = current.id.startsWith("stone:") ? current.id.slice(6) : current.id.slice(8);
     const kind = current.id.startsWith("stone:") ? "stone" : "product";

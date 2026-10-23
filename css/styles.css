@@ -823,6 +823,7 @@ summary:focus-visible {
 }
 
 .stone-photo {
+  position: relative;
   margin: 0;
   width: 100%;
   background: var(--bg-card);
@@ -840,10 +841,19 @@ summary:focus-visible {
   border-radius: calc(var(--radius) + 2px);
 }
 
-.stone-photo figcaption {
-  padding: 0.7rem 0.9rem 0.85rem;
-  color: var(--color-muted);
-  font-size: 0.82rem;
+/* Подписи к фото: в DOM для SEO/скринридеров, визуально скрыты */
+.stone-photo figcaption,
+.gallery-grid figcaption:not(:empty) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .photo-carousel {
@@ -1736,6 +1746,7 @@ body.has-lightbox {
 }
 
 .gallery-grid figure {
+  position: relative;
   margin: 0;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1748,11 +1759,6 @@ body.has-lightbox {
   width: 100%;
   aspect-ratio: 3 / 2;
   object-fit: cover;
-}
-
-.gallery-grid figcaption {
-  padding: 0.45rem 0.7rem 0.55rem;
-  color: var(--color-text);
 }
 
 .gallery-grid figcaption:empty {
@@ -2163,6 +2169,26 @@ ul.stone-links {
   height: auto; /* атрибуты width/height не растягивают кадр */
   aspect-ratio: 3 / 2; /* как .gallery-grid img */
   object-fit: cover;
+}
+
+.home-photo--carousel .photo-carousel {
+  border-radius: 0;
+}
+
+.home-photo--carousel .photo-carousel-slide img {
+  aspect-ratio: 3 / 2;
+  border-radius: 0;
+}
+
+.home-photo--carousel .photo-carousel-dots {
+  flex-wrap: wrap;
+  row-gap: 0.3rem;
+  padding: 0 0.75rem;
+}
+
+.home-photo--carousel .photo-carousel-dot {
+  width: 0.42rem;
+  height: 0.42rem;
 }
 
 .home-photo-placeholder {

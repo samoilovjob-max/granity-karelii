@@ -120,6 +120,7 @@ function footer(prefix, note = "18 пород · калькулятор масс
           </li>
           <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>
           <li class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></li>
+          <li class="footer-legal"><a href="${prefix}soglashenie.html">Пользовательское соглашение</a></li>
         </ul>
       </div>
       <p class="footer-note">${note}</p>
@@ -584,6 +585,8 @@ fs.mkdirSync(productDir, { recursive: true });
 });
 fs.writeFileSync(path.join(root, "produkciya.html"), productsPage(orderedProducts));
 fs.writeFileSync(path.join(root, "galereya.html"), galleryPage());
+syncHomeBlocksCarousel();
+syncHomeStonesCarousel();
 writeSitemap(orderedProducts);
 console.log(`wrote vidy.html, produkciya.html, galereya.html, sitemap.xml, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
 
@@ -602,6 +605,7 @@ function writeSitemap(productList) {
     "kontakty.html",
     "postavka-granita-petrozavodsk-kareliya.html",
     "politika.html",
+    "soglashenie.html",
     ...stones.map((stone) => `granity/${stone.id}.html`),
     ...productList.map((product) => `produkciya/${product.id}.html`)
   ];
@@ -638,4 +642,94 @@ function galleryPage() {
 </body>
 </html>
 `;
+}
+
+/** Gallery photos for the home blocks carousel: explicit tag or caption with «блок». */
+function isBlockGalleryItem(item) {
+  if (!item || !item.src) return false;
+  if (Array.isArray(item.tags) && item.tags.includes("blocks")) return true;
+  return /блок/i.test(String(item.caption || ""));
+}
+
+function homeCarouselMarkup({ start, end, label, interval, items, indent = "    " }) {
+  if (!items.length) {
+    return `${start}
+${indent}<!-- нет фото для карусели «${label}» -->
+${indent}${end}`;
+  }
+  const slides = items
+    .map((item, index) => {
+      const alt = esc(item.alt || label);
+      return `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${items.length}">
+          <img src="${esc(item.src)}" alt="${alt}" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
+        </div>`;
+    })
+    .join("");
+  const dots = items
+    .map(
+      (_, index) =>
+        `<button type="button" class="photo-carousel-dot${index === 0 ? " is-active" : ""}" data-index="${index}" aria-label="Фото ${index + 1}"${index === 0 ? ' aria-current="true"' : ""}></button>`
+    )
+    .join("");
+  return `${start}
+${indent}<figure class="home-photo home-photo--carousel section-gap">
+${indent}  <div class="photo-carousel" data-carousel data-interval="${interval}" aria-roledescription="карусель" aria-label="${esc(label)}">
+${indent}    <div class="photo-carousel-track" data-track>${slides}</div>
+${indent}    <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+${indent}    <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+${indent}    <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">${dots}</div>
+${indent}  </div>
+${indent}</figure>
+${indent}${end}`;
+}
+
+function patchIndexCarousel(start, end, markup, logLabel, count) {
+  const indexPath = path.join(root, "index.html");
+  let html = fs.readFileSync(indexPath, "utf8");
+  const from = html.indexOf(start);
+  const to = html.indexOf(end);
+  if (from === -1 || to === -1 || to < from) {
+    console.warn(`${logLabel} markers missing in index.html`);
+    return;
+  }
+  html = `${html.slice(0, from)}${markup}${html.slice(to + end.length)}`;
+  fs.writeFileSync(indexPath, html);
+  console.log(`${logLabel}: ${count} photo(s)`);
+}
+
+function syncHomeBlocksCarousel() {
+  const start = "<!-- HOME_BLOCKS_CAROUSEL:start -->";
+  const end = "<!-- HOME_BLOCKS_CAROUSEL:end -->";
+  const items = (Array.isArray(gallery.items) ? gallery.items : [])
+    .filter(isBlockGalleryItem)
+    .map((item) => ({ src: item.src, alt: item.caption || "Блоки гранита" }));
+  const markup = homeCarouselMarkup({
+    start,
+    end,
+    label: "Блоки гранита",
+    interval: 7000,
+    items
+  });
+  patchIndexCarousel(start, end, markup, "home blocks carousel", items.length);
+}
+
+function syncHomeStonesCarousel() {
+  const start = "<!-- HOME_STONES_CAROUSEL:start -->";
+  const end = "<!-- HOME_STONES_CAROUSEL:end -->";
+  const items = stones
+    .map((stone) => {
+      const shots = imageGallery("granites", stone.id);
+      if (!shots.length) return null;
+      return { src: shots[0], alt: stone.name };
+    })
+    .filter(Boolean);
+  const markup = homeCarouselMarkup({
+    start,
+    end,
+    label: "Виды гранита",
+    interval: 5000,
+    items,
+    indent: "      "
+  });
+  patchIndexCarousel(start, end, markup, "home stones carousel", items.length);
 }
