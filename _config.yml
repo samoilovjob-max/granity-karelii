@@ -1,8 +1,5 @@
-url: "https://granit-karel.ru"
-baseurl: ""
-
-# GitHub Pages (Jekyll): РЅРµ РїСѓР±Р»РёРєРѕРІР°С‚СЊ CMS Рё Node-Р°СЂС‚РµС„Р°РєС‚С‹.
-# РђРґРјРёРЅРєР° СЂР°Р±РѕС‚Р°РµС‚ С‚РѕР»СЊРєРѕ Р»РѕРєР°Р»СЊРЅРѕ С‡РµСЂРµР· `npm start`.
+# GitHub Pages (Jekyll): не публиковать CMS и Node-артефакты.
+# Админка работает только локально через `npm start`.
 exclude:
   - admin
   - node_modules

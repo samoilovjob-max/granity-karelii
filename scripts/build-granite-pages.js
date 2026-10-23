@@ -131,15 +131,7 @@ function footer(prefix, note = "18 пород · калькулятор масс
   <script src="${prefix}js/lead.js"></script>`;
 }
 
-function keywordTag(keywords) {
-  const phrases = (Array.isArray(keywords) ? keywords : [])
-    .map((item) => String(item).trim())
-    .filter(Boolean);
-  if (!phrases.length) return "";
-  return `\n  <meta name="keywords" content="${esc(phrases.join(", "))}" />`;
-}
-
-function head(prefix, title, description, extra = "", keywords = [], pagePath = "") {
+function head(prefix, title, description, extra = "", pagePath = "") {
   const pageUrl = absoluteUrl(pagePath);
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -147,7 +139,7 @@ function head(prefix, title, description, extra = "", keywords = [], pagePath = 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
-  <meta name="description" content="${esc(description)}" />${keywordTag(keywords)}
+  <meta name="description" content="${esc(description)}" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:type" content="website" />
@@ -283,8 +275,7 @@ function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = 
   const seo = stored && typeof stored === "object" ? stored : {};
   const title = String(seo.title || fallbackTitle);
   const description = String(seo.description || fallbackDescription);
-  const keywords = Array.isArray(seo.keywords) ? seo.keywords : [];
-  return head(prefix, title, description, extra, keywords, pagePath);
+  return head(prefix, title, description, extra, pagePath);
 }
 
 function story(article, keyPrefix) {
@@ -333,7 +324,7 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation, "radiation"]
   ].map(([label, value, key]) => `<div><dt>${label}</dt><dd data-edit="stone.${stone.id}.${key}">${esc(value)}</dd></div>`).join("");
 
-  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), article.keywords, `granity/${stone.id}.html`)}
+  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), `granity/${stone.id}.html`)}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span data-edit="stone.${stone.id}.name">${esc(stone.name)}</span></p>
@@ -503,7 +494,7 @@ function productPage(product, siblings) {
     prev ? `<a href="${prev.id}.html">← ${esc(prev.name)}</a>` : "<span></span>",
     next ? `<a href="${next.id}.html">${esc(next.name)} →</a>` : "<span></span>"
   ].join("");
-  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), article.keywords, `produkciya/${product.id}.html`)}
+  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), `produkciya/${product.id}.html`)}
   ${nav("../", "products")}
   <main class="page">
     <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span data-edit="product.${product.id}.name">${esc(product.name)}</span></p>
