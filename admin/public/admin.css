@@ -259,6 +259,19 @@ summary { cursor: pointer; font-weight: 700; }
   align-items: start;
 }
 
+label.check {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+  font-weight: 500;
+}
+
+label.check input {
+  width: auto;
+  margin: 0;
+}
+
 .preview { display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; background: #e7e4de; }
 .preview-bar { justify-content: space-between; padding: 0.45rem 0.7rem; background: var(--card); border-bottom: 1px solid var(--line); }
 .frame-wrap { min-height: 0; display: grid; justify-items: center; }

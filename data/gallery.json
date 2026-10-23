@@ -24,17 +24,20 @@
     {
       "id": "gmv1i1sln",
       "src": "images/gallery/gmv1i1sln.webp",
-      "caption": "Блоки гранита на площадке"
+      "caption": "Блоки гранита на площадке",
+      "tags": ["blocks"]
     },
     {
       "id": "gmv1i1slo",
       "src": "images/gallery/gmv1i1slo.webp",
-      "caption": "Склад блоков у цеха"
+      "caption": "Склад блоков у цеха",
+      "tags": ["blocks"]
     },
     {
       "id": "gmv1i1slp",
       "src": "images/gallery/gmv1i1slp.webp",
-      "caption": "Партия камня на гравии"
+      "caption": "Партия камня на гравии",
+      "tags": ["blocks"]
     },
     {
       "id": "gmv1i1slq",

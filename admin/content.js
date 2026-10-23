@@ -1014,7 +1014,15 @@ function saveGallery(next) {
   const clean = items.map((item) => {
     const stored = known.get(item.id);
     if (!stored) return null;
-    return { id: stored.id, src: stored.src, caption: String(item.caption || "").slice(0, 180) };
+    const caption = String(item.caption || "").slice(0, 180);
+    const tags = Array.isArray(item.tags)
+      ? [...new Set(item.tags.map((tag) => String(tag || "").trim()).filter(Boolean))]
+      : Array.isArray(stored.tags)
+        ? stored.tags
+        : [];
+    const entry = { id: stored.id, src: stored.src, caption };
+    if (tags.length) entry.tags = tags;
+    return entry;
   }).filter(Boolean);
   const title = String(next.title || current.title).slice(0, 120);
   const lead = String(next.lead || current.lead).slice(0, 400);
