@@ -388,6 +388,14 @@
         form.reset();
         applyTopic(form, form.dataset.topic || "");
         setStatus(form, "ok", "Заявка успешно принята, свяжемся в течение дня");
+        try {
+          const metrikaId = window.GK_METRIKA_ID;
+          if (typeof window.ym === "function" && metrikaId) {
+            window.ym(metrikaId, "reachGoal", "lead");
+          }
+        } catch (_) {
+          /* Metrika optional */
+        }
       } catch {
         setStatus(
           form,
