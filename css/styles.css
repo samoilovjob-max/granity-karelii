@@ -550,9 +550,16 @@ select {
   justify-self: center;
 }
 
-.footer-note {
+.footer-end {
   justify-self: end;
-  text-align: right;
+  text-align: left;
+}
+
+.footer-end .footer-note {
+  margin: 0 0 0.15rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  line-height: 2;
 }
 
 .footer-contacts {
@@ -1263,7 +1270,7 @@ body.has-lightbox {
   }
 
   .footer-mid,
-  .footer-note {
+  .footer-end {
     justify-self: start;
     text-align: left;
   }

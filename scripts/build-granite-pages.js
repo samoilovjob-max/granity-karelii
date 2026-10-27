@@ -94,7 +94,7 @@ function consentNote(prefix) {
   return `<p class="consent-note">Заявка уходит на почту производства и на сайте не сохраняется. Отправляя заявку, вы соглашаетесь на <a href="${prefix}politika.html">обработку персональных данных</a>.</p>`;
 }
 
-function footer(prefix, note = "18 пород · калькулятор массы") {
+function footer(prefix) {
   return `<footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-col footer-id">
@@ -105,7 +105,6 @@ function footer(prefix, note = "18 пород · калькулятор масс
         <ul class="footer-contacts">
           <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
           <li class="footer-copy">© 2014 Граниты Карелии</li>
-          <li><a href="${prefix}produkciya.html">Производство изделий из гранита</a></li>
         </ul>
       </div>
       <div class="footer-col footer-mid">
@@ -115,21 +114,44 @@ function footer(prefix, note = "18 пород · калькулятор масс
             <span class="footer-apps">
               <a href="https://wa.me/${esc(site.phoneTel.replace(/^\+/, ""))}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
               <a href="${esc(site.telegramUrl || `https://t.me/+${site.phoneTel.replace(/^\+/, "")}`)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
-              ${site.maxUrl ? `<a href="${esc(site.maxUrl)}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>` : ""}
+              <a href="${esc(site.maxUrl || "https://max.ru/")}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>
             </span>
           </li>
           <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>
-          <li class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></li>
-          <li class="footer-legal"><a href="${prefix}soglashenie.html">Пользовательское соглашение</a></li>
         </ul>
       </div>
-      <p class="footer-note">${note}</p>
+      <div class="footer-col footer-end">
+        <p class="footer-note">Камнеобработка в Карелии</p>
+        <ul class="footer-contacts">
+          <li class="footer-legal"><a href="${prefix}politika.html">Персональные данные</a></li>
+          <li class="footer-legal"><a href="${prefix}soglashenie.html">Пользовательское соглашение</a></li>
+          <li class="footer-legal"><a href="${prefix}politika.html">Политика в отношении обработки персональных данных</a></li>
+        </ul>
+      </div>
     </div>
   </footer>
   <script src="${prefix}js/nav.js"></script>
   <script src="${prefix}js/carousel.js"></script>
   <script src="${prefix}js/phone-countries.js"></script>
   <script src="${prefix}js/lead.js"></script>`;
+}
+
+function metrikaSnippet() {
+  const id = String(site.metrikaId || "").trim();
+  if (!/^\d+$/.test(id)) return "";
+  return `<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+   window.GK_METRIKA_ID = ${id};
+   ym(${id}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/${id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+`;
 }
 
 function head(prefix, title, description, extra = "", pagePath = "") {
@@ -158,7 +180,7 @@ function head(prefix, title, description, extra = "", pagePath = "") {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="${prefix}css/styles.css" />
-</head>
+  ${metrikaSnippet()}</head>
 <body>`;
 }
 
@@ -638,7 +660,7 @@ function galleryPage() {
     </section>
     ${grid}
   </main>
-  ${footer("", "Камнеобработка в Карелии")}
+  ${footer("")}
 </body>
 </html>
 `;
