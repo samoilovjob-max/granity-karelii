@@ -136,12 +136,25 @@ details {
 
 summary { cursor: pointer; font-weight: 700; }
 
+.photo-list { margin-top: 0.9rem; }
+.photo-list h2, .gallery-add h2 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+
 .photo-box {
   margin-top: 0.8rem;
   border: 1px dashed var(--line);
   border-radius: 12px;
   padding: 0.8rem;
 }
+
+.gallery-add {
+  margin-top: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.85rem 0.9rem 1rem;
+  background: #faf7f4;
+}
+
+.file-btn { display: inline-flex; margin-top: 0.7rem; }
 
 .photo-box img, .thumb {
   width: 100%;

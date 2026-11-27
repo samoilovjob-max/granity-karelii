@@ -144,11 +144,13 @@
       <figure class="photo-lightbox-figure">
         <img alt="" draggable="false" />
         <figcaption></figcaption>
+        <a class="btn btn-primary btn-lead js-lead photo-lightbox-lead" href="#zayavka" hidden>Запросить расчёт на это изделие</a>
       </figure>
       <button type="button" class="photo-lightbox-nav photo-lightbox-next" data-next aria-label="Следующее фото">›</button>`;
     document.body.appendChild(lightbox);
 
     lightbox.addEventListener("click", (event) => {
+      if (event.target.closest(".js-lead")) return;
       if (event.target.closest("[data-close]")) closeLightbox();
       else if (event.target.closest("[data-prev]")) stepLightbox(-1);
       else if (event.target.closest("[data-next]")) stepLightbox(1);
@@ -169,10 +171,24 @@
   function showLightboxSlide() {
     const img = lightbox.querySelector("img");
     const caption = lightbox.querySelector("figcaption");
+    const lead = lightbox.querySelector(".photo-lightbox-lead");
     const slide = lightboxImages[lightboxIndex];
     img.src = slide.src;
-    img.alt = slide.alt;
-    caption.textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+    img.alt = slide.alt || "";
+    const parts = [slide.title, slide.stone].filter(Boolean);
+    const label = parts.length ? parts.join(" · ") : slide.alt;
+    caption.textContent = label
+      ? `${label} · ${lightboxIndex + 1} / ${lightboxImages.length}`
+      : `${lightboxIndex + 1} / ${lightboxImages.length}`;
+    if (lead) {
+      if (slide.topic) {
+        lead.hidden = false;
+        lead.setAttribute("data-lead-topic", slide.topic);
+      } else {
+        lead.hidden = true;
+        lead.removeAttribute("data-lead-topic");
+      }
+    }
   }
 
   function stepLightbox(dir) {
@@ -200,42 +216,40 @@
     presentLightbox();
   }
 
-  function galleryImages() {
-    return [...document.querySelectorAll(".gallery-grid img")];
+  function visibleGalleryCards() {
+    return [...document.querySelectorAll(".gallery-card")].filter((card) => !card.hidden && card.offsetParent !== null);
   }
 
-  function openGallery(img) {
-    const images = galleryImages();
-    const index = images.indexOf(img);
+  function cardSlide(card) {
+    const img = card.querySelector("img");
+    return {
+      src: img ? img.currentSrc || img.src : "",
+      alt: img ? img.alt || "" : "",
+      title: card.getAttribute("data-title") || "",
+      stone: card.getAttribute("data-stone") || "",
+      topic: card.getAttribute("data-lead-topic") || ""
+    };
+  }
+
+  function openGalleryCard(card) {
+    const cards = visibleGalleryCards();
+    const index = cards.indexOf(card);
     if (index < 0) return;
     ensureLightbox();
     lightboxRoot = null;
-    lightboxImages = images.map((item) => ({ src: item.currentSrc || item.src, alt: item.alt || "" }));
+    lightboxImages = cards.map(cardSlide);
     lightboxIndex = index;
     presentLightbox();
   }
 
-  function armGallery(root) {
-    root.querySelectorAll("img").forEach((img) => {
-      img.tabIndex = 0;
-    });
-  }
-
-  const gallery = document.querySelector(".gallery-grid");
-  if (gallery) {
-    armGallery(gallery);
-    new MutationObserver(() => armGallery(gallery)).observe(gallery, { childList: true, subtree: true });
+  const galleryRoot = document.getElementById("gallery-root");
+  if (galleryRoot) {
     document.addEventListener("click", (event) => {
-      const img = event.target.closest(".gallery-grid img");
-      if (!img) return;
-      openGallery(img);
-    });
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      const img = event.target.closest(".gallery-grid img");
-      if (!img) return;
-      event.preventDefault();
-      openGallery(img);
+      const media = event.target.closest(".gallery-card-media");
+      if (!media) return;
+      const card = media.closest(".gallery-card");
+      if (!card || card.hidden) return;
+      openGalleryCard(card);
     });
   }
 
@@ -252,49 +266,22 @@
     root.dataset.index = "0";
     root.dataset.paused = "0";
 
-    const prev = root.querySelector("[data-prev]");
-    const next = root.querySelector("[data-next]");
-    const step = (index) => {
-      root.dataset.paused = "0";
-      goTo(root, index);
-      // Blur controls so focus does not keep autoplay paused.
-      if (document.activeElement instanceof HTMLElement && root.contains(document.activeElement)) {
-        document.activeElement.blur();
-      }
-    };
-
-    prev?.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      step(currentIndex(root) - 1);
-    });
-    next?.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      step(currentIndex(root) + 1);
-    });
     const track = root.querySelector("[data-track]");
     let touched = false;
     track?.addEventListener("touchstart", () => {
       touched = true;
     }, { passive: true });
 
-    bindDrag(
-      track,
-      (dir) => {
+    // По карточке не листаем — только открываем просмотр; листание в lightbox.
+    bindDrag(track, () => {
+      touched = true;
+    }, {
+      onTap: () => {
         touched = true;
-        root.dataset.paused = "0";
-        goTo(root, currentIndex(root) + dir);
-      },
-      {
-        onTap: () => {
-          touched = true;
-          openLightbox(root, currentIndex(root));
-        }
+        openLightbox(root, currentIndex(root));
       }
-    );
+    });
 
-    // Mouse and trackpad open the photo on click. They do not drag to the next frame.
     track?.addEventListener("click", (event) => {
       if (touched) {
         touched = false;

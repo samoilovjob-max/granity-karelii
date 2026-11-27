@@ -39,7 +39,7 @@ function footerHtml(prefix) {
           <span>Граниты Карелии</span>
         </a>
         <ul class="footer-contacts">
-          <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
+          <li><span data-edit="site.legalName">${esc(site.legalName || "ООО «ГРАНИТЫ КАРЕЛИИ»")}</span>, ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
           <li class="footer-copy">© 2014 Граниты Карелии</li>
         </ul>
       </div>
@@ -48,9 +48,9 @@ function footerHtml(prefix) {
           <li class="footer-phone">
             <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
-              <a href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
-              <a href="${esc(tg)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
-              <a href="${esc(max)}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>
+              <a href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.webp" alt="" width="18" height="18" loading="lazy" /></a>
+              <a href="${esc(tg)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.webp" alt="" width="18" height="18" loading="lazy" /></a>
+              <a href="${esc(max)}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.webp" alt="" width="18" height="18" loading="lazy" /></a>
             </span>
           </li>
           <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>

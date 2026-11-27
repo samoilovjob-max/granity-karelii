@@ -7,47 +7,679 @@
   },
   "items": [
     {
-      "id": "gmv1hp0il",
-      "src": "images/gallery/gmv1hp0il.webp",
-      "caption": "Полированная фактура тёмного камня"
+      "id": "prod-balyasiny-002_balyasina-dva-shara",
+      "src": "images/products/balyasiny/002_balyasina-dva-shara.webp",
+      "caption": "Балясины: два шара, Возрождение",
+      "title": "Балясина двухъярусная",
+      "stone": "Возрождение",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
     },
     {
-      "id": "gmv1hp0im",
-      "src": "images/gallery/gmv1hp0im.webp",
-      "caption": "Обработка поверхности в цехе"
+      "id": "prod-balyasiny-003_balyasina-s-poyasom",
+      "src": "images/products/balyasiny/003_balyasina-s-poyasom.webp",
+      "caption": "Балясины: с поясом, Возрождение",
+      "title": "Балясина с поясом",
+      "stone": "Возрождение",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
     },
     {
-      "id": "gmv1hp0in",
-      "src": "images/gallery/gmv1hp0in.webp",
-      "caption": "Готовые плиты перед отгрузкой"
+      "id": "prod-balyasiny-001_balyasina-tri-yarusa",
+      "src": "images/products/balyasiny/001_balyasina-tri-yarusa.webp",
+      "caption": "Балясины: три яруса, Возрождение",
+      "title": "Балясина трёхъярусная",
+      "stone": "Возрождение",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-006_vazon-korichnevyy",
+      "src": "images/products/balyasiny/006_vazon-korichnevyy.webp",
+      "caption": "Балясины: вазон коричневый",
+      "title": "Вазон точёный",
+      "stone": "Дымовский гранит",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-004_vazon-chernyy",
+      "src": "images/products/balyasiny/004_vazon-chernyy.webp",
+      "caption": "Балясины: вазон чёрный",
+      "title": "Вазон точёный",
+      "stone": "Габбро-диабаз",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-012_vazon-korichnevyy-ploskaya-kromka",
+      "src": "images/products/balyasiny/012_vazon-korichnevyy-ploskaya-kromka.webp",
+      "caption": "Балясины: вазон габбро-диабаз",
+      "title": "Вазон точёный",
+      "stone": "Габбро-диабаз",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-008_vazon-chernyy-vysokiy",
+      "src": "images/products/balyasiny/008_vazon-chernyy-vysokiy.webp",
+      "caption": "Балясины: вазон дымовский высокий",
+      "title": "Вазон точёный высокий",
+      "stone": "Дымовский гранит",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-011_vazon-chernyy-klassicheskiy",
+      "src": "images/products/balyasiny/011_vazon-chernyy-klassicheskiy.webp",
+      "caption": "Балясины: вазон дымовский классический",
+      "title": "Вазон точёный классический",
+      "stone": "Дымовский гранит",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-010_vazon-korichnevyy-otkrytyy",
+      "src": "images/products/balyasiny/010_vazon-korichnevyy-otkrytyy.webp",
+      "caption": "Балясины: вазоны габбро-диабаз",
+      "title": "Вазоны точёные",
+      "stone": "Габбро-диабаз",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-007_vazon-korichnevyy-uzkiy",
+      "src": "images/products/balyasiny/007_vazon-korichnevyy-uzkiy.webp",
+      "caption": "Балясины: вазон коричневый узкий",
+      "title": "Вазон точёный узкий",
+      "stone": "Дымовский гранит",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-009_vazony-chernye-raznye",
+      "src": "images/products/balyasiny/009_vazony-chernye-raznye.webp",
+      "caption": "Балясины: чёрные вазоны разной высоты",
+      "title": "Вазоны точёные",
+      "stone": "Габбро-диабаз",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-balyasiny-005_vazony-chernye-para",
+      "src": "images/products/balyasiny/005_vazony-chernye-para.webp",
+      "caption": "Балясины: пара чёрных вазонов",
+      "title": "Вазоны точёные, пара",
+      "stone": "Габбро-диабаз",
+      "category": "turned",
+      "tags": [
+        "product",
+        "balyasiny",
+        "turned"
+      ]
+    },
+    {
+      "id": "prod-nadgrobiya-005_kompleks-na-kladbishche",
+      "src": "images/products/nadgrobiya/005_kompleks-na-kladbishche.webp",
+      "caption": "Надгробные плиты: комплекс на кладбище",
+      "title": "Мемориальный комплекс",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "nadgrobiya",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-nadgrobiya-003_kompleks-s-vstavkoy",
+      "src": "images/products/nadgrobiya/003_kompleks-s-vstavkoy.webp",
+      "caption": "Надгробные плиты: комплекс с вставкой",
+      "title": "Мемориальный комплекс",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "nadgrobiya",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-nadgrobiya-001_nadgrobnaya-plita",
+      "src": "images/products/nadgrobiya/001_nadgrobnaya-plita.webp",
+      "caption": "Надгробные плиты: надгробная плита",
+      "title": "Надгробная плита",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "nadgrobiya",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-nadgrobiya-002_plita-s-krestom",
+      "src": "images/products/nadgrobiya/002_plita-s-krestom.webp",
+      "caption": "Надгробные плиты: плита с крестом",
+      "title": "Надгробная плита с крестом",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "nadgrobiya",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-nadgrobiya-004_gravirovka",
+      "src": "images/products/nadgrobiya/004_gravirovka.webp",
+      "caption": "Надгробные плиты: гравировка",
+      "title": "Стела с гравировкой",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "nadgrobiya",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-pamyatniki-001_krest-i-derevo",
+      "src": "images/products/pamyatniki/001_krest-i-derevo.webp",
+      "caption": "Памятники: крест и дерево",
+      "title": "Стела с резьбой",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "pamyatniki",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-pamyatniki-002_stela-s-derevom",
+      "src": "images/products/pamyatniki/002_stela-s-derevom.webp",
+      "caption": "Памятники: стела с деревом",
+      "title": "Стела фигурная с резьбой",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "pamyatniki",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-tumby-001_kromka-tumby",
+      "src": "images/products/tumby/001_kromka-tumby.webp",
+      "caption": "Тумбы под памятники: кромка тумбы",
+      "title": "Тумба под памятник",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "tumby",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-tumby-002_shtabel-tumb",
+      "src": "images/products/tumby/002_shtabel-tumb.webp",
+      "caption": "Тумбы под памятники: штабель тумб",
+      "title": "Тумбы под памятники",
+      "stone": "Габбро-диабаз",
+      "category": "memorial",
+      "tags": [
+        "product",
+        "tumby",
+        "memorial"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-002_kubiki-v-cehe",
+      "src": "images/products/bruschatka/002_kubiki-v-cehe.webp",
+      "caption": "Брусчатка: кубики в цехе",
+      "title": "Брусчатка в цехе",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-003_kubiki-v-yashchike",
+      "src": "images/products/bruschatka/003_kubiki-v-yashchike.webp",
+      "caption": "Брусчатка: кубики в ящике",
+      "title": "Брусчатка в ящике",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-005_kubiki-krupno",
+      "src": "images/products/bruschatka/005_kubiki-krupno.webp",
+      "caption": "Брусчатка: кубики крупно",
+      "title": "Брусчатка крупным планом",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-001_svetlye-kubiki",
+      "src": "images/products/bruschatka/001_svetlye-kubiki.webp",
+      "caption": "Брусчатка: светлые кубики",
+      "title": "Брусчатка кубическая",
+      "stone": "Возрождение",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-006_pryamougolnye",
+      "src": "images/products/bruschatka/006_pryamougolnye.webp",
+      "caption": "Брусчатка: прямоугольные",
+      "title": "Брусчатка прямоугольная",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-007_rozovye-kubiki",
+      "src": "images/products/bruschatka/007_rozovye-kubiki.webp",
+      "caption": "Брусчатка: розовые кубики, Винга",
+      "title": "Брусчатка розовая",
+      "stone": "Винга",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-bruschatka-004_partiya-vo-dvore",
+      "src": "images/products/bruschatka/004_partiya-vo-dvore.webp",
+      "caption": "Брусчатка: партия во дворе",
+      "title": "Партия брусчатки",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "bruschatka",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-plity-mosheniya-001_plitka-rozovaya",
+      "src": "images/products/plity-mosheniya/001_plitka-rozovaya.webp",
+      "caption": "Плиты мощения: плитка, Возрождение",
+      "title": "Плита мощения",
+      "stone": "Возрождение",
+      "category": "construction",
+      "tags": [
+        "product",
+        "plity-mosheniya",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-plity-mosheniya-002_plitka-seraya",
+      "src": "images/products/plity-mosheniya/002_plitka-seraya.webp",
+      "caption": "Плиты мощения: плитка серая",
+      "title": "Плита мощения",
+      "stone": "Возрождение",
+      "category": "construction",
+      "tags": [
+        "product",
+        "plity-mosheniya",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-plity-mosheniya-003_shtabel-plitki",
+      "src": "images/products/plity-mosheniya/003_shtabel-plitki.webp",
+      "caption": "Плиты мощения: штабель плитки",
+      "title": "Плиты мощения",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "plity-mosheniya",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-sleby-002_naklonnye-sleby",
+      "src": "images/products/sleby/002_naklonnye-sleby.webp",
+      "caption": "Слэбы: наклонные слэбы",
+      "title": "Слэбы",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "sleby",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-sleby-001_shtabeli-plit",
+      "src": "images/products/sleby/001_shtabeli-plit.webp",
+      "caption": "Слэбы: штабели плит",
+      "title": "Слэбы",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "sleby",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-sleby-004_ryady-slebov",
+      "src": "images/products/sleby/004_ryady-slebov.webp",
+      "caption": "Слэбы: ряды слэбов",
+      "title": "Слэбы на складе",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "sleby",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-taktilnye-plity-002_plita-s-kvadratnymi-rifami",
+      "src": "images/products/taktilnye-plity/002_plita-s-kvadratnymi-rifami.webp",
+      "caption": "Тактильные плиты: плита с квадратными рифами",
+      "title": "Тактильная плита",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "taktilnye-plity",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-taktilnye-plity-001_plita-s-konusami",
+      "src": "images/products/taktilnye-plity/001_plita-s-konusami.webp",
+      "caption": "Тактильные плиты: плита с конусами",
+      "title": "Тактильная плита",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "taktilnye-plity",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-taktilnye-plity-004_korichnevaya-s-konusami",
+      "src": "images/products/taktilnye-plity/004_korichnevaya-s-konusami.webp",
+      "caption": "Тактильные плиты: коричневая с конусами",
+      "title": "Тактильная плита",
+      "stone": "Дымовский гранит",
+      "category": "construction",
+      "tags": [
+        "product",
+        "taktilnye-plity",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-taktilnye-plity-003_krasnaya-s-kvadratnymi-rifami",
+      "src": "images/products/taktilnye-plity/003_krasnaya-s-kvadratnymi-rifami.webp",
+      "caption": "Тактильные плиты: красная с квадратными рифами, Винга",
+      "title": "Тактильная плита",
+      "stone": "Винга",
+      "category": "construction",
+      "tags": [
+        "product",
+        "taktilnye-plity",
+        "construction"
+      ]
+    },
+    {
+      "id": "prod-sleby-003_faktura-sleba",
+      "src": "images/products/sleby/003_faktura-sleba.webp",
+      "caption": "Слэбы: фактура слэба",
+      "title": "Фактура слэба",
+      "stone": "Габбро-диабаз",
+      "category": "construction",
+      "tags": [
+        "product",
+        "sleby",
+        "construction"
+      ]
     },
     {
       "id": "gmv1i1sln",
       "src": "images/gallery/gmv1i1sln.webp",
       "caption": "Блоки гранита на площадке",
-      "tags": ["blocks"]
+      "title": "Блоки гранита на площадке",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "blocks",
+        "workshop"
+      ]
     },
     {
-      "id": "gmv1i1slo",
-      "src": "images/gallery/gmv1i1slo.webp",
-      "caption": "Склад блоков у цеха",
-      "tags": ["blocks"]
+      "id": "gmv1hp0in",
+      "src": "images/gallery/gmv1hp0in.webp",
+      "caption": "Готовые плиты перед отгрузкой",
+      "title": "Готовые плиты перед отгрузкой",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "gmv1i1slq",
+      "src": "images/gallery/gmv1i1slq.webp",
+      "caption": "Крупный план поверхности слэба",
+      "title": "Крупный план поверхности слэба",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "gmv1hp0im",
+      "src": "images/gallery/gmv1hp0im.webp",
+      "caption": "Обработка поверхности в цехе",
+      "title": "Обработка поверхности в цехе",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
     },
     {
       "id": "gmv1i1slp",
       "src": "images/gallery/gmv1i1slp.webp",
       "caption": "Партия камня на гравии",
-      "tags": ["blocks"]
+      "title": "Партия камня на гравии",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "blocks",
+        "workshop"
+      ]
     },
     {
-      "id": "gmv1i1slq",
-      "src": "images/gallery/gmv1i1slq.webp",
-      "caption": "Крупный план поверхности слэба"
+      "id": "gmv1hp0il",
+      "src": "images/gallery/gmv1hp0il.webp",
+      "caption": "Полированная фактура тёмного камня",
+      "title": "Полированная фактура тёмного камня",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "gmv1i1slo",
+      "src": "images/gallery/gmv1i1slo.webp",
+      "caption": "Склад блоков у цеха",
+      "title": "Склад блоков у цеха",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "blocks",
+        "workshop"
+      ]
     },
     {
       "id": "gmv1i1slr",
       "src": "images/gallery/gmv1i1slr.webp",
-      "caption": "Фактура готового изделия"
+      "caption": "Фактура готового изделия",
+      "title": "Фактура готового изделия",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "g-workshop-bridge-saw-block",
+      "src": "images/gallery/g-workshop-bridge-saw-block.webp",
+      "caption": "Мостовая пила: распил камня в цехе",
+      "title": "Распиловка камня мостовой пилой",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "g-workshop-disk-saw-cut",
+      "src": "images/gallery/g-workshop-disk-saw-cut.webp",
+      "caption": "Распил камня дисковой пилой с водяным охлаждением",
+      "title": "Дисковая пила в работе",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "g-workshop-bridge-saw-water",
+      "src": "images/gallery/g-workshop-bridge-saw-water.webp",
+      "caption": "Резка камня мостовой пилой, подача воды",
+      "title": "Мостовая пила с охлаждением",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "g-workshop-polish-operator",
+      "src": "images/gallery/g-workshop-polish-operator.webp",
+      "caption": "Полировальный станок: обработка поверхности плиты",
+      "title": "Полировка плиты оператором",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "g-workshop-polish-arm",
+      "src": "images/gallery/g-workshop-polish-arm.webp",
+      "caption": "Полировка гранитной плиты в цехе",
+      "title": "Полировальный станок в цехе",
+      "stone": "Производство",
+      "category": "workshop",
+      "tags": [
+        "workshop"
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "all",
+      "label": "Все работы"
+    },
+    {
+      "id": "memorial",
+      "label": "Памятники и стелы"
+    },
+    {
+      "id": "turned",
+      "label": "Вазы и балясины"
+    },
+    {
+      "id": "construction",
+      "label": "Плиты и стройматериалы"
+    },
+    {
+      "id": "workshop",
+      "label": "Цех и отгрузка"
     }
   ]
 }

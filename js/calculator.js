@@ -29,7 +29,8 @@
   const selectedStone = () => stones.find((s) => s.id === stoneSelect.value) || stones[0];
 
   const toNumber = (value) => {
-    const n = Number(value);
+    const raw = String(value ?? "").trim().replace(/\s/g, "").replace(",", ".");
+    const n = Number(raw);
     return Number.isFinite(n) && n > 0 ? n : 0;
   };
 
@@ -39,7 +40,9 @@
     return { volume, mass };
   };
 
-  const formatVolume = (value) => value.toFixed(4).replace(/\.?0+$/, (m) => (m.includes(".") ? m.replace(/0+$/, "").replace(/\.$/, "") : m)) || "0";
+  const formatVolume = (value) =>
+    value.toFixed(4).replace(/\.?0+$/, (m) => (m.includes(".") ? m.replace(/0+$/, "").replace(/\.$/, "") : m)) ||
+    "0";
   const formatMass = (value) => {
     if (value >= 100) return value.toFixed(1);
     if (value >= 10) return value.toFixed(2);
@@ -79,12 +82,141 @@
     truckMeter.setAttribute("aria-valuenow", tons.toFixed(1));
   };
 
+  const totalsOf = (list) =>
+    list.reduce(
+      (acc, item) => {
+        acc.volume += item.volume;
+        acc.mass += item.mass;
+        return acc;
+      },
+      { volume: 0, mass: 0 }
+    );
+
+  const orderOpen = document.getElementById("calcOrderOpen");
+  const orderHint = document.getElementById("calcOrderHint");
+  const orderPanel = document.getElementById("calcOrderPanel");
+  const orderForm = document.getElementById("calcOrderForm");
+
+  const syncOrderUi = () => {
+    if (!orderOpen) return;
+    const hasItems = items.length > 0;
+    orderOpen.disabled = !hasItems;
+    if (hasItems) {
+      orderOpen.removeAttribute("title");
+      if (orderHint) orderHint.hidden = true;
+    } else {
+      orderOpen.setAttribute("title", "Добавьте хотя бы одну позицию в расчёт");
+      if (orderHint) orderHint.hidden = false;
+      if (orderPanel && !orderPanel.hidden) {
+        orderPanel.hidden = true;
+        orderOpen.setAttribute("aria-expanded", "false");
+      }
+    }
+  };
+
+  const buildOrderMessage = ({ name, phone, phoneCountry, city, comment }) => {
+    const totals = totalsOf(items);
+    const tons = totals.mass / 1000;
+    const lines = items.map(
+      (item, index) =>
+        `${index + 1}. ${item.stoneName} — ${item.length}×${item.width}×${item.thickness} мм — ${item.qty} шт — ${formatVolume(item.volume)} м³ — ${formatMass(item.mass)} кг`
+    );
+    return [
+      "Заявка из калькулятора массы",
+      "",
+      "Контакты:",
+      name ? `Имя / организация: ${name}` : "Имя / организация: —",
+      `Телефон: ${phone}${phoneCountry ? ` (${phoneCountry})` : ""}`,
+      `Город доставки: ${city}`,
+      comment ? `Комментарий: ${comment}` : null,
+      "",
+      "Позиции:",
+      ...lines,
+      "",
+      "Итого по партии:",
+      `Общий объём: ${formatVolume(totals.volume)} м³`,
+      `Общая масса: ${formatMass(totals.mass)} кг (${tons.toFixed(1)} т)`,
+      `Загрузка фуры (20 т): ${tons.toFixed(1)} т / 20.0 т`
+    ]
+      .filter((line) => line !== null)
+      .join("\n");
+  };
+
+  const bindOrderForm = () => {
+    if (!orderForm || !orderOpen || !orderPanel || !window.GK_LEAD) return;
+    window.GK_LEAD.bindPhoneField(orderForm);
+
+    orderOpen.addEventListener("click", () => {
+      if (orderOpen.disabled || !items.length) return;
+      const open = orderPanel.hidden;
+      orderPanel.hidden = !open;
+      orderOpen.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        const focusEl = orderForm.querySelector('[name="phone"]') || orderForm.querySelector('[name="name"]');
+        if (focusEl) focusEl.focus({ preventScroll: true });
+        orderPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+
+    const button = orderForm.querySelector('[type="submit"]');
+    const idleLabel = button ? button.textContent : "Отправить заявку";
+
+    orderForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!items.length) {
+        syncOrderUi();
+        return;
+      }
+      if (!orderForm.reportValidity()) return;
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Отправка...";
+      }
+      window.GK_LEAD.setStatus(orderForm, "", "");
+
+      const countryIso = orderForm.phone_country ? orderForm.phone_country.value : "RU";
+      const country = window.GK_PHONE_COUNTRIES?.byIso.get(countryIso);
+      const name = orderForm.name.value.trim();
+      const phone = orderForm.phone.value.trim();
+      const city = orderForm.city.value.trim();
+      const comment = orderForm.comment.value.trim();
+      const phoneCountry = country ? `${country.name} (+${country.dial})` : countryIso;
+
+      try {
+        await window.GK_LEAD.submitLead({
+          subject: "Заявка из калькулятора массы",
+          name,
+          phone,
+          phoneCountry,
+          city,
+          comment,
+          message: buildOrderMessage({ name, phone, phoneCountry, city, comment }),
+          botcheck: orderForm.botcheck ? orderForm.botcheck.value : ""
+        });
+        window.GK_LEAD.setStatus(
+          orderForm,
+          "ok",
+          "Расчёт отправлен на почту производства. Ответим в течение рабочего дня"
+        );
+      } catch {
+        window.GK_LEAD.setStatus(orderForm, "err", window.GK_LEAD.errorHelpHtml());
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = idleLabel;
+        }
+      }
+    });
+  };
+
   const renderItems = () => {
     if (!items.length) {
       itemsBody.innerHTML = '<tr class="empty-row"><td colspan="6">Позиций пока нет — добавьте изделие</td></tr>';
       totalVolume.textContent = "0";
       totalMass.textContent = "0";
       updateTruck(0);
+      syncOrderUi();
       return;
     }
 
@@ -102,18 +234,11 @@
       )
       .join("");
 
-    const totals = items.reduce(
-      (acc, item) => {
-        acc.volume += item.volume;
-        acc.mass += item.mass;
-        return acc;
-      },
-      { volume: 0, mass: 0 }
-    );
-
+    const totals = totalsOf(items);
     totalVolume.textContent = formatVolume(totals.volume);
     totalMass.textContent = formatMass(totals.mass);
     updateTruck(totals.mass);
+    syncOrderUi();
   };
 
   stoneSelect.addEventListener("change", updatePreview);
@@ -150,4 +275,5 @@
 
   updatePreview();
   renderItems();
+  bindOrderForm();
 })();

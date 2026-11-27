@@ -61,6 +61,11 @@ function pushPreview() {
   if (!ready || !preview.contentWindow) return;
   const message = { type: "gk-preview", fields, seo: { title: seo.title, description: seo.description } };
   if (gallery) message.gallery = gallery;
+  if (current && Array.isArray(current.photos) && current.photos.length) {
+    message.photos = current.photos.map((item) => ({ key: item.key, url: item.url }));
+  } else if (current && current.photo) {
+    message.photo = { key: current.photo.key, url: current.photo.url };
+  }
   preview.contentWindow.postMessage(message, location.origin);
 }
 
@@ -77,9 +82,23 @@ function collectFields() {
   if (gallery) {
     if (Object.prototype.hasOwnProperty.call(fields, "gallery.title")) gallery.title = fields["gallery.title"];
     if (Object.prototype.hasOwnProperty.call(fields, "gallery.lead")) gallery.lead = fields["gallery.lead"];
-    editor.querySelectorAll("[data-caption]").forEach((el) => {
-      const item = gallery.items.find((entry) => entry.id === el.dataset.caption);
-      if (item) item.caption = el.value;
+    editor.querySelectorAll("[data-item-title]").forEach((el) => {
+      const item = gallery.items.find((entry) => entry.id === el.dataset.itemTitle);
+      if (item) {
+        item.title = el.value;
+        item.caption = item.stone ? `${item.title}, ${item.stone}` : item.title;
+      }
+    });
+    editor.querySelectorAll("[data-item-stone]").forEach((el) => {
+      const item = gallery.items.find((entry) => entry.id === el.dataset.itemStone);
+      if (item) {
+        item.stone = el.value;
+        item.caption = item.title ? `${item.title}, ${item.stone}` : item.stone;
+      }
+    });
+    editor.querySelectorAll("[data-item-category]").forEach((el) => {
+      const item = gallery.items.find((entry) => entry.id === el.dataset.itemCategory);
+      if (item) item.category = el.value;
     });
     editor.querySelectorAll("[data-tag-blocks]").forEach((el) => {
       const item = gallery.items.find((entry) => entry.id === el.dataset.tagBlocks);
@@ -216,24 +235,52 @@ function addPhrase() {
   else if (added) setStatus("Есть несохранённые правки");
 }
 
-function photoBlock(page) {
-  if (!page.photo) return "";
+function optionList(values) {
+  return (values || []).map((value) => `<option value="${escapeHtml(value)}"></option>`).join("");
+}
+
+function photosBlock(page) {
+  const slots = Array.isArray(page.photos) && page.photos.length
+    ? page.photos
+    : page.photo
+      ? [page.photo]
+      : [];
+  if (!slots.length) return "";
   const product = String(page.id || "").startsWith("product:");
-  const image = page.photo.url
-    ? `<img src="${escapeHtml(page.photo.url)}?t=${Date.now()}" alt="" />`
-    : `<div class="thumb"></div>`;
-  const label = product ? "Добавить фото" : "Заменить фото";
-  const multiple = product ? " multiple" : "";
-  const hint = product
-    ? "Порядок задаёт имя файла: 001_название, затем 002_название, затем 00_название. JPG и PNG станут WebP."
-    : "JPG и PNG при загрузке сами станут WebP: этот формат легче и страница открывается быстрее.";
-  return `<div class="photo-box">
+  const stone = String(page.id || "").startsWith("stone:");
+  if (product || stone) {
+    const image = page.photo.url
+      ? `<img src="${escapeHtml(page.photo.url)}?t=${Date.now()}" alt="" />`
+      : `<div class="thumb"></div>`;
+    const label = product ? "Добавить фото" : "Заменить фото";
+    const multiple = product ? " multiple" : "";
+    const hint = product
+      ? "Порядок задаёт имя файла: 001_название, затем 002_название, затем 00_название. JPG и PNG станут WebP."
+      : "JPG и PNG при загрузке сами станут WebP: этот формат легче и страница открывается быстрее.";
+    return `<div class="photo-box">
     <strong>Фотография</strong>
     ${image}
     <div class="photo-actions">
       <label class="primary">${label}<input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp"${multiple} hidden /></label>
     </div>
     <p class="hint">${hint}</p>
+  </div>`;
+  }
+  return `<div class="photo-list">
+    <h2>Фотографии страницы</h2>
+    <p class="hint">JPG и PNG при загрузке сами станут WebP.</p>
+    ${slots.map((slot) => {
+      const image = slot.url
+        ? `<img src="${escapeHtml(slot.url)}?t=${Date.now()}" alt="" data-photo-preview="${escapeHtml(slot.key)}" />`
+        : `<div class="thumb" data-photo-preview="${escapeHtml(slot.key)}"></div>`;
+      return `<div class="photo-box" data-photo-slot="${escapeHtml(slot.key)}">
+      <strong>${escapeHtml(slot.label || "Фото")}</strong>
+      ${image}
+      <div class="photo-actions">
+        <label class="primary">Заменить фото<input class="page-photo-file" type="file" accept="image/jpeg,image/png,image/webp" data-photo-key="${escapeHtml(slot.key)}" hidden /></label>
+      </div>
+    </div>`;
+    }).join("")}
   </div>`;
 }
 
@@ -244,14 +291,35 @@ function renderEditor(page) {
     gallery = {
       title: page.titleText,
       lead: page.lead,
-      items: page.items.map((item) => ({ ...item }))
+      items: page.items.map((item) => ({ ...item })),
+      options: page.options || { products: [], stones: [] }
     };
     fields = { "gallery.title": gallery.title, "gallery.lead": gallery.lead };
+    const productOptions = optionList(gallery.options.products);
+    const stoneOptions = optionList(gallery.options.stones);
     editor.innerHTML = `${seoBlock()}
       <label>Заголовок<input data-field="gallery.title" value="${escapeHtml(gallery.title)}" /></label>
       <label>Вступление<textarea data-field="gallery.lead">${escapeHtml(gallery.lead)}</textarea></label>
-      <div class="drop" id="drop">Перетащите фотографии сюда или нажмите, чтобы выбрать<input id="galleryFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden /></div>
-      <p class="hint">Каждое фото само сожмётся в WebP. Отметьте «На главной (блоки)» — фото попадёт в карусель на главной. Подпись со словом «блок» тоже подхватится автоматически.</p>
+      <section class="gallery-add" id="galleryAdd">
+        <h2>Добавить фото</h2>
+        <p class="hint">Заполните все поля, затем выберите файл. Фото само сожмётся в WebP.</p>
+        <label>Вид изделия
+          <input id="galleryTitle" list="galleryProductList" required placeholder="Например, Брусчатка" autocomplete="off" />
+          <datalist id="galleryProductList">${productOptions}</datalist>
+        </label>
+        <label>Порода
+          <input id="galleryStone" list="galleryStoneList" required placeholder="Например, Габбро-диабаз" autocomplete="off" />
+          <datalist id="galleryStoneList">${stoneOptions}<option value="Производство"></option></datalist>
+        </label>
+        <label>Тип фото
+          <select id="galleryCategory">
+            <option value="turned">Изделие / каталог</option>
+            <option value="workshop">Производство / цех</option>
+          </select>
+        </label>
+        <label class="primary file-btn">Фото<input id="galleryFiles" type="file" accept="image/jpeg,image/png,image/webp" hidden /></label>
+        <p class="hint" id="galleryAddHint">Сначала укажите вид изделия и породу — без них фото не загрузится.</p>
+      </section>
       <div id="items"></div>`;
     renderPhrases();
     refreshSeo(true);
@@ -267,7 +335,7 @@ function renderEditor(page) {
       ${group.fields.map((field) => `<label>${escapeHtml(field.label)}${field.type === "textarea"
         ? `<textarea data-field="${escapeHtml(field.id)}">${escapeHtml(field.value)}</textarea>`
         : `<input data-field="${escapeHtml(field.id)}" value="${escapeHtml(field.value)}" />`}</label>`).join("")}
-    </details>`).join("") + photoBlock(page);
+    </details>`).join("") + photosBlock(page);
   renderPhrases();
   refreshSeo(true);
 }
@@ -275,13 +343,29 @@ function renderEditor(page) {
 function renderGalleryItems() {
   const box = document.querySelector("#items");
   if (!box) return;
+  const productOptions = optionList(gallery.options && gallery.options.products);
+  const stoneOptions = optionList(gallery.options && gallery.options.stones);
   box.innerHTML = gallery.items.map((item, index) => {
     const onHome = Array.isArray(item.tags) && item.tags.includes("blocks");
+    const category = item.category === "workshop" ? "workshop" : "turned";
     return `
     <article class="gallery-item">
       <img class="thumb" src="/${escapeHtml(item.src)}" alt="" />
       <div>
-        <label>Подпись<input data-caption="${escapeHtml(item.id)}" value="${escapeHtml(item.caption || "")}" /></label>
+        <label>Вид изделия
+          <input data-item-title="${escapeHtml(item.id)}" list="itemProductList-${escapeHtml(item.id)}" value="${escapeHtml(item.title || "")}" required />
+          <datalist id="itemProductList-${escapeHtml(item.id)}">${productOptions}</datalist>
+        </label>
+        <label>Порода
+          <input data-item-stone="${escapeHtml(item.id)}" list="itemStoneList-${escapeHtml(item.id)}" value="${escapeHtml(item.stone || "")}" required />
+          <datalist id="itemStoneList-${escapeHtml(item.id)}">${stoneOptions}<option value="Производство"></option></datalist>
+        </label>
+        <label>Тип фото
+          <select data-item-category="${escapeHtml(item.id)}">
+            <option value="turned"${category === "turned" ? " selected" : ""}>Изделие / каталог</option>
+            <option value="workshop"${category === "workshop" ? " selected" : ""}>Производство / цех</option>
+          </select>
+        </label>
         <label class="check"><input type="checkbox" data-tag-blocks="${escapeHtml(item.id)}"${onHome ? " checked" : ""} /> На главной (блоки)</label>
         <div class="item-actions">
           <button class="ghost" type="button" data-move="-1" data-index="${index}" ${index === 0 ? "disabled" : ""}>Выше</button>
@@ -310,11 +394,17 @@ async function openPage(id) {
   setStatus("");
 }
 
-async function uploadFiles(files, kind, id) {
+async function uploadFiles(files, kind, id, extra = {}) {
   for (const file of files) {
     const body = new FormData();
     body.append("file", file);
-    const response = await fetch(`/admin/api/upload?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id || "")}`, {
+    if (extra.title) body.append("title", extra.title);
+    if (extra.stone) body.append("stone", extra.stone);
+    if (extra.category) body.append("category", extra.category);
+    if (extra.key) body.append("key", extra.key);
+    const query = new URLSearchParams({ kind, id: id || "" });
+    if (extra.key) query.set("key", extra.key);
+    const response = await fetch(`/admin/api/upload?${query}`, {
       method: "POST",
       headers: csrf ? { "X-CSRF-Token": csrf } : {},
       body
@@ -324,6 +414,19 @@ async function uploadFiles(files, kind, id) {
     if (kind === "gallery" && data.item) {
       gallery.items.push(data.item);
       renderGalleryItems();
+    } else if (kind === "page" && data.photo && current) {
+      const slot = (current.photos || []).find((item) => item.key === data.photo.key);
+      if (slot) slot.url = data.photo.url;
+      if (current.photo && current.photo.key === data.photo.key) current.photo.url = data.photo.url;
+      const previewNode = editor.querySelector(`[data-photo-preview="${data.photo.key.replace(/"/g, "")}"]`);
+      if (previewNode) {
+        const image = document.createElement("img");
+        image.src = `${data.photo.url}?t=${Date.now()}`;
+        image.alt = "";
+        image.dataset.photoPreview = data.photo.key;
+        previewNode.replaceWith(image);
+      }
+      pushPreview();
     } else if (current && current.photo) {
       current.photo.url = data.url;
       const message = { type: "gk-preview", fields, photo: { key: current.photo.key, url: `${data.url}?t=${Date.now()}` } };
@@ -337,6 +440,15 @@ async function uploadFiles(files, kind, id) {
       }
     }
   }
+}
+
+function galleryMetaFromForm() {
+  const title = String(document.querySelector("#galleryTitle")?.value || "").trim();
+  const stone = String(document.querySelector("#galleryStone")?.value || "").trim();
+  const category = String(document.querySelector("#galleryCategory")?.value || "turned").trim() || "turned";
+  if (!title) throw new Error("Укажите вид изделия");
+  if (!stone) throw new Error("Укажите породу");
+  return { title, stone, category };
 }
 
 document.querySelector("#loginForm").addEventListener("submit", async (event) => {
@@ -381,7 +493,7 @@ editor.addEventListener("input", (event) => {
     refreshSeo(false);
     return;
   }
-  if (event.target.matches("[data-field], [data-caption], [data-tag-blocks]")) collectFields();
+  if (event.target.matches("[data-field], [data-item-title], [data-item-stone], [data-item-category], [data-tag-blocks]")) collectFields();
 });
 
 editor.addEventListener("keydown", (event) => {
@@ -421,11 +533,10 @@ editor.addEventListener("click", (event) => {
     renderGalleryItems();
     setStatus("Есть несохранённые правки");
   }
-  if (event.target.id === "drop") document.querySelector("#galleryFiles").click();
 });
 
 editor.addEventListener("change", (event) => {
-  if (event.target.matches("[data-tag-blocks]")) {
+  if (event.target.matches("[data-tag-blocks], [data-item-category]")) {
     collectFields();
     return;
   }
@@ -437,34 +548,34 @@ editor.addEventListener("change", (event) => {
       .then(() => setStatus("Фото уже на странице. Текст сохранится кнопкой «Сохранить»."))
       .catch((error) => setStatus(error.message));
   }
-  if (event.target.id === "galleryFiles") {
+  if (event.target.classList.contains("page-photo-file")) {
+    const key = event.target.dataset.photoKey;
     setStatus("Сжимаю фото в WebP…");
-    uploadFiles(event.target.files, "gallery")
-      .then(() => setStatus("Фото добавлено. Подпись сохранится кнопкой «Сохранить»."))
+    uploadFiles(event.target.files, "page", "", { key })
+      .then(() => {
+        event.target.value = "";
+        setStatus("Фото уже на странице. Текст сохранится кнопкой «Сохранить».");
+      })
       .catch((error) => setStatus(error.message));
   }
-});
-
-editor.addEventListener("dragover", (event) => {
-  if (!event.target.closest("#drop")) return;
-  event.preventDefault();
-  event.target.closest("#drop").classList.add("over");
-});
-
-editor.addEventListener("dragleave", (event) => {
-  const drop = event.target.closest("#drop");
-  if (drop) drop.classList.remove("over");
-});
-
-editor.addEventListener("drop", (event) => {
-  const drop = event.target.closest("#drop");
-  if (!drop) return;
-  event.preventDefault();
-  drop.classList.remove("over");
-  setStatus("Сжимаю фото в WebP…");
-  uploadFiles(event.dataTransfer.files, "gallery")
-    .then(() => setStatus("Фото добавлено. Подпись сохранится кнопкой «Сохранить»."))
-    .catch((error) => setStatus(error.message));
+  if (event.target.id === "galleryFiles") {
+    try {
+      const meta = galleryMetaFromForm();
+      setStatus("Сжимаю фото в WebP…");
+      uploadFiles(event.target.files, "gallery", "", meta)
+        .then(() => {
+          event.target.value = "";
+          document.querySelector("#galleryTitle").value = "";
+          document.querySelector("#galleryStone").value = "";
+          document.querySelector("#galleryCategory").value = "turned";
+          setStatus("Фото добавлено. Правки по списку сохраните кнопкой «Сохранить».");
+        })
+        .catch((error) => setStatus(error.message));
+    } catch (error) {
+      event.target.value = "";
+      setStatus(error.message);
+    }
+  }
 });
 
 document.querySelector("#save").addEventListener("click", async () => {

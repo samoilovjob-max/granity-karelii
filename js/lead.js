@@ -1,6 +1,7 @@
 (() => {
   // Куда уходит заявка. Сайт на GitHub Pages сам письма не хранит.
   // Access Key из https://web3forms.com (привязан к info@granit-karel.ru). Ключ публичный — это нормально.
+  // В кабинете Web3Forms ограничьте allowed domains: granit-karel.ru, www.granit-karel.ru.
   const FORM_ENDPOINT = "https://api.web3forms.com/submit";
   const FORM_ACCESS_KEY = "cc6875b2-d9e4-491f-94a6-e3dd68542c7d";
   const FORM_FROM_NAME = "Граниты Карелии";
@@ -309,6 +310,7 @@
 
   const setStatus = (form, kind, html) => {
     const status = form.querySelector(".lead-status");
+    if (!status) return;
     status.className = `lead-status${kind ? ` is-${kind}` : ""}`;
     status.innerHTML = html;
   };
@@ -316,6 +318,65 @@
   const applyTopic = (form, topic) => {
     const subject = form.querySelector('[name="subject"]');
     if (subject) subject.value = topic || "Заявка на партию";
+  };
+
+  const errorHelpHtml = () =>
+    `Ошибка отправки. Позвоните <a href="${PHONE_HREF}">${PHONE_TEXT}</a> или напишите в <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer">WhatsApp</a> / <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer">Telegram</a>.`;
+
+  const submitLead = async ({
+    subject,
+    name = "",
+    phone,
+    phoneCountry = "",
+    product = "",
+    city = "",
+    comment = "",
+    message,
+    botcheck = ""
+  }) => {
+    if (!FORM_ACCESS_KEY) throw new Error("no-key");
+    const body = {
+      access_key: FORM_ACCESS_KEY,
+      from_name: FORM_FROM_NAME,
+      subject: subject || "Заявка на партию",
+      name,
+      phone,
+      phone_country: phoneCountry,
+      product,
+      city,
+      comment,
+      message:
+        message ||
+        [
+          name ? `Имя / организация: ${name}` : null,
+          `Телефон: ${phone}${phoneCountry ? ` (${phoneCountry})` : ""}`,
+          product ? `Тип продукции: ${product}` : null,
+          city ? `Город: ${city}` : null,
+          comment ? `Комментарий: ${comment}` : null
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      botcheck
+    };
+    const response = await fetch(FORM_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.success === false) throw new Error("send");
+    try {
+      const metrikaId = window.GK_METRIKA_ID;
+      if (typeof window.ym === "function" && metrikaId) {
+        window.ym(metrikaId, "reachGoal", "lead");
+      }
+    } catch (_) {
+      /* Metrika optional */
+    }
+    return data;
   };
 
   const bindForm = (form) => {
@@ -329,15 +390,6 @@
       event.preventDefault();
       if (!form.reportValidity()) return;
 
-      if (!FORM_ACCESS_KEY) {
-        setStatus(
-          form,
-          "err",
-          `Ошибка отправки, пожалуйста, позвоните по телефону <a href="${PHONE_HREF}">${PHONE_TEXT}</a>.`
-        );
-        return;
-      }
-
       button.disabled = true;
       button.textContent = "Отправка...";
       setStatus(form, "", "");
@@ -346,67 +398,48 @@
       const country = phoneData()?.byIso.get(countryIso);
       const name = form.name.value.trim();
       const phone = form.phone.value.trim();
-      const product = form.product.value;
+      const product = form.product ? form.product.value : "";
       const city = form.city.value.trim();
       const comment = form.comment.value.trim();
       const phoneCountry = country ? `${country.name} (+${country.dial})` : countryIso;
-      const body = {
-        access_key: FORM_ACCESS_KEY,
-        from_name: FORM_FROM_NAME,
-        subject: form.subject.value || "Заявка на партию",
-        name,
-        phone,
-        phone_country: phoneCountry,
-        product,
-        city,
-        comment,
-        message: [
-          `Имя / организация: ${name}`,
-          `Телефон: ${phone} (${phoneCountry})`,
-          product ? `Тип продукции: ${product}` : null,
-          city ? `Город: ${city}` : null,
-          comment ? `Комментарий: ${comment}` : null
-        ]
-          .filter(Boolean)
-          .join("\n"),
-        botcheck: form.botcheck.value
-      };
 
       try {
-        const response = await fetch(FORM_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          },
-          body: JSON.stringify(body)
+        await submitLead({
+          subject: form.subject.value || "Заявка на партию",
+          name,
+          phone,
+          phoneCountry,
+          product,
+          city,
+          comment,
+          botcheck: form.botcheck ? form.botcheck.value : ""
         });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || data.success === false) {
-          throw new Error("send");
-        }
         form.reset();
         applyTopic(form, form.dataset.topic || "");
         setStatus(form, "ok", "Заявка успешно принята, свяжемся в течение дня");
-        try {
-          const metrikaId = window.GK_METRIKA_ID;
-          if (typeof window.ym === "function" && metrikaId) {
-            window.ym(metrikaId, "reachGoal", "lead");
-          }
-        } catch (_) {
-          /* Metrika optional */
+        const dialog = form.closest("dialog.lead-dialog");
+        if (dialog) {
+          window.setTimeout(() => {
+            closeLeadDialog(dialog);
+            setStatus(form, "", "");
+          }, 1200);
         }
       } catch {
-        setStatus(
-          form,
-          "err",
-          `Ошибка отправки, пожалуйста, позвоните по телефону <a href="${PHONE_HREF}">${PHONE_TEXT}</a>.`
-        );
+        setStatus(form, "err", errorHelpHtml());
       } finally {
         button.disabled = false;
         button.textContent = idleLabel;
       }
     });
+  };
+
+  window.GK_LEAD = {
+    bindPhoneField,
+    submitLead,
+    setStatus,
+    errorHelpHtml,
+    phoneHref: PHONE_HREF,
+    phoneText: PHONE_TEXT
   };
 
   let lockedScrollY = 0;
@@ -469,7 +502,7 @@
     return dialog;
   };
 
-  document.querySelectorAll(".lead-form").forEach(bindForm);
+  document.querySelectorAll(".lead-form:not([data-calc-order])").forEach(bindForm);
 
   document.addEventListener("click", (event) => {
     const trigger = event.target.closest(".js-lead");
@@ -496,4 +529,33 @@
     const name = form.querySelector("[name=name]");
     if (name) name.focus();
   });
+
+  // Плавающая кнопка на страницах пород и продукции: видна после ухода hero-CTA из зоны видимости.
+  const heroLead = document.querySelector(".stone-hero .js-lead");
+  if (heroLead) {
+    const topic = heroLead.getAttribute("data-lead-topic") || "";
+    const fab = document.createElement("a");
+    fab.className = "btn btn-primary btn-lead js-lead lead-fab";
+    fab.href = "#zayavka";
+    if (topic) fab.setAttribute("data-lead-topic", topic);
+    fab.textContent = "Запросить расчёт";
+    fab.setAttribute("aria-label", "Запросить расчёт партии");
+    document.body.appendChild(fab);
+
+    const midCta = document.querySelector(".lead-mid-cta");
+    const updateFab = () => {
+      const heroRect = heroLead.getBoundingClientRect();
+      const heroGone = heroRect.bottom < 0;
+      let nearMid = false;
+      if (midCta) {
+        const midRect = midCta.getBoundingClientRect();
+        nearMid = midRect.top < window.innerHeight * 0.85 && midRect.bottom > window.innerHeight * 0.15;
+      }
+      fab.classList.toggle("is-visible", heroGone && !nearMid);
+    };
+
+    updateFab();
+    window.addEventListener("scroll", updateFab, { passive: true });
+    window.addEventListener("resize", updateFab);
+  }
 })();
