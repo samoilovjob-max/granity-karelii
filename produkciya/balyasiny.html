@@ -23,15 +23,21 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
-  <!-- Yandex.Metrika counter -->
+<!-- Yandex.Metrika counter -->
 <script type="text/javascript">
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
    window.GK_METRIKA_ID = 113704179;
-   ym(113704179, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+   (function(){
+     function boot(){
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+       ym(113704179, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:false });
+     }
+     if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 4000 });
+     else window.addEventListener("load", function(){ setTimeout(boot, 2500); });
+   })();
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/113704179" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
@@ -77,29 +83,29 @@
       <figure class="stone-photo stone-photo--carousel" data-photo="product.balyasiny.photo">
       <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Фотографии: Балясины и точёные изделия">
         <div class="photo-carousel-track" data-track><div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 12">
-          <img src="../images/products/balyasiny/001_balyasina-tri-yarusa.webp" alt="Балясины и точёные изделия — фото 1" width="800" height="600"  draggable="false" />
+          <img src="../images/products/balyasiny/001_balyasina-tri-yarusa.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 1" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 12">
-          <img src="../images/products/balyasiny/002_balyasina-dva-shara.webp" alt="Балясины и точёные изделия — фото 2" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/002_balyasina-dva-shara.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 2" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 12">
-          <img src="../images/products/balyasiny/003_balyasina-s-poyasom.webp" alt="Балясины и точёные изделия — фото 3" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/003_balyasina-s-poyasom.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 3" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 12">
-          <img src="../images/products/balyasiny/004_vazon-chernyy.webp" alt="Балясины и точёные изделия — фото 4" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/004_vazon-chernyy.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 4" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="4" role="group" aria-roledescription="слайд" aria-label="5 из 12">
-          <img src="../images/products/balyasiny/005_vazony-chernye-para.webp" alt="Балясины и точёные изделия — фото 5" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/005_vazony-chernye-para.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 5" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="5" role="group" aria-roledescription="слайд" aria-label="6 из 12">
-          <img src="../images/products/balyasiny/006_vazon-korichnevyy.webp" alt="Балясины и точёные изделия — фото 6" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/006_vazon-korichnevyy.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 6" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="6" role="group" aria-roledescription="слайд" aria-label="7 из 12">
-          <img src="../images/products/balyasiny/007_vazon-korichnevyy-uzkiy.webp" alt="Балясины и точёные изделия — фото 7" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/007_vazon-korichnevyy-uzkiy.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 7" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="7" role="group" aria-roledescription="слайд" aria-label="8 из 12">
-          <img src="../images/products/balyasiny/008_vazon-chernyy-vysokiy.webp" alt="Балясины и точёные изделия — фото 8" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/008_vazon-chernyy-vysokiy.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 8" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="8" role="group" aria-roledescription="слайд" aria-label="9 из 12">
-          <img src="../images/products/balyasiny/009_vazony-chernye-raznye.webp" alt="Балясины и точёные изделия — фото 9" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/009_vazony-chernye-raznye.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 9" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="9" role="group" aria-roledescription="слайд" aria-label="10 из 12">
-          <img src="../images/products/balyasiny/010_vazon-korichnevyy-otkrytyy.webp" alt="Балясины и точёные изделия — фото 10" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/010_vazon-korichnevyy-otkrytyy.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 10" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="10" role="group" aria-roledescription="слайд" aria-label="11 из 12">
-          <img src="../images/products/balyasiny/011_vazon-chernyy-klassicheskiy.webp" alt="Балясины и точёные изделия — фото 11" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/011_vazon-chernyy-klassicheskiy.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 11" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="11" role="group" aria-roledescription="слайд" aria-label="12 из 12">
-          <img src="../images/products/balyasiny/012_vazon-korichnevyy-ploskaya-kromka.webp" alt="Балясины и точёные изделия — фото 12" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/products/balyasiny/012_vazon-korichnevyy-ploskaya-kromka.webp" width="800" height="600" alt="Балясины и точёные изделия — фото 12" draggable="false" />
         </div></div>
         <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
         <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>

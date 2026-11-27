@@ -54,6 +54,24 @@ server {
 
   client_max_body_size 32m;
 
+  gzip on;
+  gzip_comp_level 5;
+  gzip_min_length 256;
+  gzip_proxied any;
+  gzip_vary on;
+  gzip_types
+    text/plain
+    text/css
+    text/xml
+    application/javascript
+    application/json
+    application/xml
+    application/rss+xml
+    image/svg+xml
+    font/ttf
+    font/otf
+    application/vnd.ms-fontobject;
+
   ssl_certificate /etc/letsencrypt/live/granit-karel.ru/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/granit-karel.ru/privkey.pem;
   include /etc/letsencrypt/options-ssl-nginx.conf;

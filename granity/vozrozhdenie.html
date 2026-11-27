@@ -23,15 +23,21 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
-  <!-- Yandex.Metrika counter -->
+<!-- Yandex.Metrika counter -->
 <script type="text/javascript">
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
    window.GK_METRIKA_ID = 113704179;
-   ym(113704179, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+   (function(){
+     function boot(){
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+       ym(113704179, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:false });
+     }
+     if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 4000 });
+     else window.addEventListener("load", function(){ setTimeout(boot, 2500); });
+   })();
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/113704179" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
@@ -77,9 +83,9 @@
       <figure class="stone-photo stone-photo--carousel" data-photo="stone.vozrozhdenie.photo">
       <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Фотографии: Возрождение">
         <div class="photo-carousel-track" data-track><div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 2">
-          <img src="../images/granites/vozrozhdenie/01-polirovka.webp" alt="Возрождение — фото 1" width="800" height="600"  draggable="false" />
+          <img src="../images/granites/vozrozhdenie/01-polirovka.webp" width="800" height="600" alt="Возрождение — фото 1" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 2">
-          <img src="../images/granites/vozrozhdenie/02.webp" alt="Возрождение — фото 2" width="800" height="600" loading="lazy" draggable="false" />
+          <img data-src="../images/granites/vozrozhdenie/02.webp" width="800" height="600" alt="Возрождение — фото 2" draggable="false" />
         </div></div>
         <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
         <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>

@@ -58,6 +58,19 @@ function esc(value) {
   }[char]));
 }
 
+function mobileVariantSrc(src) {
+  const rel = String(src || "").replace(/^\//, "");
+  if (!rel || !/\.webp$/i.test(rel)) return "";
+  const variantRel = rel.replace(/\.webp$/i, ".w720.webp");
+  return fs.existsSync(path.join(root, variantRel)) ? variantRel : "";
+}
+
+function withMobileSrc(item) {
+  if (!item || !item.src) return item;
+  const srcMobile = mobileVariantSrc(item.src);
+  return srcMobile ? { ...item, srcMobile } : item;
+}
+
 function nav(prefix, active) {
   const href = (file) => `${prefix}${file}`;
   const item = (file, label, key) =>
@@ -141,13 +154,19 @@ function metrikaSnippet() {
   if (!/^\d+$/.test(id)) return "";
   return `<!-- Yandex.Metrika counter -->
 <script type="text/javascript">
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
    window.GK_METRIKA_ID = ${id};
-   ym(${id}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+   (function(){
+     function boot(){
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+       ym(${id}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:false });
+     }
+     if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 4000 });
+     else window.addEventListener("load", function(){ setTimeout(boot, 2500); });
+   })();
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/${id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
@@ -187,12 +206,16 @@ function head(prefix, title, description, extra = "", pagePath = "") {
 
 function photoCarousel(rels, prefix, name, photoKey, compact) {
   const slides = rels
-    .map(
-      (rel, index) =>
-        `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${rels.length}">
-          <img src="${prefix}${rel}" alt="${esc(name)} — фото ${index + 1}" width="800" height="600" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
-        </div>`
-    )
+    .map((rel, index) => {
+      const src = `${prefix}${rel}`;
+      const imgAttrs =
+        index === 0
+          ? `src="${src}" width="800" height="600"`
+          : `data-src="${src}" width="800" height="600"`;
+      return `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${rels.length}">
+          <img ${imgAttrs} alt="${esc(name)} — фото ${index + 1}" draggable="false" />
+        </div>`;
+    })
     .join("");
   const dots = rels
     .map(
@@ -686,6 +709,8 @@ fs.writeFileSync(path.join(root, "galereya.html"), galleryPage());
 syncHomeProductsCarousel();
 syncHomeBlocksCarousel();
 syncHomeStonesCarousel();
+optimizeHomePlantImages();
+ensureHomeLcpPreload();
 writeSitemap(orderedProducts);
 console.log(`wrote vidy.html, produkciya.html, galereya.html, sitemap.xml, ${stones.length} stone pages, ${orderedProducts.length} product pages`);
 
@@ -811,14 +836,22 @@ ${indent}${end}`;
   const slides = items
     .map((item, index) => {
       const alt = esc(item.alt || label);
-      const eager =
+      const src = esc(item.src);
+      const mobileSrc = esc(item.srcMobile || "");
+      // Do not put the full-size file in srcset: mobile DPR would pick it and kill LCP.
+      const srcset = mobileSrc
+        ? ` srcset="${mobileSrc} 720w" sizes="(max-width: 767px) 100vw, min(560px, 46vw)"`
+        : "";
+      const deferredMobile = mobileSrc ? ` data-src-mobile="${mobileSrc}"` : "";
+      const fullAttr = ` data-full="${src}"`;
+      const attrs =
         index === 0 && firstPriority
-          ? ' width="1200" height="800" fetchpriority="high"'
+          ? `src="${mobileSrc || src}" width="1200" height="800" fetchpriority="high"${srcset}${fullAttr}`
           : index === 0
-            ? ' width="1200" height="800"'
-            : ' width="1200" height="800" loading="lazy"';
+            ? `src="${mobileSrc || src}" width="1200" height="800"${srcset}${fullAttr}`
+            : `data-src="${src}"${deferredMobile}${fullAttr} width="1200" height="800"`;
       return `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${items.length}">
-          <img src="${esc(item.src)}" alt="${alt}"${eager} draggable="false" />
+          <img ${attrs} alt="${alt}" draggable="false" />
         </div>`;
     })
     .join("");
@@ -855,10 +888,12 @@ function syncHomeProductsCarousel() {
     for (const cat of ["memorial", "turned", "construction"]) {
       const item = byCat[cat][i];
       if (!item) continue;
-      picked.push({
-        src: item.src,
-        alt: item.title || item.caption || "Готовая продукция"
-      });
+      picked.push(
+        withMobileSrc({
+          src: item.src,
+          alt: item.title || item.caption || "Готовая продукция"
+        })
+      );
       added = true;
       if (picked.length >= max) break;
     }
@@ -868,7 +903,7 @@ function syncHomeProductsCarousel() {
     start,
     end,
     label: "Готовая продукция",
-    interval: 5000,
+    interval: 8000,
     items: picked,
     indent: "      ",
     figureClass: "home-photo home-hero-photo home-photo--carousel",
@@ -896,7 +931,7 @@ function syncHomeBlocksCarousel() {
   const end = "<!-- HOME_BLOCKS_CAROUSEL:end -->";
   const items = (Array.isArray(gallery.items) ? gallery.items : [])
     .filter(isBlockGalleryItem)
-    .map((item) => ({ src: item.src, alt: item.caption || "Блоки гранита" }));
+    .map((item) => withMobileSrc({ src: item.src, alt: item.caption || "Блоки гранита" }));
   const markup = homeCarouselMarkup({
     start,
     end,
@@ -914,16 +949,73 @@ function syncHomeStonesCarousel() {
     .map((stone) => {
       const shots = imageGallery("granites", stone.id);
       if (!shots.length) return null;
-      return { src: shots[0], alt: stone.name };
+      return withMobileSrc({ src: shots[0], alt: stone.name });
     })
     .filter(Boolean);
   const markup = homeCarouselMarkup({
     start,
     end,
     label: "Виды гранита",
-    interval: 5000,
+    interval: 8000,
     items,
     indent: "      "
   });
   patchIndexCarousel(start, end, markup, "home stones carousel", items.length);
+}
+
+function optimizeHomePlantImages() {
+  const indexPath = path.join(root, "index.html");
+  let html = fs.readFileSync(indexPath, "utf8");
+  html = html.replace(
+    /<img src="(images\/production\/[^"]+\.webp)"([^>]*) loading="lazy"([^>]*)>/g,
+    (match, src, pre, post) => {
+      const mobile = mobileVariantSrc(src);
+      const mobileAttr = mobile ? ` data-src-mobile="${mobile}"` : "";
+      return `<img data-src="${src}"${mobileAttr} data-full="${src}"${pre}${post}>`;
+    }
+  );
+  html = html.replace(/<img src="(images\/production\/[^"]+\.webp)"([^>]*?)>/g, (match, src, rest) => {
+    if (/data-src=/.test(rest)) return match;
+    const mobile = mobileVariantSrc(src);
+    if (!mobile) return match;
+    const cleaned = rest.replace(/\s*srcset="[^"]*"/g, "").replace(/\s*sizes="[^"]*"/g, "").replace(/\s*data-full="[^"]*"/g, "");
+    return `<img src="${mobile}" srcset="${mobile} 720w" sizes="(max-width: 767px) 100vw, min(560px, 46vw)" data-full="${src}"${cleaned}>`;
+  });
+  // Already converted to .w720.webp but still listing full file in srcset
+  html = html.replace(
+    /<img src="(images\/production\/[^"]+\.w720\.webp)"([^>]*)>/g,
+    (match, mobile, rest) => {
+      const full = mobile.replace(/\.w720\.webp$/i, ".webp");
+      const cleaned = rest.replace(/\s*srcset="[^"]*"/g, "").replace(/\s*sizes="[^"]*"/g, "").replace(/\s*data-full="[^"]*"/g, "");
+      return `<img src="${mobile}" srcset="${mobile} 720w" sizes="(max-width: 767px) 100vw, min(560px, 46vw)" data-full="${full}"${cleaned}>`;
+    }
+  );
+  html = html.replace(
+    /<img data-src="(images\/production\/[^"]+\.webp)"([^>]*)>/g,
+    (match, src, rest) => {
+      const mobile = mobileVariantSrc(src);
+      if (!mobile) return match;
+      let next = rest;
+      if (!/data-src-mobile=/.test(next)) next = ` data-src-mobile="${mobile}"${next}`;
+      if (!/data-full=/.test(next)) next = ` data-full="${src}"${next}`;
+      return `<img data-src="${src}"${next}>`;
+    }
+  );
+  fs.writeFileSync(indexPath, html);
+}
+
+function ensureHomeLcpPreload() {
+  const indexPath = path.join(root, "index.html");
+  let html = fs.readFileSync(indexPath, "utf8");
+  const heroMatch = html.match(
+    /<img src="(images\/products\/[^"]+\.w720\.webp)"[^>]*fetchpriority="high"/
+  );
+  const hero = heroMatch ? heroMatch[1] : "images/products/nadgrobiya/005_kompleks-na-kladbishche.w720.webp";
+  html = html.replace(/\n\s*<link rel="preload" as="image"[^>]*>/g, "");
+  const preload = `  <link rel="preload" as="image" href="${hero}" imagesrcset="${hero} 720w" imagesizes="(max-width: 767px) 100vw, min(560px, 46vw)" fetchpriority="high" />`;
+  html = html.replace(
+    '<link rel="stylesheet" href="css/styles.css" />',
+    `<link rel="stylesheet" href="css/styles.css" />\n${preload}`
+  );
+  fs.writeFileSync(indexPath, html);
 }
