@@ -32,10 +32,10 @@ module.exports = [
     name: "Памятники",
     summary: "Стандартные и фигурные стелы для одиночных и семейных мемориалов.",
     granites: [
-      "gabbro-diabaz", // документ
-      "hauki", // допущение: uses «Стелы с прямой гравировкой»
-      "kolskiy", // допущение: uses «Стелы с прямой гравировкой»
-      "dymovskiy" // допущение: uses «Мемориальные комплексы»
+      "gabbro-diabaz",
+      "amphibolite",
+      "vinga",
+      "dymovskiy"
     ]
   },
   {

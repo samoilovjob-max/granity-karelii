@@ -94,6 +94,9 @@ function nav(prefix, active) {
             <a href="${href("kalkulyator-massy-granita.html")}">Калькулятор массы</a>
             <a href="${href("kalkulyator-bruschatki.html")}">Калькулятор брусчатки</a>
             <a href="${href("postavka-granita-petrozavodsk-kareliya.html")}">Поставка и доставка</a>
+            <a href="${href("polezno/buchardirovanie-granita.html")}">Бучардирование гранита</a>
+            <a href="${href("polezno/svojstva-gabbro-diabaza-i-amfibolita.html")}">Свойства габбро и амфиболита</a>
+            <a href="${href("polezno/karery-karelii.html")}">Карьеры Карелии</a>
           </div>
         </details>
         <a${active === "contacts" ? ' class="is-active"' : ""} href="${href("kontakty.html")}">Контакты</a>
@@ -785,6 +788,9 @@ function writeSitemap(productList) {
     "postavka-granita-petrozavodsk-kareliya.html",
     "politika.html",
     "soglashenie.html",
+    "polezno/buchardirovanie-granita.html",
+    "polezno/svojstva-gabbro-diabaza-i-amfibolita.html",
+    "polezno/karery-karelii.html",
     ...stones.map((stone) => `granity/${stone.id}.html`),
     ...productList.map((product) => `produkciya/${product.id}.html`)
   ];
