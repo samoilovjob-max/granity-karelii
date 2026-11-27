@@ -38,6 +38,7 @@ function imageGallery(dir, id) {
     const files = fs
       .readdirSync(folder)
       .filter((name) => /\.(webp|jpe?g|png)$/i.test(name))
+      .filter((name) => !/\.w\d+\.webp$/i.test(name))
       .sort(compare);
     if (files.length) return files.map((name) => `images/${dir}/${id}/${name}`);
   }

@@ -13,10 +13,51 @@
     return [...root.querySelectorAll(".photo-carousel-slide")];
   }
 
-  function goTo(root, index, { restart = true } = {}) {
+  function slideSrc(img, { full = false } = {}) {
+    if (!img) return "";
+    if (full) {
+      return (
+        img.getAttribute("data-full") ||
+        img.getAttribute("data-src") ||
+        img.getAttribute("src") ||
+        img.currentSrc ||
+        img.getAttribute("data-src-mobile") ||
+        ""
+      );
+    }
+    return (
+      img.getAttribute("data-src-mobile") ||
+      img.getAttribute("src") ||
+      img.getAttribute("data-src") ||
+      img.currentSrc ||
+      ""
+    );
+  }
+
+  function hydrateSlide(slide) {
+    if (!slide) return;
+    const img = slide.querySelector("img[data-src], img[data-src-mobile]");
+    if (!img) return;
+    const next = slideSrc(img);
+    if (!next) return;
+    if (img.getAttribute("src") !== next) img.setAttribute("src", next);
+  }
+
+  function hydrateAround(root, index, { neighbors = true } = {}) {
+    const slides = slidesOf(root);
+    if (!slides.length) return;
+    const len = slides.length;
+    const offsets = neighbors ? [-1, 0, 1] : [0, 1];
+    offsets.forEach((offset) => {
+      hydrateSlide(slides[((index + offset) % len + len) % len]);
+    });
+  }
+
+  function goTo(root, index, { restart = true, neighbors = true } = {}) {
     const slides = slidesOf(root);
     if (!slides.length) return;
     const next = ((index % slides.length) + slides.length) % slides.length;
+    hydrateAround(root, next, { neighbors });
     slides.forEach((slide, i) => {
       slide.classList.toggle("is-active", i === next);
     });
@@ -40,7 +81,7 @@
     if (root.dataset.paused === "1" || document.hidden) return;
     const ms = Number(root.dataset.interval) || INTERVAL_DEFAULT;
     root._timer = setInterval(() => {
-      goTo(root, currentIndex(root) + 1);
+      goTo(root, currentIndex(root) + 1, { restart: false, neighbors: false });
     }, ms);
   }
 
@@ -207,9 +248,10 @@
   function openLightbox(root, index) {
     ensureLightbox();
     lightboxRoot = root;
+    hydrateAround(root, index);
     lightboxImages = slidesOf(root).map((slide) => {
       const img = slide.querySelector("img");
-      return { src: img.currentSrc || img.src, alt: img.alt || "" };
+      return { src: slideSrc(img, { full: true }), alt: img ? img.alt || "" : "" };
     });
     lightboxIndex = index;
     pause(root);
@@ -223,7 +265,7 @@
   function cardSlide(card) {
     const img = card.querySelector("img");
     return {
-      src: img ? img.currentSrc || img.src : "",
+      src: slideSrc(img),
       alt: img ? img.alt || "" : "",
       title: card.getAttribute("data-title") || "",
       stone: card.getAttribute("data-stone") || "",
@@ -264,7 +306,28 @@
 
   carousels.forEach((root) => {
     root.dataset.index = "0";
-    root.dataset.paused = "0";
+    root.dataset.paused = "1";
+    hydrateAround(root, 0, { neighbors: false });
+
+    root.addEventListener("click", (event) => {
+      const prev = event.target.closest("[data-prev]");
+      if (prev && root.contains(prev)) {
+        event.preventDefault();
+        goTo(root, currentIndex(root) - 1);
+        return;
+      }
+      const next = event.target.closest("[data-next]");
+      if (next && root.contains(next)) {
+        event.preventDefault();
+        goTo(root, currentIndex(root) + 1);
+        return;
+      }
+      const dot = event.target.closest(".photo-carousel-dot[data-index]");
+      if (dot && root.contains(dot)) {
+        event.preventDefault();
+        goTo(root, Number(dot.getAttribute("data-index") || 0));
+      }
+    });
 
     const track = root.querySelector("[data-track]");
     let touched = false;
@@ -273,8 +336,9 @@
     }, { passive: true });
 
     // По карточке не листаем — только открываем просмотр; листание в lightbox.
-    bindDrag(track, () => {
+    bindDrag(track, (dir) => {
       touched = true;
+      goTo(root, currentIndex(root) + dir);
     }, {
       onTap: () => {
         touched = true;
@@ -291,7 +355,20 @@
       openLightbox(root, currentIndex(root));
     });
 
-    restartTimer(root);
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) resume(root);
+            else pause(root);
+          });
+        },
+        { rootMargin: "0px", threshold: 0.45 }
+      );
+      io.observe(root);
+    } else {
+      resume(root);
+    }
   });
 
   document.addEventListener("visibilitychange", () => {
