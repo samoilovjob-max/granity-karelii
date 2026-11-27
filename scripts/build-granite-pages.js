@@ -177,8 +177,9 @@ function metrikaSnippet() {
 `;
 }
 
-function head(prefix, title, description, extra = "", pagePath = "") {
+function head(prefix, title, description, extra = "", pagePath = "", ogImage = DEFAULT_OG_IMAGE) {
   const pageUrl = absoluteUrl(pagePath);
+  const shareImage = ogImage || DEFAULT_OG_IMAGE;
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -192,7 +193,11 @@ function head(prefix, title, description, extra = "", pagePath = "") {
   <link rel="canonical" href="${esc(pageUrl)}" />
   <meta property="og:url" content="${esc(pageUrl)}" />
   <meta property="og:locale" content="ru_RU" />
-  <meta property="og:image" content="${esc(DEFAULT_OG_IMAGE)}" />
+  <meta property="og:image" content="${esc(shareImage)}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${esc(title)}" />
+  <meta name="twitter:description" content="${esc(description)}" />
+  <meta name="twitter:image" content="${esc(shareImage)}" />
   ${extra}
   <link rel="icon" href="${prefix}favicon.ico" sizes="32x32" />
   <link rel="icon" type="image/svg+xml" href="${prefix}images/brand/logo-gk-transparent.svg" />
@@ -217,7 +222,7 @@ function photoCarousel(rels, prefix, name, photoKey, compact) {
           ? `src="${src}" width="800" height="600"`
           : `data-src="${src}" width="800" height="600"`;
       return `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${rels.length}">
-          <img ${imgAttrs} alt="${esc(name)} — фото ${index + 1}" draggable="false" />
+          <img ${imgAttrs} alt="${esc(name)} оптом от производителя" draggable="false" />
         </div>`;
     })
     .join("");
@@ -322,11 +327,11 @@ function articleDescription(article) {
   return clipSeoDescription(source, 170);
 }
 
-function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "", pagePath = "") {
+function searchHead(prefix, stored, fallbackTitle, fallbackDescription, extra = "", pagePath = "", ogImage = DEFAULT_OG_IMAGE) {
   const seo = stored && typeof stored === "object" ? stored : {};
   const title = String(seo.title || fallbackTitle);
   const description = String(seo.description || fallbackDescription);
-  return head(prefix, title, description, extra, pagePath);
+  return head(prefix, title, description, extra, pagePath, ogImage);
 }
 
 function story(article, keyPrefix) {
@@ -362,15 +367,26 @@ function breadcrumbList(items) {
   };
 }
 
-function collectionPageLd(name, description, path) {
-  return ldJson({
-    "@context": "https://schema.org",
+function collectionPageLd(name, description, path, { image = DEFAULT_OG_IMAGE, crumbName = name, itemList } = {}) {
+  const page = {
     "@type": "CollectionPage",
     name,
     description,
     url: absoluteUrl(path),
+    image,
     isPartOf: { "@type": "WebSite", name: "Граниты Карелии", url: `${SITE_URL}/` },
     provider: { "@type": "Organization", name: "Граниты Карелии", url: `${SITE_URL}/` }
+  };
+  if (itemList) page.mainEntity = itemList;
+  return ldJson({
+    "@context": "https://schema.org",
+    "@graph": [
+      page,
+      breadcrumbList([
+        { name: "Главная", path: "" },
+        { name: crumbName, path }
+      ])
+    ]
   });
 }
 
@@ -412,7 +428,11 @@ function stonePage(stone, index) {
     ["Радиация", stone.radiation, "radiation"]
   ].map(([label, value, key]) => `<div><dt>${label}</dt><dd data-edit="stone.${stone.id}.${key}">${esc(value)}</dd></div>`).join("");
 
-  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), `granity/${stone.id}.html`)}
+  const stoneOg = (() => {
+    const shots = imageGallery("granites", stone.id);
+    return shots[0] ? absoluteUrl(shots[0]) : DEFAULT_OG_IMAGE;
+  })();
+  return `${head("../", article.seoTitle, articleDescription(article), structuredData(stone, article), `granity/${stone.id}.html`, stoneOg)}
   ${nav("../", "types")}
   <main class="page">
     <p class="crumbs"><a href="../vidy.html">Виды гранитов</a><span aria-hidden="true">/</span><span data-edit="stone.${stone.id}.name">${esc(stone.name)}</span></p>
@@ -460,7 +480,21 @@ function catalogPage() {
 
   const catalogSeoTitle = String((pagesCopy.catalog.seo && pagesCopy.catalog.seo.title) || seoDefaults.catalog.title);
   const catalogSeoDesc = String((pagesCopy.catalog.seo && pagesCopy.catalog.seo.description) || seoDefaults.catalog.description);
-  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description, collectionPageLd(catalogSeoTitle, catalogSeoDesc, "vidy.html"), "vidy.html")}
+  const catalogOg = DEFAULT_OG_IMAGE;
+  const catalogLd = collectionPageLd(catalogSeoTitle, catalogSeoDesc, "vidy.html", {
+    image: catalogOg,
+    crumbName: "Виды гранитов",
+    itemList: {
+      "@type": "ItemList",
+      itemListElement: stones.map((stone, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: stone.name,
+        url: absoluteUrl(`granity/${stone.id}.html`)
+      }))
+    }
+  });
+  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description, catalogLd, "vidy.html", catalogOg)}
   ${nav("", "types")}
   <main class="page">
     <section class="page-intro">
@@ -611,7 +645,11 @@ function productPage(product, siblings) {
     prev ? `<a href="${prev.id}.html">← ${esc(prev.name)}</a>` : "<span></span>",
     next ? `<a href="${next.id}.html">${esc(next.name)} →</a>` : "<span></span>"
   ].join("");
-  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), `produkciya/${product.id}.html`)}
+  const productOg = (() => {
+    const shots = imageGallery("products", product.id);
+    return shots[0] ? absoluteUrl(shots[0]) : DEFAULT_OG_IMAGE;
+  })();
+  return `${head("../", article.seoTitle || product.name, articleDescription(article), productStructuredData(product, article), `produkciya/${product.id}.html`, productOg)}
   ${nav("../", "products")}
   <main class="page">
     <p class="crumbs"><a href="../produkciya.html">Продукция</a><span aria-hidden="true">/</span><span data-edit="product.${product.id}.name">${esc(product.name)}</span></p>
@@ -653,7 +691,21 @@ function productPage(product, siblings) {
 function productsPage(list) {
   const productsSeoTitle = String((pagesCopy.products.seo && pagesCopy.products.seo.title) || seoDefaults.products.title);
   const productsSeoDesc = String((pagesCopy.products.seo && pagesCopy.products.seo.description) || seoDefaults.products.description);
-  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description, collectionPageLd(productsSeoTitle, productsSeoDesc, "produkciya.html"), "produkciya.html")}
+  const productsOg = absoluteUrl("images/products/nadgrobiya/005_kompleks-na-kladbishche.webp");
+  const productsLd = collectionPageLd(productsSeoTitle, productsSeoDesc, "produkciya.html", {
+    image: productsOg,
+    crumbName: "Продукция",
+    itemList: {
+      "@type": "ItemList",
+      itemListElement: list.map((product, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: product.name,
+        url: absoluteUrl(`produkciya/${product.id}.html`)
+      }))
+    }
+  });
+  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description, productsLd, "produkciya.html", productsOg)}
   ${nav("", "products")}
   <main class="page">
     <section class="page-intro">
@@ -799,7 +851,14 @@ function galleryPage() {
     : `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии"><p class="gallery-empty">Фотографии работ появятся здесь.</p></section>`;
   const galleryTitle = String((gallery.seo && gallery.seo.title) || `${gallery.title} — Граниты Карелии`);
   const galleryDesc = String((gallery.seo && gallery.seo.description) || gallery.lead);
-  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead, collectionPageLd(galleryTitle, galleryDesc, "galereya.html"), "galereya.html")}
+  const galleryOg = absoluteUrl(
+    (items[0] && items[0].src) || "images/production/ceh-raspilovka-01.webp"
+  );
+  const galleryLd = collectionPageLd(galleryTitle, galleryDesc, "galereya.html", {
+    image: galleryOg,
+    crumbName: "Галерея"
+  });
+  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead, galleryLd, "galereya.html", galleryOg)}
   ${nav("", "gallery")}
   <main class="page">
     <section class="page-intro">
