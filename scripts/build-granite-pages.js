@@ -78,7 +78,6 @@ function nav(prefix, active) {
         <details class="nav-useful"${usefulOpen ? " open" : ""}>
           <summary${usefulOpen ? ' class="is-active"' : ""}>Полезно</summary>
           <div class="nav-useful-menu">
-            <a href="${href("polezno.html")}">Обзор</a>
             <a href="${href("kalkulyator-massy-granita.html")}">Калькулятор массы</a>
             <a href="${href("kalkulyator-bruschatki.html")}">Калькулятор брусчатки</a>
             <a href="${href("postavka-granita-petrozavodsk-kareliya.html")}">Поставка и доставка</a>
@@ -103,7 +102,7 @@ function footer(prefix) {
           <span>Граниты Карелии</span>
         </a>
         <ul class="footer-contacts">
-          <li>ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
+          <li><span data-edit="site.legalName">${esc(site.legalName || "ООО «ГРАНИТЫ КАРЕЛИИ»")}</span>, ИНН <span class="footer-inn" data-edit="site.inn">${esc(site.inn)}</span></li>
           <li class="footer-copy">© 2014 Граниты Карелии</li>
         </ul>
       </div>
@@ -112,9 +111,9 @@ function footer(prefix) {
           <li class="footer-phone">
             <a href="tel:${esc(site.phoneTel)}" data-edit="site.phone" data-bind="tel">${esc(site.phone)}</a>
             <span class="footer-apps">
-              <a href="https://wa.me/${esc(site.phoneTel.replace(/^\+/, ""))}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
-              <a href="${esc(site.telegramUrl || `https://t.me/+${site.phoneTel.replace(/^\+/, "")}`)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.png" alt="" width="18" height="18" /></a>
-              <a href="${esc(site.maxUrl || "https://max.ru/")}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.png" alt="" width="18" height="18" /></a>
+              <a href="https://wa.me/${esc(site.phoneTel.replace(/^\+/, ""))}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="${prefix}images/messengers/whatsapp.webp" alt="" width="18" height="18" loading="lazy" /></a>
+              <a href="${esc(site.telegramUrl || `https://t.me/+${site.phoneTel.replace(/^\+/, "")}`)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="${prefix}images/messengers/telegram.webp" alt="" width="18" height="18" loading="lazy" /></a>
+              <a href="${esc(site.maxUrl || "https://max.ru/")}" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="${prefix}images/messengers/max.webp" alt="" width="18" height="18" loading="lazy" /></a>
             </span>
           </li>
           <li><a href="mailto:${esc(site.email)}" data-edit="site.email" data-bind="mailto">${esc(site.email)}</a></li>
@@ -130,10 +129,11 @@ function footer(prefix) {
       </div>
     </div>
   </footer>
-  <script src="${prefix}js/nav.js"></script>
-  <script src="${prefix}js/carousel.js"></script>
-  <script src="${prefix}js/phone-countries.js"></script>
-  <script src="${prefix}js/lead.js"></script>`;
+  <script src="${prefix}js/nav.js" defer></script>
+  <script src="${prefix}js/carousel.js" defer></script>
+  <script src="${prefix}js/gallery.js" defer></script>
+  <script src="${prefix}js/phone-countries.js" defer></script>
+  <script src="${prefix}js/lead.js" defer></script>`;
 }
 
 function metrikaSnippet() {
@@ -178,6 +178,7 @@ function head(prefix, title, description, extra = "", pagePath = "") {
   <link rel="apple-touch-icon" href="${prefix}images/brand/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="${prefix}css/styles.css" />
   ${metrikaSnippet()}</head>
@@ -189,7 +190,7 @@ function photoCarousel(rels, prefix, name, photoKey, compact) {
     .map(
       (rel, index) =>
         `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${rels.length}">
-          <img src="${prefix}${rel}" alt="${esc(name)} — фото ${index + 1}" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
+          <img src="${prefix}${rel}" alt="${esc(name)} — фото ${index + 1}" width="800" height="600" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
         </div>`
     )
     .join("");
@@ -220,17 +221,17 @@ function photo(stone, prefix, compact) {
   if (gallery.length) {
     const caption = compact ? "" : `<figcaption>${esc(stone.name)}</figcaption>`;
     return `<figure class="stone-photo" data-photo="${photoKey}">
-        <img src="${prefix}${gallery[0]}" alt="${esc(stone.name)}" loading="lazy" />
+        <img src="${prefix}${gallery[0]}" alt="${esc(stone.name)}" width="800" height="600" loading="lazy" />
         ${caption}
       </figure>`;
   }
-  const caption = compact
-    ? ""
-    : `<figcaption>Фото появится здесь: images/granites/${esc(stone.id)}.webp</figcaption>`;
-  return `<figure class="stone-photo" data-photo="${photoKey}">
-        <!-- Фото породы подставляет админка в images/granites/${stone.id}.webp -->
-        <div class="stone-photo-placeholder" style="background:${stone.color}" role="img" aria-label="Место для фотографии: ${esc(stone.name)}"></div>
-        ${caption}
+  return `<figure class="stone-photo stone-photo--await" data-photo="${photoKey}">
+        <!-- Фото породы: images/granites/${stone.id}/ — пока временный UX -->
+        ${photoAwait(stone.name, {
+          compact,
+          topic: compact ? "" : `${stone.name} — фото образца`,
+          leadHref: "#zayavka"
+        })}
       </figure>`;
 }
 
@@ -318,10 +319,37 @@ function story(article, keyPrefix) {
   }).join("")}</div>`;
 }
 
+function ldJson(data) {
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+}
+
+function breadcrumbList(items) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path || "")
+    }))
+  };
+}
+
+function collectionPageLd(name, description, path) {
+  return ldJson({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    isPartOf: { "@type": "WebSite", name: "Граниты Карелии", url: `${SITE_URL}/` },
+    provider: { "@type": "Organization", name: "Граниты Карелии", url: `${SITE_URL}/` }
+  });
+}
+
 function structuredData(stone, article) {
   const shots = imageGallery("granites", stone.id);
-  const data = {
-    "@context": "https://schema.org",
+  const product = {
     "@type": "Product",
     name: stone.name,
     alternateName: stone.latin,
@@ -329,8 +357,18 @@ function structuredData(stone, article) {
     description: articleDescription(article),
     brand: { "@type": "Brand", name: "Граниты Карелии" }
   };
-  if (shots[0]) data.image = absoluteUrl(shots[0]);
-  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+  if (shots[0]) product.image = absoluteUrl(shots[0]);
+  return ldJson({
+    "@context": "https://schema.org",
+    "@graph": [
+      product,
+      breadcrumbList([
+        { name: "Главная", path: "" },
+        { name: "Виды гранитов", path: "vidy.html" },
+        { name: stone.name, path: `granity/${stone.id}.html` }
+      ])
+    ]
+  });
 }
 
 function stonePage(stone, index) {
@@ -367,6 +405,13 @@ function stonePage(stone, index) {
     <dl class="specs specs-board" aria-label="Характеристики">${specs}</dl>
     ${appliedProducts(stone)}
     ${story(article, `stone.${stone.id}`)}
+    <section class="cta-band section-gap lead-mid-cta" aria-label="Заявка на расчёт">
+      <h2>Нужен расчёт по этой породе?</h2>
+      <p>Пришлите объём и город — посчитаем партию и спецификацию.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lead js-lead" href="#zayavka" data-lead-topic="${esc(stone.name)}">Запросить расчёт</a>
+      </div>
+    </section>
     <nav class="pager" aria-label="Соседние породы">
       <a href="${prev.id}.html">← ${esc(prev.name)}</a>
       <a href="${next.id}.html">${esc(next.name)} →</a>
@@ -386,7 +431,9 @@ function catalogPage() {
         <p class="density">${esc(stone.density)}</p>
       </a>`).join("\n");
 
-  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description, "", "vidy.html")}
+  const catalogSeoTitle = String((pagesCopy.catalog.seo && pagesCopy.catalog.seo.title) || seoDefaults.catalog.title);
+  const catalogSeoDesc = String((pagesCopy.catalog.seo && pagesCopy.catalog.seo.description) || seoDefaults.catalog.description);
+  return `${searchHead("", pagesCopy.catalog.seo, seoDefaults.catalog.title, seoDefaults.catalog.description, collectionPageLd(catalogSeoTitle, catalogSeoDesc, "vidy.html"), "vidy.html")}
   ${nav("", "types")}
   <main class="page">
     <section class="page-intro">
@@ -416,8 +463,22 @@ function catalogPage() {
 `;
 }
 
+function photoAwait(name, { compact = false, topic = "", leadHref = "#zayavka" } = {}) {
+  const label = esc(name);
+  if (compact) {
+    return `<div class="photo-await photo-await--compact" role="img" aria-label="Фото по запросу: ${label}">
+        <span class="photo-await-title">Фото по запросу</span>
+      </div>`;
+  }
+  const topicAttr = topic ? ` data-lead-topic="${esc(topic)}"` : "";
+  return `<div class="photo-await" role="img" aria-label="Фото партии по запросу: ${label}">
+        <p class="photo-await-title">Фото партии по запросу</p>
+        <p class="photo-await-text">Пришлём актуальные снимки со склада вместе с расчётом партии.</p>
+        <a class="btn btn-primary btn-lead js-lead" href="${esc(leadHref)}"${topicAttr}>Запросить фото</a>
+      </div>`;
+}
+
 function productPhoto(product, prefix, compact) {
-  const stone = stoneById[product.granites[0]];
   const photoKey = `product.${product.id}.photo`;
   const shots = imageGallery("products", product.id);
   if (shots.length > 1 && !compact) {
@@ -426,17 +487,14 @@ function productPhoto(product, prefix, compact) {
   if (shots.length) {
     const caption = compact ? "" : `<figcaption>${esc(product.name)}</figcaption>`;
     return `<figure class="stone-photo" data-photo="${photoKey}">
-        <img src="${prefix}${shots[0]}" alt="${esc(product.name)}" loading="lazy" />
+        <img src="${prefix}${shots[0]}" alt="${esc(product.name)}" width="800" height="600" loading="lazy" />
         ${caption}
       </figure>`;
   }
-  const caption = compact
-    ? ""
-    : `<figcaption>Фото появится здесь: images/products/${esc(product.id)}.webp</figcaption>`;
-  return `<figure class="stone-photo" data-photo="${photoKey}">
-        <!-- Фото продукции подставляет админка в images/products/${product.id}.webp -->
-        <div class="stone-photo-placeholder" style="background:${stone.color}" role="img" aria-label="Место для фотографии: ${esc(product.name)}"></div>
-        ${caption}
+  const topic = compact ? "" : `${product.name} — фото партии`;
+  return `<figure class="stone-photo stone-photo--await" data-photo="${photoKey}">
+        <!-- Фото продукции: images/products/${product.id}/ — пока временный UX -->
+        ${photoAwait(product.name, { compact, topic, leadHref: "#zayavka" })}
       </figure>`;
 }
 
@@ -494,8 +552,7 @@ function appliedProducts(stone) {
 
 function productStructuredData(product, article) {
   const shots = imageGallery("products", product.id);
-  const data = {
-    "@context": "https://schema.org",
+  const productLd = {
     "@type": "Product",
     name: product.name,
     category: CATEGORY_LABEL[product.category],
@@ -503,8 +560,18 @@ function productStructuredData(product, article) {
     description: articleDescription(article),
     brand: { "@type": "Brand", name: "Граниты Карелии" }
   };
-  if (shots[0]) data.image = absoluteUrl(shots[0]);
-  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+  if (shots[0]) productLd.image = absoluteUrl(shots[0]);
+  return ldJson({
+    "@context": "https://schema.org",
+    "@graph": [
+      productLd,
+      breadcrumbList([
+        { name: "Главная", path: "" },
+        { name: "Продукция", path: "produkciya.html" },
+        { name: product.name, path: `produkciya/${product.id}.html` }
+      ])
+    ]
+  });
 }
 
 function productPage(product, siblings) {
@@ -541,6 +608,13 @@ function productPage(product, siblings) {
       <ul class="stone-links">${graniteLinks(product, "../")}</ul>
     </section>
     ${story(article, `product.${product.id}`)}
+    <section class="cta-band section-gap lead-mid-cta" aria-label="Заявка на расчёт">
+      <h2>Нужен расчёт по этому изделию?</h2>
+      <p>Пришлите объём и город — посчитаем партию под вашу машину.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lead js-lead" href="#zayavka" data-lead-topic="${esc(product.name)}">Запросить расчёт</a>
+      </div>
+    </section>
     <nav class="pager" aria-label="Соседние изделия">${pager}</nav>
   </main>
   ${footer("../")}
@@ -550,7 +624,9 @@ function productPage(product, siblings) {
 }
 
 function productsPage(list) {
-  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description, "", "produkciya.html")}
+  const productsSeoTitle = String((pagesCopy.products.seo && pagesCopy.products.seo.title) || seoDefaults.products.title);
+  const productsSeoDesc = String((pagesCopy.products.seo && pagesCopy.products.seo.description) || seoDefaults.products.description);
+  return `${searchHead("", pagesCopy.products.seo, seoDefaults.products.title, seoDefaults.products.description, collectionPageLd(productsSeoTitle, productsSeoDesc, "produkciya.html"), "produkciya.html")}
   ${nav("", "products")}
   <main class="page">
     <section class="page-intro">
@@ -607,6 +683,7 @@ fs.mkdirSync(productDir, { recursive: true });
 });
 fs.writeFileSync(path.join(root, "produkciya.html"), productsPage(orderedProducts));
 fs.writeFileSync(path.join(root, "galereya.html"), galleryPage());
+syncHomeProductsCarousel();
 syncHomeBlocksCarousel();
 syncHomeStonesCarousel();
 writeSitemap(orderedProducts);
@@ -621,7 +698,6 @@ function writeSitemap(productList) {
     "vidy.html",
     "produkciya.html",
     "galereya.html",
-    "polezno.html",
     "kalkulyator-massy-granita.html",
     "kalkulyator-bruschatki.html",
     "kontakty.html",
@@ -641,16 +717,60 @@ function writeSitemap(productList) {
   fs.writeFileSync(path.join(root, "sitemap.xml"), xml);
 }
 
+function galleryCard(item, index) {
+  const title = item.title || item.caption || gallery.title;
+  const stone = item.stone || "";
+  const category = item.category || "workshop";
+  const workshop = category === "workshop";
+  const topic = stone ? `${title} (${stone})` : title;
+  const meta = workshop
+    ? ""
+    : `<div class="gallery-card-meta">
+        <p class="gallery-card-title">${esc(title)}</p>
+        ${stone ? `<p class="gallery-card-stone">${esc(stone)}</p>` : ""}
+      </div>`;
+  return `<article class="gallery-card${workshop ? " gallery-card--workshop" : ""}" data-category="${esc(category)}" data-id="${esc(item.id)}" data-title="${esc(title)}" data-stone="${esc(stone)}" data-lead-topic="${esc(topic)}">
+      <button type="button" class="gallery-card-media" aria-label="Открыть фото: ${esc(title)}">
+        <img src="${esc(item.src)}" alt="${esc(title)}${stone ? ` — ${esc(stone)}` : ""}" width="${workshop ? 960 : 800}" height="${workshop ? 600 : 1000}"${index < 3 ? "" : ' loading="lazy"'} />
+      </button>
+      ${meta}
+    </article>`;
+}
+
 function galleryPage() {
   const items = Array.isArray(gallery.items) ? gallery.items : [];
-  const figures = items.map((item) => `<figure>
-        <img src="${esc(item.src)}" alt="${esc(item.caption || gallery.title)}" loading="lazy" />
-        ${item.caption ? `<figcaption data-caption="${esc(item.id)}">${esc(item.caption)}</figcaption>` : `<figcaption data-caption="${esc(item.id)}"></figcaption>`}
-      </figure>`).join("\n");
-  const grid = items.length
-    ? `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии">${figures}</section>`
+  const filters = Array.isArray(gallery.filters) && gallery.filters.length
+    ? gallery.filters
+    : [
+        { id: "all", label: "Все работы" },
+        { id: "memorial", label: "Памятники и стелы" },
+        { id: "turned", label: "Вазы и балясины" },
+        { id: "construction", label: "Плиты и стройматериалы" },
+        { id: "workshop", label: "Цех и отгрузка" }
+      ];
+  const catalog = items.filter((item) => item.category !== "workshop");
+  const workshop = items.filter((item) => item.category === "workshop");
+  const filterBar = `<div class="gallery-filters" role="tablist" aria-label="Фильтр галереи">
+      ${filters.map((f, i) => `<button type="button" class="gallery-filter${i === 0 ? " is-active" : ""}" role="tab" aria-selected="${i === 0 ? "true" : "false"}" data-filter="${esc(f.id)}">${esc(f.label)}</button>`).join("")}
+    </div>`;
+  const catalogGrid = catalog.length
+    ? `<section class="gallery-block" data-gallery-block="catalog">
+      <h2 class="gallery-block-title">Готовые изделия</h2>
+      <div class="gallery-grid gallery-grid--catalog" aria-label="Каталожные фото">${catalog.map((item, i) => galleryCard(item, i)).join("\n")}</div>
+    </section>`
+    : "";
+  const workshopGrid = workshop.length
+    ? `<section class="gallery-block" data-gallery-block="workshop">
+      <h2 class="gallery-block-title">Производство и склад</h2>
+      <div class="gallery-grid gallery-grid--workshop" aria-label="Фото с производства">${workshop.map((item, i) => galleryCard(item, i + catalog.length)).join("\n")}</div>
+    </section>`
+    : "";
+  const body = items.length
+    ? `${filterBar}<div id="gallery-root">${catalogGrid}${workshopGrid}</div>`
     : `<section class="gallery-grid" id="gallery-root" aria-label="Фотографии"><p class="gallery-empty">Фотографии работ появятся здесь.</p></section>`;
-  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead, "", "galereya.html")}
+  const galleryTitle = String((gallery.seo && gallery.seo.title) || `${gallery.title} — Граниты Карелии`);
+  const galleryDesc = String((gallery.seo && gallery.seo.description) || gallery.lead);
+  return `${searchHead("", gallery.seo, `${gallery.title} — Граниты Карелии`, gallery.lead, collectionPageLd(galleryTitle, galleryDesc, "galereya.html"), "galereya.html")}
   ${nav("", "gallery")}
   <main class="page">
     <section class="page-intro">
@@ -658,7 +778,7 @@ function galleryPage() {
       <h1 data-edit="gallery.title">${esc(gallery.title)}</h1>
       <p class="lead" data-edit="gallery.lead">${esc(gallery.lead)}</p>
     </section>
-    ${grid}
+    ${body}
   </main>
   ${footer("")}
 </body>
@@ -670,10 +790,19 @@ function galleryPage() {
 function isBlockGalleryItem(item) {
   if (!item || !item.src) return false;
   if (Array.isArray(item.tags) && item.tags.includes("blocks")) return true;
-  return /блок/i.test(String(item.caption || ""));
+  return /блок/i.test(String(item.caption || item.title || ""));
 }
 
-function homeCarouselMarkup({ start, end, label, interval, items, indent = "    " }) {
+function homeCarouselMarkup({
+  start,
+  end,
+  label,
+  interval,
+  items,
+  indent = "    ",
+  figureClass = "home-photo home-photo--carousel section-gap",
+  firstPriority = false
+}) {
   if (!items.length) {
     return `${start}
 ${indent}<!-- нет фото для карусели «${label}» -->
@@ -682,8 +811,14 @@ ${indent}${end}`;
   const slides = items
     .map((item, index) => {
       const alt = esc(item.alt || label);
+      const eager =
+        index === 0 && firstPriority
+          ? ' width="1200" height="800" fetchpriority="high"'
+          : index === 0
+            ? ' width="1200" height="800"'
+            : ' width="1200" height="800" loading="lazy"';
       return `<div class="photo-carousel-slide${index === 0 ? " is-active" : ""}" data-index="${index}" role="group" aria-roledescription="слайд" aria-label="${index + 1} из ${items.length}">
-          <img src="${esc(item.src)}" alt="${alt}" ${index === 0 ? "" : 'loading="lazy"'} draggable="false" />
+          <img src="${esc(item.src)}" alt="${alt}"${eager} draggable="false" />
         </div>`;
     })
     .join("");
@@ -694,7 +829,7 @@ ${indent}${end}`;
     )
     .join("");
   return `${start}
-${indent}<figure class="home-photo home-photo--carousel section-gap">
+${indent}<figure class="${figureClass}">
 ${indent}  <div class="photo-carousel" data-carousel data-interval="${interval}" aria-roledescription="карусель" aria-label="${esc(label)}">
 ${indent}    <div class="photo-carousel-track" data-track>${slides}</div>
 ${indent}    <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
@@ -703,6 +838,43 @@ ${indent}    <div class="photo-carousel-dots" role="tablist" aria-label="Выб�
 ${indent}  </div>
 ${indent}</figure>
 ${indent}${end}`;
+}
+
+function syncHomeProductsCarousel() {
+  const start = "<!-- HOME_PRODUCTS_CAROUSEL:start -->";
+  const end = "<!-- HOME_PRODUCTS_CAROUSEL:end -->";
+  const byCat = { memorial: [], turned: [], construction: [] };
+  for (const item of Array.isArray(gallery.items) ? gallery.items : []) {
+    if (!item || !item.src || item.category === "workshop") continue;
+    if (byCat[item.category]) byCat[item.category].push(item);
+  }
+  const picked = [];
+  const max = 12;
+  for (let i = 0; picked.length < max; i++) {
+    let added = false;
+    for (const cat of ["memorial", "turned", "construction"]) {
+      const item = byCat[cat][i];
+      if (!item) continue;
+      picked.push({
+        src: item.src,
+        alt: item.title || item.caption || "Готовая продукция"
+      });
+      added = true;
+      if (picked.length >= max) break;
+    }
+    if (!added) break;
+  }
+  const markup = homeCarouselMarkup({
+    start,
+    end,
+    label: "Готовая продукция",
+    interval: 5000,
+    items: picked,
+    indent: "      ",
+    figureClass: "home-photo home-hero-photo home-photo--carousel",
+    firstPriority: true
+  });
+  patchIndexCarousel(start, end, markup, "home products carousel", picked.length);
 }
 
 function patchIndexCarousel(start, end, markup, logLabel, count) {
