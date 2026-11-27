@@ -143,71 +143,85 @@
   };
 
   const bindOrderForm = () => {
-    if (!orderForm || !orderOpen || !orderPanel || !window.GK_LEAD) return;
-    window.GK_LEAD.bindPhoneField(orderForm);
+    if (!orderForm || !orderOpen || !orderPanel) return;
+    let ready = false;
 
-    orderOpen.addEventListener("click", () => {
-      if (orderOpen.disabled || !items.length) return;
-      const open = orderPanel.hidden;
-      orderPanel.hidden = !open;
-      orderOpen.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) {
-        const focusEl = orderForm.querySelector('[name="phone"]') || orderForm.querySelector('[name="name"]');
-        if (focusEl) focusEl.focus({ preventScroll: true });
-        orderPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    });
+    const attach = () => {
+      if (ready || !window.GK_LEAD) return false;
+      ready = true;
+      window.GK_LEAD.bindPhoneField(orderForm);
 
-    const button = orderForm.querySelector('[type="submit"]');
-    const idleLabel = button ? button.textContent : "Отправить заявку";
-
-    orderForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!items.length) {
-        syncOrderUi();
-        return;
-      }
-      if (!orderForm.reportValidity()) return;
-
-      if (button) {
-        button.disabled = true;
-        button.textContent = "Отправка...";
-      }
-      window.GK_LEAD.setStatus(orderForm, "", "");
-
-      const countryIso = orderForm.phone_country ? orderForm.phone_country.value : "RU";
-      const country = window.GK_PHONE_COUNTRIES?.byIso.get(countryIso);
-      const name = orderForm.name.value.trim();
-      const phone = orderForm.phone.value.trim();
-      const city = orderForm.city.value.trim();
-      const comment = orderForm.comment.value.trim();
-      const phoneCountry = country ? `${country.name} (+${country.dial})` : countryIso;
-
-      try {
-        await window.GK_LEAD.submitLead({
-          subject: "Заявка из калькулятора массы",
-          name,
-          phone,
-          phoneCountry,
-          city,
-          comment,
-          message: buildOrderMessage({ name, phone, phoneCountry, city, comment }),
-          botcheck: orderForm.botcheck ? orderForm.botcheck.value : ""
-        });
-        window.GK_LEAD.setStatus(
-          orderForm,
-          "ok",
-          "Расчёт отправлен на почту производства. Ответим в течение рабочего дня"
-        );
-      } catch {
-        window.GK_LEAD.setStatus(orderForm, "err", window.GK_LEAD.errorHelpHtml());
-      } finally {
-        if (button) {
-          button.disabled = false;
-          button.textContent = idleLabel;
+      orderOpen.addEventListener("click", () => {
+        if (orderOpen.disabled || !items.length) return;
+        const open = orderPanel.hidden;
+        orderPanel.hidden = !open;
+        orderOpen.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) {
+          const focusEl = orderForm.querySelector('[name="phone"]') || orderForm.querySelector('[name="name"]');
+          if (focusEl) focusEl.focus({ preventScroll: true });
+          orderPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
-      }
-    });
+      });
+
+      const button = orderForm.querySelector('[type="submit"]');
+      const idleLabel = button ? button.textContent : "Отправить заявку";
+
+      orderForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!items.length) {
+          syncOrderUi();
+          return;
+        }
+        if (!orderForm.reportValidity()) return;
+
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Отправка...";
+        }
+        window.GK_LEAD.setStatus(orderForm, "", "");
+
+        const countryIso = orderForm.phone_country ? orderForm.phone_country.value : "RU";
+        const country = window.GK_PHONE_COUNTRIES?.byIso.get(countryIso);
+        const name = orderForm.name.value.trim();
+        const phone = orderForm.phone.value.trim();
+        const city = orderForm.city.value.trim();
+        const comment = orderForm.comment.value.trim();
+        const phoneCountry = country ? `${country.name} (+${country.dial})` : countryIso;
+
+        try {
+          await window.GK_LEAD.submitLead({
+            subject: "Заявка из калькулятора массы",
+            name,
+            phone,
+            phoneCountry,
+            city,
+            comment,
+            message: buildOrderMessage({ name, phone, phoneCountry, city, comment }),
+            botcheck: orderForm.botcheck ? orderForm.botcheck.value : ""
+          });
+          window.GK_LEAD.setStatus(
+            orderForm,
+            "ok",
+            "Расчёт отправлен на почту производства. Ответим в течение рабочего дня"
+          );
+        } catch {
+          window.GK_LEAD.setStatus(orderForm, "err", window.GK_LEAD.errorHelpHtml());
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = idleLabel;
+          }
+        }
+      });
+      return true;
+    };
+
+    if (attach()) return;
+    let tries = 0;
+    const timer = setInterval(() => {
+      tries += 1;
+      if (attach() || tries > 40) clearInterval(timer);
+    }, 150);
   };
 
   const renderItems = () => {
