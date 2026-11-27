@@ -1,2 +1,12 @@
 node_modules/
 admin/.local-password
+
+# Local audit / Lighthouse / probe outputs
+scripts/audit-report.json
+scripts/audit-deep-report.json
+scripts/battle-check-report.json
+scripts/speed-probe-report.json
+scripts/lh-*.json
+
+# Intermediate image fix scratch
+images/**/_fixed/
