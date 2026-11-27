@@ -229,6 +229,25 @@
         lead.hidden = true;
         lead.removeAttribute("data-lead-topic");
       }
+      // #region agent log
+      try {
+        fetch("http://127.0.0.1:7399/ingest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            hypothesisId: "E",
+            location: "carousel.js:showLightboxSlide",
+            message: "lightbox lead button state",
+            data: {
+              topic: slide.topic || null,
+              hidden: Boolean(lead.hidden),
+              hasGkLead: Boolean(window.GK_LEAD)
+            },
+            timestamp: Date.now()
+          })
+        }).catch(() => {});
+      } catch (_) {}
+      // #endregion
     }
   }
 

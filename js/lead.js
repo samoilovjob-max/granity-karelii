@@ -443,6 +443,23 @@
     phoneText: PHONE_TEXT
   };
 
+  // #region agent log
+  const __dbgLead = (hypothesisId, location, message, data) => {
+    try {
+      fetch("http://127.0.0.1:7399/ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hypothesisId, location, message, data: data || {}, timestamp: Date.now() })
+      }).catch(() => {});
+    } catch (_) {}
+  };
+  __dbgLead("D", "lead.js:GK_LEAD", "GK_LEAD exported", {
+    hasPhoneData: Boolean(phoneData()),
+    path: location.pathname,
+    jsLeadCount: document.querySelectorAll(".js-lead").length
+  });
+  // #endregion
+
   let lockedScrollY = 0;
 
   const setScrollLock = (locked) => {
@@ -511,6 +528,14 @@
     event.preventDefault();
     const topic = trigger.getAttribute("data-lead-topic") || "";
     const inline = document.querySelector("#zayavka .lead-form");
+    // #region agent log
+    __dbgLead("E", "lead.js:js-lead-click", "js-lead handler ran", {
+      topic,
+      hasInline: Boolean(inline),
+      isLightboxLead: trigger.classList.contains("photo-lightbox-lead"),
+      className: trigger.className
+    });
+    // #endregion
     if (inline) {
       inline.dataset.topic = topic;
       applyTopic(inline, topic);
@@ -527,6 +552,12 @@
       dialog.showModal();
       setScrollLock(true);
     }
+    // #region agent log
+    __dbgLead("E", "lead.js:dialog-open", "lead dialog shown", {
+      topic,
+      dialogOpen: Boolean(dialog.open)
+    });
+    // #endregion
     const name = form.querySelector("[name=name]");
     if (name) name.focus();
   });
