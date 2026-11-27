@@ -53,7 +53,7 @@ function walk(dir, out = []) {
   return out;
 }
 
-const skip = new Set(["postavka.html", "google0955be30a03c36db.html"]);
+const skip = new Set(["postavka.html", "google0955be30a03c36db.html", "yandex_dcfe62db0172133b.html"]);
 let updated = 0;
 for (const file of walk(root)) {
   const rel = path.relative(root, file).replace(/\\/g, "/");
