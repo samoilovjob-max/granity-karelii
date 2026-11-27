@@ -145,8 +145,7 @@ function footer(prefix) {
   <script src="${prefix}js/nav.js" defer></script>
   <script src="${prefix}js/carousel.js" defer></script>
   <script src="${prefix}js/gallery.js" defer></script>
-  <script src="${prefix}js/phone-countries.js" defer></script>
-  <script src="${prefix}js/lead.js" defer></script>`;
+  <script src="${prefix}js/lead-boot.js" defer></script>`;
 }
 
 function metrikaSnippet() {
@@ -156,16 +155,21 @@ function metrikaSnippet() {
 <script type="text/javascript">
    window.GK_METRIKA_ID = ${id};
    (function(){
+     var started = false;
      function boot(){
+       if (started) return;
+       started = true;
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
        m[i].l=1*new Date();
        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-       ym(${id}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:false });
+       ym(${id}, "init", { clickmap:false, trackLinks:true, accurateTrackBounce:true, webvisor:false });
      }
-     if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 4000 });
-     else window.addEventListener("load", function(){ setTimeout(boot, 2500); });
+     ["pointerdown","keydown","touchstart","scroll"].forEach(function(type){
+       window.addEventListener(type, boot, { once:true, passive:true });
+     });
+     window.addEventListener("load", function(){ setTimeout(boot, 8000); });
    })();
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/${id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>

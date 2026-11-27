@@ -44,16 +44,21 @@
 <script type="text/javascript">
    window.GK_METRIKA_ID = 113704179;
    (function(){
+     var started = false;
      function boot(){
+       if (started) return;
+       started = true;
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
        m[i].l=1*new Date();
        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-       ym(113704179, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:false });
+       ym(113704179, "init", { clickmap:false, trackLinks:true, accurateTrackBounce:true, webvisor:false });
      }
-     if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 4000 });
-     else window.addEventListener("load", function(){ setTimeout(boot, 2500); });
+     ["pointerdown","keydown","touchstart","scroll"].forEach(function(type){
+       window.addEventListener(type, boot, { once:true, passive:true });
+     });
+     window.addEventListener("load", function(){ setTimeout(boot, 8000); });
    })();
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/113704179" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -274,8 +279,7 @@
   </footer>
 
   <script src="js/nav.js" defer></script>
-  <script src="js/phone-countries.js" defer></script>
-  <script src="js/lead.js" defer></script>
+  <script src="js/lead-boot.js" defer></script>
   <script>
     (() => {
       const btn = document.getElementById("copy-requisites");

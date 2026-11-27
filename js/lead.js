@@ -209,7 +209,8 @@
       input.dataset.national = digits;
       input.value = formatNational(country, digits);
       input.setCustomValidity("");
-      renderMenu();
+      // Menu HTML is heavy (~100 countries); build only while the picker is open.
+      if (!menu.hidden) renderMenu();
     };
 
     const syncValidity = () => {
