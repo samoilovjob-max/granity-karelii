@@ -217,10 +217,21 @@
     };
 
     if (attach()) return;
+
+    const onReady = () => {
+      if (attach()) cleanup();
+    };
+    const cleanup = () => {
+      window.removeEventListener("gk:lead-ready", onReady);
+      clearInterval(timer);
+    };
+
+    window.addEventListener("gk:lead-ready", onReady);
+    // Poll as a backup; keep waiting well past the old 6s cutoff.
     let tries = 0;
     const timer = setInterval(() => {
       tries += 1;
-      if (attach() || tries > 40) clearInterval(timer);
+      if (attach() || tries > 200) cleanup();
     }, 150);
   };
 

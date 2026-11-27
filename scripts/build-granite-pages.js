@@ -148,7 +148,8 @@ function footer(prefix) {
   <script src="${prefix}js/nav.js" defer></script>
   <script src="${prefix}js/carousel.js" defer></script>
   <script src="${prefix}js/gallery.js" defer></script>
-  <script src="${prefix}js/lead-boot.js" defer></script>`;
+  <script src="${prefix}js/phone-countries.js" defer></script>
+  <script src="${prefix}js/lead.js" defer></script>`;
 }
 
 function metrikaSnippet() {
