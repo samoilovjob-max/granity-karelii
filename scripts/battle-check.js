@@ -46,7 +46,7 @@ function fetchUrl(url, opts = {}) {
           Accept: "text/html,application/xhtml+xml,*/*",
           ...(opts.headers || {})
         },
-        timeout: opts.timeout || 15000,
+        timeout: opts.timeout || 30000,
         rejectUnauthorized: opts.insecure ? false : true
       },
       (res) => {
@@ -75,19 +75,29 @@ function fetchUrl(url, opts = {}) {
   });
 }
 
-async function fetchFollow(url, max = 5) {
-  let current = url;
-  const chain = [];
-  for (let i = 0; i < max; i++) {
-    const res = await fetchUrl(current, { method: "GET" });
-    chain.push({ url: current, status: res.status, location: res.headers && res.headers.location });
-    if (res.status >= 300 && res.status < 400 && res.headers.location) {
-      current = new URL(res.headers.location, current).href;
-      continue;
+async function fetchFollow(url, max = 5, { retries = 2 } = {}) {
+  let last = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    let current = url;
+    const chain = [];
+    for (let i = 0; i < max; i++) {
+      const res = await fetchUrl(current, { method: "GET" });
+      chain.push({ url: current, status: res.status, location: res.headers && res.headers.location });
+      if (res.status >= 300 && res.status < 400 && res.headers.location) {
+        current = new URL(res.headers.location, current).href;
+        continue;
+      }
+      last = { ...res, finalUrl: current, chain };
+      // Retry only soft transport failures (timeout / network), not HTTP errors.
+      if ((res.status === 0 || res.error) && attempt < retries) {
+        await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+        break;
+      }
+      return last;
     }
-    return { ...res, finalUrl: current, chain };
+    if (last && last.status !== 0 && !last.error) return last;
   }
-  return { status: 0, error: "too many redirects", chain, finalUrl: current };
+  return last || { status: 0, error: "too many redirects", chain: [], finalUrl: url };
 }
 
 function extract(html, re, flags = "gi") {
@@ -333,8 +343,15 @@ async function checkDataPhoto() {
   console.log("\n=== Editable photos markers ===");
   const home = await fetchFollow(`${ORIGIN}/`);
   const about = await fetchFollow(`${ORIGIN}/o-kompanii.html`);
-  if (/data-photo="home\.hero"/.test(home.body || "")) ok("home.hero data-photo");
-  else fail("home.hero data-photo missing");
+  const homeHtml = home.body || "";
+  // Hero is a product carousel now; keep data-photo="home.hero" on the figure for CMS.
+  if (/data-photo="home\.hero"/.test(homeHtml) && /home-hero-photo|HOME_PRODUCTS_CAROUSEL|photo-carousel/.test(homeHtml)) {
+    ok("home.hero carousel + data-photo");
+  } else if (/data-photo="home\.hero"/.test(homeHtml)) {
+    ok("home.hero data-photo");
+  } else {
+    fail("home.hero data-photo missing");
+  }
   if (/data-photo="about\.workshop"/.test(about.body || "") && /data-photo="about\.products"/.test(about.body || "")) {
     ok("about photo markers");
   } else fail("about photo markers missing");
