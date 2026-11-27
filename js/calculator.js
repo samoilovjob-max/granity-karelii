@@ -146,41 +146,12 @@
     if (!orderForm || !orderOpen || !orderPanel) return;
     let ready = false;
 
-    // #region agent log
-    const __dbg = (hypothesisId, location, message, data) => {
-      try {
-        fetch("http://127.0.0.1:7399/ingest", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ hypothesisId, location, message, data: data || {}, timestamp: Date.now() })
-        }).catch(() => {});
-      } catch (_) {}
-    };
-    __dbg("B", "calculator.js:bindOrderForm", "bindOrderForm entered", {
-      hasGkLead: Boolean(window.GK_LEAD),
-      hasPhoneData: Boolean(window.GK_PHONE_COUNTRIES),
-      orderOpenDisabled: Boolean(orderOpen.disabled)
-    });
-    // #endregion
-
     const attach = () => {
       if (ready || !window.GK_LEAD) return false;
       ready = true;
-      // #region agent log
-      __dbg("B", "calculator.js:attach", "GK_LEAD ready; attaching order handlers", {
-        hasPhoneData: Boolean(window.GK_PHONE_COUNTRIES)
-      });
-      // #endregion
       window.GK_LEAD.bindPhoneField(orderForm);
 
       orderOpen.addEventListener("click", () => {
-        // #region agent log
-        __dbg("B", "calculator.js:orderOpen.click", "calcOrderOpen click handler ran", {
-          disabled: Boolean(orderOpen.disabled),
-          items: items.length,
-          panelWasHidden: orderPanel.hidden
-        });
-        // #endregion
         if (orderOpen.disabled || !items.length) return;
         const open = orderPanel.hidden;
         orderPanel.hidden = !open;
@@ -246,23 +217,21 @@
     };
 
     if (attach()) return;
+
+    const onReady = () => {
+      if (attach()) cleanup();
+    };
+    const cleanup = () => {
+      window.removeEventListener("gk:lead-ready", onReady);
+      clearInterval(timer);
+    };
+
+    window.addEventListener("gk:lead-ready", onReady);
+    // Poll as a backup; keep waiting well past the old 6s cutoff.
     let tries = 0;
     const timer = setInterval(() => {
       tries += 1;
-      if (attach() || tries > 40) {
-        // #region agent log
-        if (!ready) {
-          __dbg("B", "calculator.js:poll-timeout", "gave up waiting for GK_LEAD", {
-            tries,
-            hasGkLead: Boolean(window.GK_LEAD),
-            hasPhoneData: Boolean(window.GK_PHONE_COUNTRIES)
-          });
-        } else {
-          __dbg("B", "calculator.js:poll-success", "attached after polling", { tries });
-        }
-        // #endregion
-        clearInterval(timer);
-      }
+      if (attach() || tries > 200) cleanup();
     }, 150);
   };
 
