@@ -1,4 +1,6 @@
 (() => {
+  if (window.GK_LEAD) return;
+
   // Куда уходит заявка. Сайт на GitHub Pages сам письма не хранит.
   // Access Key из https://web3forms.com (привязан к info@granit-karel.ru). Ключ публичный — это нормально.
   // В кабинете Web3Forms ограничьте allowed domains: granit-karel.ru, www.granit-karel.ru.
@@ -530,6 +532,9 @@
     const name = form.querySelector("[name=name]");
     if (name) name.focus();
   });
+
+  // Notify boot/calculator that delegated handlers and GK_LEAD are ready.
+  window.dispatchEvent(new CustomEvent("gk:lead-ready"));
 
   // Плавающая кнопка на страницах пород и продукции: видна после ухода hero-CTA из зоны видимости.
   const heroLead = document.querySelector(".stone-hero .js-lead");
