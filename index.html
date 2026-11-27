@@ -22,10 +22,12 @@
     "@graph": [
     {
     "@type": "Organization",
+    "@id": "https://granit-karel.ru/#organization",
     "name": "Граниты Карелии",
     "url": "https://granit-karel.ru/",
     "email": "info@granit-karel.ru",
     "telephone": "+79218017170",
+    "logo": "https://granit-karel.ru/images/brand/logo-gk-transparent.svg",
     "description": "Оптовые поставки гранита, памятников, брусчатки и других изделий из камня. Производство в Петрозаводске.",
     "address": {
       "@type": "PostalAddress",
@@ -37,12 +39,14 @@
     },
     {
     "@type": "LocalBusiness",
+    "@id": "https://granit-karel.ru/#localbusiness",
     "name": "Граниты Карелии",
     "url": "https://granit-karel.ru/",
     "email": "info@granit-karel.ru",
     "telephone": "+79218017170",
     "image": "https://granit-karel.ru/images/granites/gabbro-diabaz/01-polirovka.webp",
     "description": "Оптовые поставки гранита, памятников, брусчатки и других изделий из камня. Производство в Петрозаводске.",
+    "parentOrganization": { "@id": "https://granit-karel.ru/#organization" },
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Пряжинское шоссе, 45",
@@ -123,6 +127,7 @@
   <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 <!-- Yandex.Metrika counter -->
@@ -138,7 +143,7 @@
 <noscript><div><img src="https://mc.yandex.ru/watch/113704179" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 </head>
-<body>
+<body class="home">
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="index.html" aria-label="Граниты Карелии">
@@ -154,7 +159,6 @@
         <details class="nav-useful">
           <summary>Полезно</summary>
           <div class="nav-useful-menu">
-            <a href="polezno.html">Обзор</a>
             <a href="kalkulyator-massy-granita.html">Калькулятор массы</a>
             <a href="kalkulyator-bruschatki.html">Калькулятор брусчатки</a>
             <a href="postavka-granita-petrozavodsk-kareliya.html">Поставка и доставка</a>
@@ -182,13 +186,43 @@
         <div class="hero-actions">
           <a class="btn btn-primary btn-lead js-lead" href="#zayavka">Оставить заявку на партию</a>
         </div>
-        <p class="consent-note">Заявка уходит на почту производства и на сайте не сохраняется. Отправляя заявку, вы соглашаетесь на <a href="politika.html">обработку персональных данных</a>.</p>
+        <p class="consent-note">Согласие на <a href="politika.html">обработку персональных данных</a>.</p>
       </div>
 
-      <figure class="home-photo home-hero-photo">
-        <!-- Потом заменить на images/home/proizvodstvo.webp -->
-        <img src="images/granites/gabbro-diabaz/01-polirovka.webp" alt="Полированная плита карельского габбро-диабаза глубокого черного цвета" width="1024" height="1024" fetchpriority="high" />
+      <!-- HOME_PRODUCTS_CAROUSEL:start -->
+      <figure class="home-photo home-hero-photo home-photo--carousel">
+        <div class="photo-carousel" data-carousel data-interval="5000" aria-roledescription="карусель" aria-label="Готовая продукция">
+          <div class="photo-carousel-track" data-track><div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 12">
+          <img src="images/products/nadgrobiya/005_kompleks-na-kladbishche.webp" alt="Мемориальный комплекс" width="1200" height="800" fetchpriority="high" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 12">
+          <img src="images/products/balyasiny/002_balyasina-dva-shara.webp" alt="Балясина двухъярусная" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 12">
+          <img src="images/products/bruschatka/002_kubiki-v-cehe.webp" alt="Брусчатка в цехе" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 12">
+          <img src="images/products/nadgrobiya/003_kompleks-s-vstavkoy.webp" alt="Мемориальный комплекс" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="4" role="group" aria-roledescription="слайд" aria-label="5 из 12">
+          <img src="images/products/balyasiny/003_balyasina-s-poyasom.webp" alt="Балясина с поясом" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="5" role="group" aria-roledescription="слайд" aria-label="6 из 12">
+          <img src="images/products/bruschatka/003_kubiki-v-yashchike.webp" alt="Брусчатка в ящике" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="6" role="group" aria-roledescription="слайд" aria-label="7 из 12">
+          <img src="images/products/nadgrobiya/001_nadgrobnaya-plita.webp" alt="Надгробная плита" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="7" role="group" aria-roledescription="слайд" aria-label="8 из 12">
+          <img src="images/products/balyasiny/001_balyasina-tri-yarusa.webp" alt="Балясина трёхъярусная" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="8" role="group" aria-roledescription="слайд" aria-label="9 из 12">
+          <img src="images/products/bruschatka/005_kubiki-krupno.webp" alt="Брусчатка крупным планом" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="9" role="group" aria-roledescription="слайд" aria-label="10 из 12">
+          <img src="images/products/nadgrobiya/002_plita-s-krestom.webp" alt="Надгробная плита с крестом" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="10" role="group" aria-roledescription="слайд" aria-label="11 из 12">
+          <img src="images/products/balyasiny/006_vazon-korichnevyy.webp" alt="Вазон точёный" width="1200" height="800" loading="lazy" draggable="false" />
+        </div><div class="photo-carousel-slide" data-index="11" role="group" aria-roledescription="слайд" aria-label="12 из 12">
+          <img src="images/products/bruschatka/001_svetlye-kubiki.webp" alt="Брусчатка кубическая" width="1200" height="800" loading="lazy" draggable="false" />
+        </div></div>
+          <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+          <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+          <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото"><button type="button" class="photo-carousel-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button><button type="button" class="photo-carousel-dot" data-index="1" aria-label="Фото 2"></button><button type="button" class="photo-carousel-dot" data-index="2" aria-label="Фото 3"></button><button type="button" class="photo-carousel-dot" data-index="3" aria-label="Фото 4"></button><button type="button" class="photo-carousel-dot" data-index="4" aria-label="Фото 5"></button><button type="button" class="photo-carousel-dot" data-index="5" aria-label="Фото 6"></button><button type="button" class="photo-carousel-dot" data-index="6" aria-label="Фото 7"></button><button type="button" class="photo-carousel-dot" data-index="7" aria-label="Фото 8"></button><button type="button" class="photo-carousel-dot" data-index="8" aria-label="Фото 9"></button><button type="button" class="photo-carousel-dot" data-index="9" aria-label="Фото 10"></button><button type="button" class="photo-carousel-dot" data-index="10" aria-label="Фото 11"></button><button type="button" class="photo-carousel-dot" data-index="11" aria-label="Фото 12"></button></div>
+        </div>
       </figure>
+      <!-- HOME_PRODUCTS_CAROUSEL:end -->
     </section>
 
     <section class="section-gap" aria-labelledby="segments-title">
@@ -260,41 +294,41 @@
       <figure class="home-photo home-photo--carousel section-gap">
         <div class="photo-carousel" data-carousel data-interval="5000" aria-roledescription="карусель" aria-label="Виды гранита">
           <div class="photo-carousel-track" data-track><div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 18">
-          <img src="images/granites/gabbro-diabaz/01-polirovka.webp" alt="Габбро-диабаз"  draggable="false" />
+          <img src="images/granites/gabbro-diabaz/01-polirovka.webp" alt="Габбро-диабаз" width="1200" height="800" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 18">
-          <img src="images/granites/kalguvaara/01-polirovka.webp" alt="Калгуваара" loading="lazy" draggable="false" />
+          <img src="images/granites/kalguvaara/01-polirovka.webp" alt="Калгуваара" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 18">
-          <img src="images/granites/dyadina-gora/01-polirovka.webp" alt="Дядина Гора" loading="lazy" draggable="false" />
+          <img src="images/granites/dyadina-gora/01-polirovka.webp" alt="Дядина Гора" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 18">
-          <img src="images/granites/onezhskiy-labradorit/01-polirovka.webp" alt="Онежский лабрадорит" loading="lazy" draggable="false" />
+          <img src="images/granites/onezhskiy-labradorit/01-polirovka.webp" alt="Онежский лабрадорит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="4" role="group" aria-roledescription="слайд" aria-label="5 из 18">
-          <img src="images/granites/vozrozhdenie/01-polirovka.webp" alt="Возрождение" loading="lazy" draggable="false" />
+          <img src="images/granites/vozrozhdenie/01-polirovka.webp" alt="Возрождение" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="5" role="group" aria-roledescription="слайд" aria-label="6 из 18">
-          <img src="images/granites/mavara/01-polirovka.webp" alt="Мавара" loading="lazy" draggable="false" />
+          <img src="images/granites/mavara/01-polirovka.webp" alt="Мавара" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="6" role="group" aria-roledescription="слайд" aria-label="7 из 18">
-          <img src="images/granites/dymovskiy/01-polirovka.webp" alt="Дымовский гранит" loading="lazy" draggable="false" />
+          <img src="images/granites/dymovskiy/01-polirovka.webp" alt="Дымовский гранит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="7" role="group" aria-roledescription="слайд" aria-label="8 из 18">
-          <img src="images/granites/kolskiy/01.webp" alt="Кольский габбро-диорит" loading="lazy" draggable="false" />
+          <img src="images/granites/kolskiy/01.webp" alt="Кольский габбро-диорит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="8" role="group" aria-roledescription="слайд" aria-label="9 из 18">
-          <img src="images/granites/onego-green/01-polirovka.webp" alt="Онего Грин" loading="lazy" draggable="false" />
+          <img src="images/granites/onego-green/01-polirovka.webp" alt="Онего Грин" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="9" role="group" aria-roledescription="слайд" aria-label="10 из 18">
-          <img src="images/granites/vinga/01-polirovka.webp" alt="Винга" loading="lazy" draggable="false" />
+          <img src="images/granites/vinga/01-polirovka.webp" alt="Винга" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="10" role="group" aria-roledescription="слайд" aria-label="11 из 18">
-          <img src="images/granites/hauki/01-polirovka.webp" alt="Хауки" loading="lazy" draggable="false" />
+          <img src="images/granites/hauki/01-polirovka.webp" alt="Хауки" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="11" role="group" aria-roledescription="слайд" aria-label="12 из 18">
-          <img src="images/granites/amphibolite/01-polirovka.webp" alt="Гранатовый амфиболит" loading="lazy" draggable="false" />
+          <img src="images/granites/amphibolite/01-polirovka.webp" alt="Гранатовый амфиболит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="12" role="group" aria-roledescription="слайд" aria-label="13 из 18">
-          <img src="images/granites/kupetskiy/01-polirovka.webp" alt="Купецкий гранит" loading="lazy" draggable="false" />
+          <img src="images/granites/kupetskiy/01-polirovka.webp" alt="Купецкий гранит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="13" role="group" aria-roledescription="слайд" aria-label="14 из 18">
-          <img src="images/granites/galaktika/01-polirovka.webp" alt="Галактика" loading="lazy" draggable="false" />
+          <img src="images/granites/galaktika/01-polirovka.webp" alt="Галактика" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="14" role="group" aria-roledescription="слайд" aria-label="15 из 18">
-          <img src="images/granites/khibinite/01-polirovka.webp" alt="Хибинит" loading="lazy" draggable="false" />
+          <img src="images/granites/khibinite/01-polirovka.webp" alt="Хибинит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="15" role="group" aria-roledescription="слайд" aria-label="16 из 18">
-          <img src="images/granites/krasnogorskiy/01-polirovka.webp" alt="Красногорский гранит" loading="lazy" draggable="false" />
+          <img src="images/granites/krasnogorskiy/01-polirovka.webp" alt="Красногорский гранит" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="16" role="group" aria-roledescription="слайд" aria-label="17 из 18">
-          <img src="images/granites/sopka-buntina/01-polirovka.webp" alt="Сопка Бунтина" loading="lazy" draggable="false" />
+          <img src="images/granites/sopka-buntina/01-polirovka.webp" alt="Сопка Бунтина" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="17" role="group" aria-roledescription="слайд" aria-label="18 из 18">
-          <img src="images/granites/kashina-gora/01-polirovka.webp" alt="Кашина Гора" loading="lazy" draggable="false" />
+          <img src="images/granites/kashina-gora/01-polirovka.webp" alt="Кашина Гора" width="1200" height="800" loading="lazy" draggable="false" />
         </div></div>
           <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
           <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
@@ -337,20 +371,128 @@
     <section class="section-gap" aria-labelledby="plant-title">
       <h2 class="supply-title" id="plant-title">Производственная база</h2>
       <div class="home-plant">
-        <figure>
-          <img src="images/production/ceh-raspilovka.svg" alt="Камнерезный цех: распиловка блоков на Пряжинском шоссе" width="640" height="426" loading="lazy" />
+        <figure class="home-plant-carousel">
+          <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Камнерезный цех: распиловка блоков">
+            <div class="photo-carousel-track" data-track>
+              <div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 3">
+                <img src="images/production/ceh-raspilovka-01.webp" alt="Камнерезный цех: распиловка гранитного блока на Пряжинском шоссе" width="1024" height="767" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 3">
+                <img src="images/production/ceh-raspilovka-02.webp" alt="Распиловка блока гранита дисковой пилой в цехе" width="1024" height="767" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 3">
+                <img src="images/production/ceh-raspilovka-03.webp" alt="Камнерезная пила в работе: обработка гранитного блока" width="1024" height="767" loading="lazy" draggable="false" />
+              </div>
+            </div>
+            <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+            <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+            <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">
+              <button type="button" class="photo-carousel-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button>
+              <button type="button" class="photo-carousel-dot" data-index="1" aria-label="Фото 2"></button>
+              <button type="button" class="photo-carousel-dot" data-index="2" aria-label="Фото 3"></button>
+            </div>
+          </div>
           <figcaption>Камнерезный цех (распиловка блоков на Пряжинском шоссе)</figcaption>
         </figure>
-        <figure>
-          <img src="images/production/stanki-polirovki.svg" alt="Станки полировки и фигурной обработки гранита" width="640" height="426" loading="lazy" />
+        <figure class="home-plant-carousel">
+          <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Станки полировки и фигурной обработки">
+            <div class="photo-carousel-track" data-track>
+              <div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 5">
+                <img src="images/production/stanki-polirovki-01.webp" alt="Станок полировки гранита в цехе" width="767" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 5">
+                <img src="images/production/stanki-polirovki-02.webp" alt="Оператор за станком полировки гранитной плиты" width="767" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 5">
+                <img src="images/production/stanki-polirovki-03.webp" alt="Станок фигурной обработки гранита СТАНКОМ" width="768" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 5">
+                <img src="images/production/stanki-polirovki-04.webp" alt="Станок СТАНКОМ: полировка чёрной гранитной плиты" width="575" height="765" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="4" role="group" aria-roledescription="слайд" aria-label="5 из 5">
+                <img src="images/production/stanki-polirovki-05.webp" alt="Станок фигурной обработки гранита с заготовкой на столе" width="577" height="766" loading="lazy" draggable="false" />
+              </div>
+            </div>
+            <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+            <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+            <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">
+              <button type="button" class="photo-carousel-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button>
+              <button type="button" class="photo-carousel-dot" data-index="1" aria-label="Фото 2"></button>
+              <button type="button" class="photo-carousel-dot" data-index="2" aria-label="Фото 3"></button>
+              <button type="button" class="photo-carousel-dot" data-index="3" aria-label="Фото 4"></button>
+              <button type="button" class="photo-carousel-dot" data-index="4" aria-label="Фото 5"></button>
+            </div>
+          </div>
           <figcaption>Станки полировки и фигурной обработки</figcaption>
         </figure>
-        <figure>
-          <img src="images/production/sklad.svg" alt="Склад готовой продукции: паллетированные памятники и бордюры" width="640" height="426" loading="lazy" />
+        <figure class="home-plant-carousel">
+          <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Склад готовой продукции">
+            <div class="photo-carousel-track" data-track>
+              <div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 8">
+                <img src="images/production/sklad-01.webp" alt="Паллетированные памятники с резьбой храма" width="771" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 8">
+                <img src="images/production/sklad-02.webp" alt="Стек стел с фигурным верхом на поддоне" width="771" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 8">
+                <img src="images/production/sklad-03.webp" alt="Памятник с резным крестом на складе" width="771" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 8">
+                <img src="images/production/sklad-04.webp" alt="Паллета полированных гранитных плит" width="768" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="4" role="group" aria-roledescription="слайд" aria-label="5 из 8">
+                <img src="images/production/sklad-05.webp" alt="Стек фигурных стел на площадке" width="771" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="5" role="group" aria-roledescription="слайд" aria-label="6 из 8">
+                <img src="images/production/sklad-06.webp" alt="Паллетированные плиты у цеха" width="768" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="6" role="group" aria-roledescription="слайд" aria-label="7 из 8">
+                <img src="images/production/sklad-07.webp" alt="Крупная партия гранитных блоков на поддоне" width="768" height="1024" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="7" role="group" aria-roledescription="слайд" aria-label="8 из 8">
+                <img src="images/production/sklad-08.webp" alt="Стек полированных стел в упаковке" width="771" height="1024" loading="lazy" draggable="false" />
+              </div>
+            </div>
+            <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+            <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+            <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">
+              <button type="button" class="photo-carousel-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button>
+              <button type="button" class="photo-carousel-dot" data-index="1" aria-label="Фото 2"></button>
+              <button type="button" class="photo-carousel-dot" data-index="2" aria-label="Фото 3"></button>
+              <button type="button" class="photo-carousel-dot" data-index="3" aria-label="Фото 4"></button>
+              <button type="button" class="photo-carousel-dot" data-index="4" aria-label="Фото 5"></button>
+              <button type="button" class="photo-carousel-dot" data-index="5" aria-label="Фото 6"></button>
+              <button type="button" class="photo-carousel-dot" data-index="6" aria-label="Фото 7"></button>
+              <button type="button" class="photo-carousel-dot" data-index="7" aria-label="Фото 8"></button>
+            </div>
+          </div>
           <figcaption>Склад готовой продукции (паллетированные памятники и бордюры)</figcaption>
         </figure>
-        <figure>
-          <img src="images/production/pogruzka.svg" alt="Погрузка 20-тонных автопоездов козловым краном или погрузчиком" width="640" height="426" loading="lazy" />
+        <figure class="home-plant-carousel">
+          <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Погрузка автопоездов">
+            <div class="photo-carousel-track" data-track>
+              <div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 4">
+                <img src="images/production/pogruzka-01.webp" alt="Погрузка паллет с плиткой в автопоезд" width="1024" height="771" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 4">
+                <img src="images/production/pogruzka-02.webp" alt="Автопоезд с партией гранитных изделий" width="1024" height="771" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 4">
+                <img src="images/production/pogruzka-03.webp" alt="Паллетированный гранит перед погрузкой" width="1024" height="771" loading="lazy" draggable="false" />
+              </div>
+              <div class="photo-carousel-slide" data-index="3" role="group" aria-roledescription="слайд" aria-label="4 из 4">
+                <img src="images/production/pogruzka-04.webp" alt="Стек полированных гранитных плит на отгрузке" width="1024" height="771" loading="lazy" draggable="false" />
+              </div>
+            </div>
+            <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
+            <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
+            <div class="photo-carousel-dots" role="tablist" aria-label="Выбор фото">
+              <button type="button" class="photo-carousel-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button>
+              <button type="button" class="photo-carousel-dot" data-index="1" aria-label="Фото 2"></button>
+              <button type="button" class="photo-carousel-dot" data-index="2" aria-label="Фото 3"></button>
+              <button type="button" class="photo-carousel-dot" data-index="3" aria-label="Фото 4"></button>
+            </div>
+          </div>
           <figcaption>Погрузка 20-тонных автопоездов козловым краном/погрузчиком</figcaption>
         </figure>
       </div>
@@ -365,11 +507,11 @@
     <figure class="home-photo home-photo--carousel section-gap">
       <div class="photo-carousel" data-carousel data-interval="7000" aria-roledescription="карусель" aria-label="Блоки гранита">
         <div class="photo-carousel-track" data-track><div class="photo-carousel-slide is-active" data-index="0" role="group" aria-roledescription="слайд" aria-label="1 из 3">
-          <img src="images/gallery/gmv1i1sln.webp" alt="Блоки гранита на площадке"  draggable="false" />
+          <img src="images/gallery/gmv1i1sln.webp" alt="Блоки гранита на площадке" width="1200" height="800" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="1" role="group" aria-roledescription="слайд" aria-label="2 из 3">
-          <img src="images/gallery/gmv1i1slo.webp" alt="Склад блоков у цеха" loading="lazy" draggable="false" />
+          <img src="images/gallery/gmv1i1slp.webp" alt="Партия камня на гравии" width="1200" height="800" loading="lazy" draggable="false" />
         </div><div class="photo-carousel-slide" data-index="2" role="group" aria-roledescription="слайд" aria-label="3 из 3">
-          <img src="images/gallery/gmv1i1slp.webp" alt="Партия камня на гравии" loading="lazy" draggable="false" />
+          <img src="images/gallery/gmv1i1slo.webp" alt="Склад блоков у цеха" width="1200" height="800" loading="lazy" draggable="false" />
         </div></div>
         <button type="button" class="photo-carousel-nav photo-carousel-prev" data-prev aria-label="Предыдущее фото">‹</button>
         <button type="button" class="photo-carousel-nav photo-carousel-next" data-next aria-label="Следующее фото">›</button>
@@ -558,7 +700,7 @@
           <span>Граниты Карелии</span>
         </a>
         <ul class="footer-contacts">
-          <li>ИНН <span class="footer-inn" data-edit="site.inn">102003029438</span></li>
+          <li><span data-edit="site.legalName">ООО «ГРАНИТЫ КАРЕЛИИ»</span>, ИНН <span class="footer-inn" data-edit="site.inn">1000028569</span></li>
           <li class="footer-copy">© 2014 Граниты Карелии</li>
         </ul>
       </div>
@@ -567,9 +709,9 @@
           <li class="footer-phone">
             <a href="tel:+79218017170" data-edit="site.phone" data-bind="tel">+7 921 801 71 70</a>
             <span class="footer-apps">
-              <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="images/messengers/whatsapp.png" alt="" width="18" height="18" /></a>
-              <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="images/messengers/telegram.png" alt="" width="18" height="18" /></a>
-              <a href="https://max.ru/" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="images/messengers/max.png" alt="" width="18" height="18" /></a>
+              <a href="https://wa.me/79218017170" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><img src="images/messengers/whatsapp.webp" alt="" width="18" height="18" loading="lazy" /></a>
+              <a href="https://t.me/+79218017170" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><img src="images/messengers/telegram.webp" alt="" width="18" height="18" loading="lazy" /></a>
+              <a href="https://max.ru/u/f9LHodD0cOIu76knRjcUhzoELbuEA8-iqViDnVXYu1U0DWDRxQsZfiWSIUk" target="_blank" rel="noopener noreferrer" aria-label="MAX"><img src="images/messengers/max.webp" alt="" width="18" height="18" loading="lazy" /></a>
             </span>
           </li>
           <li><a href="mailto:info@granit-karel.ru" data-edit="site.email" data-bind="mailto">info@granit-karel.ru</a></li>
@@ -586,9 +728,9 @@
     </div>
   </footer>
 
-  <script src="js/nav.js"></script>
-  <script src="js/carousel.js"></script>
-  <script src="js/phone-countries.js"></script>
-  <script src="js/lead.js"></script>
+  <script src="js/nav.js" defer></script>
+  <script src="js/carousel.js" defer></script>
+  <script src="js/phone-countries.js" defer></script>
+  <script src="js/lead.js" defer></script>
 </body>
 </html>
