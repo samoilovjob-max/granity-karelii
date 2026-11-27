@@ -75,7 +75,7 @@ function nav(prefix, active) {
   const href = (file) => `${prefix}${file}`;
   const item = (file, label, key) =>
     `<a${active === key ? ' class="is-active"' : ""} href="${href(file)}">${label}</a>`;
-  const usefulOpen = active === "calc" || active === "useful";
+  const usefulActive = active === "calc" || active === "useful";
   return `<header class="site-header">
     <div class="header-inner">
       <a class="brand" href="${href("index.html")}" aria-label="Граниты Карелии">
@@ -88,8 +88,8 @@ function nav(prefix, active) {
         ${item("vidy.html", "Виды гранитов", "types")}
         ${item("produkciya.html", "Продукция", "products")}
         <a${active === "gallery" ? ' class="is-active"' : ""} href="${href("galereya.html")}">Галерея</a>
-        <details class="nav-useful"${usefulOpen ? " open" : ""}>
-          <summary${usefulOpen ? ' class="is-active"' : ""}>Полезно</summary>
+        <details class="nav-useful">
+          <summary${usefulActive ? ' class="is-active"' : ""}>Полезно</summary>
           <div class="nav-useful-menu">
             <a href="${href("kalkulyator-massy-granita.html")}">Калькулятор массы</a>
             <a href="${href("kalkulyator-bruschatki.html")}">Калькулятор брусчатки</a>
