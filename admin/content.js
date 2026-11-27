@@ -16,6 +16,14 @@ const paths = {
   productArticles: path.join(root, "scripts/products-articles.json")
 };
 
+/** Replaceable page photos: key → HTML file + storage path under images/pages/. */
+const PAGE_PHOTOS = {
+  about: [
+    { key: "about.workshop", label: "Фото цеха", file: "images/pages/about-workshop.webp", html: "o-kompanii.html" },
+    { key: "about.products", label: "Фото продукции", file: "images/pages/about-products.webp", html: "o-kompanii.html" }
+  ]
+};
+
 const HAND = {
   home: {
     title: "Главная",
@@ -122,12 +130,13 @@ const HAND = {
       { title: "Реквизиты", fields: [
         { id: "contacts.req.name", label: "Наименование", type: "textarea" },
         { id: "site.inn", label: "ИНН" },
-        { id: "contacts.req.postal", label: "Почтовый адрес", type: "textarea" },
+        { id: "contacts.req.kpp", label: "КПП" },
+        { id: "contacts.req.ogrn", label: "ОГРН" },
+        { id: "contacts.req.postal", label: "Юридический адрес", type: "textarea" },
         { id: "contacts.req.bank", label: "Банк" },
         { id: "contacts.req.account", label: "Расчётный счёт" },
         { id: "contacts.req.corr", label: "Корр. счёт" },
-        { id: "contacts.req.bik", label: "БИК" },
-        { id: "contacts.req.okved", label: "ОКВЭД", type: "textarea" }
+        { id: "contacts.req.bik", label: "БИК" }
       ]}
     ]
   },
@@ -736,7 +745,94 @@ function stoneGroups(stone, article) {
 function photoInfo(dir, id, key) {
   const { imageGallery } = require("../scripts/image-gallery");
   const shots = imageGallery(dir, id);
-  return { key, url: shots[0] ? `/${shots[0]}` : "" };
+  return {
+    key,
+    url: shots[0] ? `/${shots[0]}` : "",
+    shots: shots.map((src) => `/${src}`)
+  };
+}
+
+function readPhotoSrc(html, key) {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = html.match(
+    new RegExp(`data-photo="${escaped}"[^>]*>[\\s\\S]*?<img[^>]*\\ssrc="([^"]+)"`, "i")
+  );
+  return match ? match[1] : "";
+}
+
+function writePhotoSrc(html, key, src) {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(
+    `(data-photo="${escaped}"[\\s\\S]*?<img[^>]*\\ssrc=")[^"]*(")`,
+    "i"
+  );
+  if (!pattern.test(html)) {
+    const error = new Error(`На странице нет фото «${key}»`);
+    error.status = 400;
+    throw error;
+  }
+  pattern.lastIndex = 0;
+  return html.replace(pattern, `$1${src}$2`);
+}
+
+function pagePhotoSlots(pageId) {
+  const slots = PAGE_PHOTOS[pageId];
+  if (!slots || !slots.length) return null;
+  return slots.map((slot) => {
+    const htmlPath = path.join(root, slot.html);
+    const html = fs.readFileSync(htmlPath, "utf8");
+    const current = readPhotoSrc(html, slot.key);
+    const stored = path.join(root, slot.file);
+    const url = current
+      ? (current.startsWith("/") ? current : `/${current}`)
+      : fs.existsSync(stored)
+        ? `/${slot.file}`
+        : "";
+    return { key: slot.key, label: slot.label, file: slot.file, url };
+  });
+}
+
+function replacePagePhoto(key, absoluteWebpPath) {
+  const slot = Object.values(PAGE_PHOTOS)
+    .flat()
+    .find((item) => item.key === key);
+  if (!slot) {
+    const error = new Error("Неизвестное фото страницы");
+    error.status = 400;
+    throw error;
+  }
+  const target = path.join(root, slot.file);
+  if (!isPathInside(root, target)) {
+    const error = new Error("Некуда сохранить фото");
+    error.status = 400;
+    throw error;
+  }
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  if (path.resolve(absoluteWebpPath) !== path.resolve(target)) {
+    fs.copyFileSync(absoluteWebpPath, target);
+    try {
+      fs.unlinkSync(absoluteWebpPath);
+    } catch (_) {
+      /* ignore */
+    }
+  }
+  const htmlPath = path.join(root, slot.html);
+  let html = fs.readFileSync(htmlPath, "utf8");
+  html = writePhotoSrc(html, slot.key, slot.file);
+  fs.writeFileSync(htmlPath, html);
+  return { key: slot.key, url: `/${slot.file}`, label: slot.label, file: slot.file };
+}
+
+function isPathInside(rootDir, candidate) {
+  const relative = path.relative(path.resolve(rootDir), path.resolve(candidate));
+  return Boolean(relative) && !relative.startsWith("..") && !path.isAbsolute(relative);
+}
+
+function catalogOptions() {
+  return {
+    products: readProducts().map((product) => product.name),
+    stones: readStones().map((stone) => stone.name)
+  };
 }
 
 function getPage(id) {
@@ -749,10 +845,19 @@ function getPage(id) {
       mode: "gallery",
       titleText: gallery.title,
       lead: gallery.lead,
-      items: gallery.items
+      items: gallery.items,
+      options: catalogOptions()
     }, "galereya.html");
   }
-  if (HAND[id]) return withSeo({ id, ...fillHand({ ...HAND[id], id }) }, HAND[id].file);
+  if (HAND[id]) {
+    const page = withSeo({ id, ...fillHand({ ...HAND[id], id }) }, HAND[id].file);
+    const photos = pagePhotoSlots(id);
+    if (photos) {
+      page.photos = photos;
+      if (photos.length === 1) page.photo = photos[0];
+    }
+    return page;
+  }
   if (id === "catalog") {
     const copy = readJson(paths.pages).catalog;
     return withSeo({
@@ -1014,13 +1119,29 @@ function saveGallery(next) {
   const clean = items.map((item) => {
     const stored = known.get(item.id);
     if (!stored) return null;
-    const caption = String(item.caption || "").slice(0, 180);
+    const title = String(item.title != null ? item.title : stored.title || "").trim().slice(0, 120);
+    let stone = String(item.stone != null ? item.stone : stored.stone || "").trim().slice(0, 80);
+    const category = String(item.category || stored.category || "turned").trim() || "turned";
+    if (!title) {
+      const error = new Error("Укажите вид изделия для каждого фото");
+      error.status = 400;
+      throw error;
+    }
+    if (!stone) {
+      if (category === "workshop") stone = "Производство";
+      else {
+        const error = new Error("Укажите породу для каждого фото");
+        error.status = 400;
+        throw error;
+      }
+    }
+    const caption = String(item.caption || `${title}, ${stone}`).slice(0, 180);
     const tags = Array.isArray(item.tags)
       ? [...new Set(item.tags.map((tag) => String(tag || "").trim()).filter(Boolean))]
       : Array.isArray(stored.tags)
         ? stored.tags
         : [];
-    const entry = { id: stored.id, src: stored.src, caption };
+    const entry = { id: stored.id, src: stored.src, caption, title, stone, category };
     if (tags.length) entry.tags = tags;
     return entry;
   }).filter(Boolean);
@@ -1050,9 +1171,26 @@ function saveGallery(next) {
   return readJson(paths.gallery);
 }
 
-function addGalleryItem(src) {
+function addGalleryItem(src, meta = {}) {
+  const title = String(meta.title || "").trim().slice(0, 120);
+  const stone = String(meta.stone || "").trim().slice(0, 80);
+  if (!title) {
+    const error = new Error("Укажите вид изделия");
+    error.status = 400;
+    throw error;
+  }
+  if (!stone) {
+    const error = new Error("Укажите породу");
+    error.status = 400;
+    throw error;
+  }
+  const category = String(meta.category || "turned").trim() || "turned";
+  const caption = String(meta.caption || `${title}, ${stone}`).slice(0, 180);
   const gallery = readJson(paths.gallery);
-  const item = { id: `g${Date.now().toString(36)}`, src, caption: "" };
+  const item = { id: `g${Date.now().toString(36)}`, src, caption, title, stone, category };
+  if (Array.isArray(meta.tags) && meta.tags.length) {
+    item.tags = [...new Set(meta.tags.map((tag) => String(tag || "").trim()).filter(Boolean))];
+  }
   gallery.items.push(item);
   writeJson(paths.gallery, gallery);
   rebuild();
@@ -1066,6 +1204,9 @@ module.exports = {
   savePage,
   saveGallery,
   addGalleryItem,
+  replacePagePhoto,
+  catalogOptions,
+  PAGE_PHOTOS,
   rebuild,
   readJson,
   paths

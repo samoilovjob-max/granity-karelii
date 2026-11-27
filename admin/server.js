@@ -83,8 +83,10 @@ const previewScript = `<script>
       return;
     }
     root.innerHTML = data.items.map(function (item) {
-      var caption = item.caption ? '<figcaption>' + escapeHtml(item.caption) + '</figcaption>' : '<figcaption></figcaption>';
-      return '<figure><img src="' + escapeHtml(item.src) + '" alt="' + escapeHtml(item.caption || "") + '" />' + caption + '</figure>';
+      var title = item.title || item.caption || "";
+      var stone = item.stone || "";
+      var workshop = item.category === "workshop" ? " gallery-card--workshop" : "";
+      return '<article class="gallery-card' + workshop + '"><button type="button" class="gallery-card-media"><img src="' + escapeHtml(item.src) + '" alt="' + escapeHtml(title) + '" /></button><div class="gallery-card-meta"><p class="gallery-card-title">' + escapeHtml(title) + '</p>' + (stone ? '<p class="gallery-card-stone">' + escapeHtml(stone) + '</p>' : "") + '</div></article>';
     }).join("");
   }
   function escapeHtml(value) {
@@ -98,6 +100,9 @@ const previewScript = `<script>
     if (!data || data.type !== "gk-preview") return;
     if (data.fields) Object.keys(data.fields).forEach(function (id) { text(id, data.fields[id]); });
     if (data.photo) photo(data.photo.key, data.photo.url);
+    if (data.photos && data.photos.length) {
+      data.photos.forEach(function (item) { photo(item.key, item.url); });
+    }
     if (data.gallery) gallery(data.gallery);
     if (data.seo) {
       if (typeof data.seo.title === "string") document.title = data.seo.title;
@@ -134,14 +139,47 @@ function requestIsHttps(req) {
 }
 
 function cookieHeader(name, value, req, extra = "") {
-  const parts = [`${name}=${value}`, "HttpOnly", "SameSite=Lax", "Path=/"];
+  // Path=/admin — cookie не уходит на публичные страницы сайта
+  const parts = [`${name}=${value}`, "HttpOnly", "SameSite=Lax", "Path=/admin"];
   if (requestIsHttps(req)) parts.push("Secure");
   if (extra) parts.push(extra);
   return parts.join("; ");
 }
 
+function isLoopbackAddr(addr) {
+  const value = String(addr || "").replace(/^::ffff:/i, "");
+  return value === "127.0.0.1" || value === "::1";
+}
+
+function isIpLiteral(value) {
+  return /^(?:\d{1,3}\.){3}\d{1,3}$/.test(value) || /^[0-9a-f:]+$/i.test(value);
+}
+
+/** Реальный IP клиента: за nginx (loopback) читаем X-Real-IP / X-Forwarded-For. */
 function clientIp(req) {
-  return req.socket.remoteAddress || "unknown";
+  const remote = req.socket.remoteAddress || "";
+  if (isLoopbackAddr(remote)) {
+    const real = String(req.headers["x-real-ip"] || "").trim();
+    if (real && isIpLiteral(real)) return real.replace(/^::ffff:/i, "");
+    const forwarded = String(req.headers["x-forwarded-for"] || "")
+      .split(",")[0]
+      .trim();
+    if (forwarded && isIpLiteral(forwarded)) return forwarded.replace(/^::ffff:/i, "");
+  }
+  return remote.replace(/^::ffff:/i, "") || "unknown";
+}
+
+const ALLOW_IPS = String(process.env.ADMIN_ALLOW_IPS || "")
+  .split(/[\s,]+/)
+  .map((item) => item.trim())
+  .filter(Boolean);
+
+function requireAllowedIp(req, res, next) {
+  if (!ALLOW_IPS.length) return next();
+  const ip = clientIp(req);
+  if (ALLOW_IPS.includes(ip) || isLoopbackAddr(ip)) return next();
+  res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  return res.status(403).type("html").send("<!doctype html><title>403</title><p>Доступ с этого IP закрыт.</p>");
 }
 
 function loginAllowed(req) {
@@ -194,6 +232,13 @@ async function toWebp(buffer, destination) {
 const app = express();
 app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
+app.use("/admin", requireAllowedIp);
+app.use("/admin", (req, res, next) => {
+  res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  next();
+});
 
 app.post("/admin/api/login", (req, res) => {
   const gate = loginAllowed(req);
@@ -268,6 +313,7 @@ app.post("/admin/api/upload", requireAuth, requireCsrf, upload.single("file"), a
     }
     const kind = String(req.query.kind || "");
     const id = String(req.query.id || "").replace(/[^a-z0-9-]/g, "");
+    const photoKey = String(req.query.key || req.body?.key || "").trim();
     let relative = "";
     if (kind === "stone" || kind === "product") {
       if (!id) {
@@ -283,6 +329,16 @@ app.post("/admin/api/upload", requireAuth, requireCsrf, upload.single("file"), a
       }
     } else if (kind === "gallery") {
       relative = `images/gallery/g${Date.now().toString(36)}.webp`;
+    } else if (kind === "page") {
+      const slot = Object.values(content.PAGE_PHOTOS || {})
+        .flat()
+        .find((item) => item.key === photoKey);
+      if (!slot) {
+        const error = new Error("Не выбрано фото страницы");
+        error.status = 400;
+        throw error;
+      }
+      relative = slot.file;
     } else {
       const error = new Error("Некуда сохранить фото");
       error.status = 400;
@@ -297,10 +353,22 @@ app.post("/admin/api/upload", requireAuth, requireCsrf, upload.single("file"), a
     fs.mkdirSync(path.dirname(absolute), { recursive: true });
     await toWebp(req.file.buffer, absolute);
     let item = null;
-    if (kind === "gallery") item = content.addGalleryItem(relative);
-    else content.rebuild();
-    const stat = fs.statSync(absolute);
-    res.json({ url: `/${relative}`, bytes: stat.size, item });
+    let photo = null;
+    if (kind === "gallery") {
+      item = content.addGalleryItem(relative, {
+        title: String(req.body?.title || "").trim(),
+        stone: String(req.body?.stone || "").trim(),
+        category: String(req.body?.category || "turned").trim() || "turned"
+      });
+    } else if (kind === "page") {
+      photo = content.replacePagePhoto(photoKey, absolute);
+      relative = photo.file;
+    } else {
+      content.rebuild();
+    }
+    const finalPath = path.join(content.root, relative);
+    const stat = fs.statSync(finalPath);
+    res.json({ url: `/${relative}`, bytes: stat.size, item, photo });
   } catch (error) {
     if (error.message && /unsupported|Input buffer|Vips/.test(error.message)) {
       error.status = 400;
